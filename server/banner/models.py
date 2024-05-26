@@ -16,4 +16,10 @@ class Banner(models.Model):
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        db_table = 'banner'
+        verbose_name = 'Banner橫幅'
+        verbose_name_plural = 'Banner橫幅'
+        ordering = ['order', '-created_at']
 

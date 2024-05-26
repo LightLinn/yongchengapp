@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { useRouter } from 'expo-router';
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL } from '../../api/config';
 
 const ForgotPasswordScreen = () => {
   const [username, setUsername] = useState('');

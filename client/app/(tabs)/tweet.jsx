@@ -12,23 +12,9 @@ const TweetScreen = () => {
     const loadTweets = async () => {
       try {
         const fetchedTweets = await fetchTweets();
-        // setTweets(fetchedTweets);
-        setTweets([
-          { id: 1, username: 'User1', content: '這是第一條推文', timestamp: '2024-05-01T12:00:00Z' },
-          { id: 2, username: 'User2', content: '這是第二條推文', timestamp: '2024-05-02T14:00:00Z' },
-          { id: 3, username: 'User3', content: '這是第三條推文', timestamp: '2024-05-03T16:00:00Z' },
-          { id: 4, username: 'User4', content: '這是第四條推文', timestamp: '2024-05-04T18:00:00Z' },
-          { id: 5, username: 'User5', content: '這是第五條推文', timestamp: '2024-05-05T20:00:00Z' },
-          { id: 6, username: 'User6', content: '這是第六條推文', timestamp: '2024-05-06T22:00:00Z' },
-          { id: 7, username: 'User7', content: '這是第七條推文', timestamp: '2024-05-07T08:00:00Z' },
-          { id: 8, username: 'User8', content: '這是第八條推文', timestamp: '2024-05-08T10:00:00Z' },
-          { id: 9, username: 'User9', content: '這是第九條推文', timestamp: '2024-05-09T12:00:00Z' },
-          { id: 10, username: 'User10', content: '這是第十條推文', timestamp: '2024-05-10T14:00:00Z' },
-        ]);
+        setTweets(fetchedTweets);
       } catch (error) {
         console.error('Failed to load tweets', error);
-        
-        
       }
     };
 
@@ -38,9 +24,9 @@ const TweetScreen = () => {
   const handlePostTweet = async () => {
     if (tweetContent.trim()) {
       const newTweet = {
-        username: 'Current User', 
+        username: 'Current User',
         content: tweetContent,
-        timestamp: new Date().toISOString(),
+        created_at: new Date().toISOString(),
       };
       const savedTweet = await postTweet(newTweet);
       setTweets([savedTweet, ...tweets]);
@@ -62,7 +48,7 @@ const TweetScreen = () => {
       <FlatList
         data={tweets}
         renderItem={({ item }) => <TweetItem tweet={item} />}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id?.toString() || Math.random().toString()} // 防止id为undefined的情况
         contentContainerStyle={styles.tweetList}
       />
     </View>

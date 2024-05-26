@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BannerCarousel from '../components/BannerCarousel';
 import NewsItem from '../components/NewsItem';
-import { fetchBannerImages, fetchNews } from '../../api/newsApi';
+import { fetchNews } from '../../api/newsApi';
+import { fetchBannerImages } from '../../api/bannerApi'; 
 
 const HomeScreen = () => {
   const [username, setUsername] = useState('');
@@ -29,13 +30,6 @@ const HomeScreen = () => {
         setBanners(bannerData);
       } catch (error) {
         console.error('Failed to load banners', error);
-        // 使用演示用的資料
-        const demoBanners = [
-          { id: 1, imageUrl: 'https://via.placeholder.com/468x126.png?text=Banner+1' },
-          { id: 2, imageUrl: 'https://via.placeholder.com/468x126.png?text=Banner+2' },
-          { id: 3, imageUrl: 'https://via.placeholder.com/468x126.png?text=Banner+3' },
-        ];
-        setBanners(demoBanners);
       }
     };
 
@@ -52,18 +46,7 @@ const HomeScreen = () => {
           { id: 3, title: '演示新聞標題 3', content: '這是演示新聞 3 的內容' },
           { id: 4, title: '演示新聞標題 4', content: '這是演示新聞 4 的內容' },
           { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-        ];
+        ]
         setNews(demoNews);
       }
     };

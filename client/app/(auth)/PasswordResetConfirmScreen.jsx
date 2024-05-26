@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet, Text } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL } from '../../api/config';
 
 const PasswordResetConfirmScreen = () => {
   const router = useRouter();

@@ -21,6 +21,9 @@ class UnavailableSlot(Auditable):
 
     class Meta:
         unique_together = ('lifeguard', 'date', 'start_time', 'end_time')
+        db_table = 'unavailable_slot'
+        verbose_name = '救生员排假表'
+        verbose_name_plural = '救生员排假表'
 
     def __str__(self):
         return self.lifeguard.user.username
@@ -77,7 +80,7 @@ class CoachAvailableSlot(Auditable):
         unique_together = ['coach', 'day_of_week', 'schedule_slot', 'location']
     
     def __str__(self):
-        return f'{self.coach.user.username} - {self.start_time}'
+        return f'{self.coach.user.username}'
     
 class Location(Auditable):
     name = models.CharField(max_length=255, verbose_name='名称')
@@ -86,8 +89,8 @@ class Location(Auditable):
     
     class Meta:
         db_table = 'location'
-        verbose_name = '授課地点'
-        verbose_name_plural = '授課地点'
+        verbose_name = '教练授課地点'
+        verbose_name_plural = '教练授課地点'
     
     def __str__(self):
         return self.name
@@ -98,8 +101,8 @@ class ScheduleSlot(models.Model):
 
     class Meta:
         db_table = 'schedule_slot'
-        verbose_name = '排班时间段'
-        verbose_name_plural = '排班时间段'
+        verbose_name = '教练排班时间段'
+        verbose_name_plural = '教练排班时间段'
 
     def __str__(self):
         return f"{self.start_time} - {self.end_time}"

@@ -13,6 +13,7 @@ class Worklog(Auditable):
     daily_checks = models.ManyToManyField('DailyCheckRecord', blank=True)
     periodic_checks = models.ManyToManyField('PeriodicCheckRecord', blank=True)
     special_checks = models.ManyToManyField('SpecialCheckRecord', blank=True)
+    is_final = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -23,7 +24,6 @@ class Worklog(Auditable):
         verbose_name = '工作日誌'
         verbose_name_plural = '工作日誌'
 
-#TODO = '工作日誌紀錄使用人數'
 
 # 每日巡檢項目，針對項目給予評級「優、尚可、需改善」，以及備註欄位
 class DailyChecklist(Auditable):
@@ -31,7 +31,7 @@ class DailyChecklist(Auditable):
     description = models.TextField(verbose_name='描述', blank=True, null=True)
     
     def __str__(self):
-        return self.item
+        return self.item 
     
     class Meta:
         db_table = 'daily_checklist'
@@ -40,7 +40,7 @@ class DailyChecklist(Auditable):
 
 class DailyCheckRecord(Auditable):
     created_at = models.DateTimeField(auto_now_add=True)
-    daily_checklist = models.ForeignKey(DailyChecklist, on_delete=models.CASCADE, verbose_name='每日檢點')
+    check_item = models.ForeignKey(DailyChecklist, on_delete=models.CASCADE, verbose_name='每日檢點', blank=True, null=True)
     score = models.IntegerField(choices=[(0, '優'), (1, '尚可'), (2, '需改善')], default=0)
     duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員')
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
@@ -49,6 +49,10 @@ class DailyCheckRecord(Auditable):
         db_table = 'daily_check_record'
         verbose_name = '每日檢點記錄'
         verbose_name_plural = '每日檢點記錄'
+    
+    def __str__(self):
+        return self.check_item.item if self.check_item else ''
+
 
 # 定時巡檢項目，紀錄溫度與含氧量，包含時間欄位
 class PeriodicChecklist(Auditable):
@@ -65,8 +69,9 @@ class PeriodicChecklist(Auditable):
 
 class PeriodicCheckRecord(Auditable):
     created_at = models.DateTimeField(auto_now_add=True)
-    daily_checklist = models.ForeignKey(DailyChecklist, on_delete=models.CASCADE, verbose_name='定時檢點')
+    check_item = models.ForeignKey(PeriodicChecklist, on_delete=models.CASCADE, verbose_name='定時檢點', blank=True, null=True)
     value = models.FloatField(verbose_name='數值')
+    pool = models.CharField(max_length=100, verbose_name='池號', blank=True, null=True)
     duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員')
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
 
@@ -75,13 +80,17 @@ class PeriodicCheckRecord(Auditable):
         verbose_name = '定時檢點記錄'
         verbose_name_plural = '定時檢點記錄'
 
+    def __str__(self):
+        return self.check_item.item if self.check_item else ''
+
+
 # 特殊處理項目，紀錄指定項目的補充、劑量、數量，包含時間欄位
 class SpecialChecklist(models.Model):
     item = models.CharField(max_length=100, verbose_name='項目')
     description = models.TextField(verbose_name='描述', blank=True, null=True)
     
     def __str__(self):
-        return self.item.name
+        return self.item
     
     class Meta:
         db_table = 'special_checklist'
@@ -90,9 +99,10 @@ class SpecialChecklist(models.Model):
 
 class SpecialCheckRecord(Auditable):
     created_at = models.DateTimeField(auto_now_add=True)
-    daily_checklist = models.ForeignKey(DailyChecklist, on_delete=models.CASCADE, verbose_name='特殊處理檢點')
+    check_item = models.ForeignKey(SpecialChecklist, on_delete=models.CASCADE, verbose_name='特殊處理檢點', blank=True, null=True)
     quantity = models.FloatField(verbose_name='數量')
-    value = models.FloatField(verbose_name='數值')
+    start_time = models.DateTimeField(verbose_name='開始時間', blank=True, null=True)
+    end_time = models.DateTimeField(verbose_name='結束時間', blank=True, null=True)
     duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員')
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
 
@@ -100,6 +110,9 @@ class SpecialCheckRecord(Auditable):
         db_table = 'special_check_record'
         verbose_name = '特殊處理檢點記錄'
         verbose_name_plural = '特殊處理檢點記錄'
+
+    def __str__(self):
+        return self.check_item.item if self.check_item else ''
 
 
 '''

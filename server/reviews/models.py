@@ -12,6 +12,9 @@ class ReviewStage(models.Model):
 
     class Meta:
         ordering = ['order']
+        db_table = 'review_stages'
+        verbose_name = '審核階段'
+        verbose_name_plural = '審核階段'
 
 class Auditable(models.Model):
     STATUS_CHOICES = [

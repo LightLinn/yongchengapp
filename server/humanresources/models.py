@@ -14,8 +14,8 @@ class Employee(Auditable):
 
     class Meta:
         db_table = 'employee'
-        verbose_name = '员工'
-        verbose_name_plural = '员工'
+        verbose_name = '员工清單'
+        verbose_name_plural = '员工清單'
 
     def __str__(self):
         return self.user.username
@@ -27,8 +27,8 @@ class Coach(Auditable):
 
     class Meta:
         db_table = 'coach'
-        verbose_name = '教练'
-        verbose_name_plural = '教练'
+        verbose_name = '教练清單'
+        verbose_name_plural = '教练清單'
 
     def __str__(self):
         return self.user.username
@@ -40,8 +40,8 @@ class Lifeguard(Auditable):
 
     class Meta:
         db_table = 'lifeguard'
-        verbose_name = '救生员'
-        verbose_name_plural = '救生员'
+        verbose_name = '救生员清單'
+        verbose_name_plural = '救生员清單'
 
     def __str__(self):
         return self.user.username
@@ -53,8 +53,8 @@ class VenueManager(Auditable):
 
     class Meta:
         db_table = 'venue_manager'
-        verbose_name = '场地管理人员'
-        verbose_name_plural = '场地管理人员'
+        verbose_name = '场地管理人员清單'
+        verbose_name_plural = '场地管理人员清單'
 
     def __str__(self):
         return self.user.username

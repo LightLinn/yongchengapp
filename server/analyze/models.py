@@ -8,4 +8,7 @@ class UserActivity(Auditable):
     activity_type = models.CharField(max_length=255, verbose_name='活動類型')
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name='時間戳')
 
-# Test
+    class Meta:
+        db_table = 'user_activity'
+        verbose_name = '使用者活動'
+        verbose_name_plural = '使用者活動'

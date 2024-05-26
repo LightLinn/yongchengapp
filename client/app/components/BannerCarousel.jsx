@@ -14,9 +14,12 @@ const BannerCarousel = ({ banners }) => {
         height={200}
         width={width}
       >
-        {banners.map((banner, index) => (
-          <View key={index} style={styles.slide}>
-            <Image source={{ uri: banner.imageUrl }} style={styles.image} />
+        {banners.map((banner) => (
+          <View key={banner.id} style={styles.slide}>
+            <Image 
+              source={{ uri: banner.image ? banner.image : banner.link }} 
+              style={styles.image} 
+            />
           </View>
         ))}
       </Swiper>

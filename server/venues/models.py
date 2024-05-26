@@ -9,7 +9,7 @@ from reviews.models import Auditable
 
 class Venue(Auditable):
     name = models.CharField(max_length=255, verbose_name='場地名稱')
-    description = models.TextField(verbose_name='場地描述')
+    description = models.TextField(verbose_name='場地描述', blank=True, null=True) 
     capacity = models.IntegerField(verbose_name='容量')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
@@ -19,7 +19,7 @@ class Venue(Auditable):
     holiday_close_time = models.TimeField(verbose_name='假日關閉時間', blank=True, null=True)
     longitude = models.FloatField(verbose_name='經度', default=0)
     latitude = models.FloatField(verbose_name='緯度', default=0)
-    address = models.CharField(max_length=255, verbose_name='地址', default='')
+    address = models.CharField(max_length=255, verbose_name='地址', default='', blank=True, null=True)
     managers = models.ManyToManyField('authentication.CustomUser', related_name='venues', verbose_name='場地管理者')
 
     class Meta:
