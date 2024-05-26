@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config'; // 确保路径正确
+import { API_BASE_URL } from './config'; // 确保路径正确
 
 export const fetchBannerImages = async () => {
   const response = await fetch(`${API_BASE_URL}/banners/`);

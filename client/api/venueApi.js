@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config'; // 确保路径正确
+import { API_BASE_URL } from './config'; // 确保路径正确
 
 export const fetchVenues = async () => {
   // 这里是模拟的API调用，你可以将其替换为真实的API调用
