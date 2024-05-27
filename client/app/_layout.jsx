@@ -5,6 +5,7 @@ import { Icon } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthProvider } from '../context/AuthContext'
+import { ThemeProvider } from '../context/ThemeContext';
 
 export default function Layout() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function Layout() {
 
   return (
     <AuthProvider>
+    <ThemeProvider>
     <Stack>
       <Stack.Screen 
         name="index"
@@ -65,6 +67,7 @@ export default function Layout() {
         }}
       />
     </Stack>
+    </ThemeProvider>
     </AuthProvider>
   );
 }
