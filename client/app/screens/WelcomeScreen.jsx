@@ -50,7 +50,7 @@ const WelcomeScreen = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={{ ...styles.logoContainer, opacity: fadeAnim }}>
-        <Image source={require('../../assets/logo-01.png')} style={styles.logo} />
+        <Image source={require('../../assets/logo-1-1.jpg')} style={styles.logo} />
       </Animated.View>
       <ActivityIndicator size="large" color="#999" />
     </View>
