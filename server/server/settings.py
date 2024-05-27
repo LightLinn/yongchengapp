@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'store',
     'support',
     'notifications',
+    'news',
     'subscriptions',
     'humanresources',
     'tweets',

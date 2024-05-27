@@ -12,5 +12,8 @@ export const fetchNews = async () => {
 
 export const fetchNewsDetail = async (id) => {
   const response = await fetch(`${API_BASE_URL}/news/${id}/`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch news detail');
+  }
   return await response.json();
 };

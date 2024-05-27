@@ -1,62 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { fetchNewsDetail } from '../../../api/newsApi';
+import { fetchNotificationDetail } from '../../../api/notificationApi';
 
-const NewsDetailScreen = () => {
+const NotifyDetailScreen = () => {
   const { id } = useLocalSearchParams();
-  const [newsDetail, setNewsDetail] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    const loadNewsDetail = async () => {
+    const loadNotificationDetail = async () => {
       try {
-        const data = await fetchNewsDetail(id);
-        // setNewsDetail(data);
+        const data = await fetchNotificationDetail(id);
+        setNotification(data);
       } catch (error) {
-        console.error('Failed to load news detail', error);
-        setNewsDetail([
-          {
-            title: '演示新聞標題',
-            content: '這是一篇演示用的新聞內容。這篇新聞詳細描述了一些演示信息，並展示了如何在應用中顯示新聞的詳細內容。',
-          },
-        ]);
+        console.error('Failed to load notification detail', error);
       }
     };
 
     if (id) {
-      loadNewsDetail();
+      loadNotificationDetail();
     }
   }, [id]);
 
-  if (!newsDetail) {
+  if (!notification) {
     return (
-      <View style={styles.container}>
+      <View style={styles.loadingContainer}>
         <Text>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{newsDetail.title}</Text>
-      <Text style={styles.content}>{newsDetail.content}</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>{notification.title}</Text>
+      <Text style={styles.content}>{notification.content}</Text>
+      <Text style={styles.timestamp}>{new Date(notification.created_at).toLocaleString()}</Text>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   content: {
-    fontSize: 16,
+    fontSize: 18,
+    lineHeight: 28,
+    color: '#333',
+    marginBottom: 20,
+  },
+  timestamp: {
+    fontSize: 12,
+    color: 'gray',
   },
 });
 
-export default NewsDetailScreen;
+export default NotifyDetailScreen;

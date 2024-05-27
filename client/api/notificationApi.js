@@ -1,6 +1,19 @@
-import { API_BASE_URL } from './config'; // 确保路径正确
+import { API_BASE_URL } from './config';
 
 export const fetchNotifications = async () => {
   const response = await fetch(`${API_BASE_URL}/notifications/`);
-  return await response.json();
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error('Failed to fetch notifications');
+  }
+};
+
+export const fetchNotificationDetail = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/notifications/${id}/`);
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error('Failed to fetch notification detail');
+  }
 };

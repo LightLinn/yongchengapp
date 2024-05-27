@@ -15,8 +15,12 @@ const NotificationItem = ({ notification }) => {
       <Card containerStyle={styles.card}>
         <Card.Title>{notification.title}</Card.Title>
         <Card.Divider />
-        <Text style={styles.message}>{notification.message}</Text>
-        <Text style={styles.timestamp}>{new Date(notification.timestamp).toLocaleString()}</Text>
+        <Text style={styles.content}>
+          {notification.content.length > 50 
+            ? `${notification.content.substring(0, 50)}...` 
+            : notification.content}
+        </Text>
+        <Text style={styles.timestamp}>{new Date(notification.created_at).toLocaleString()}</Text>
       </Card>
     </TouchableOpacity>
   );
@@ -28,7 +32,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
   },
-  message: {
+  content: {
     fontSize: 16,
     marginBottom: 10,
   },

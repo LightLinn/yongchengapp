@@ -39,15 +39,6 @@ const HomeScreen = () => {
         setNews(newsData);
       } catch (error) {
         console.error('Failed to load news', error);
-        // 使用演示用的資料
-        const demoNews = [
-          { id: 1, title: '演示新聞標題 1', content: '這是演示新聞 1 的內容' },
-          { id: 2, title: '演示新聞標題 2', content: '這是演示新聞 2 的內容' },
-          { id: 3, title: '演示新聞標題 3', content: '這是演示新聞 3 的內容' },
-          { id: 4, title: '演示新聞標題 4', content: '這是演示新聞 4 的內容' },
-          { id: 5, title: '演示新聞標題 5', content: '這是演示新聞 5 的內容' },
-        ]
-        setNews(demoNews);
       }
     };
 
@@ -60,7 +51,7 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <BannerCarousel banners={banners} />
       <View style={styles.newsSection}>
-        <Text style={styles.newsTitle}>News</Text>
+        <Text style={styles.newsTitle}>最新消息</Text>
         <FlatList
           data={news}
           renderItem={({ item }) => <NewsItem news={item} />}

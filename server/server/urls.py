@@ -39,4 +39,5 @@ urlpatterns = [
     path('api/yc/', include('worklog.urls')),
     path('api/yc/', include('teachlog.urls')),
     path('api/yc/', include('banner.urls')),
+    path('api/yc/', include('news.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
