@@ -6,5 +6,5 @@ class HumanresourcesConfig(AppConfig):
     name = 'humanresources'
     verbose_name = '人資管理'
 
-    def ready(self):
-        import humanresources.signals
+    # def ready(self):
+    #     import humanresources.signals

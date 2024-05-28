@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthProvider } from '../context/AuthContext'
 import { ThemeProvider } from '../context/ThemeContext';
+import { COLORS } from '../styles/theme';
 
 export default function Layout() {
   const router = useRouter();
@@ -37,16 +38,16 @@ export default function Layout() {
           headerRight: () => (
             <View style={styles.headerIcons}>
               <TouchableOpacity onPress={navigateToNotify}>
-                <Icon name="notifications" type="material" color="#333" />
+                <Icon name="notifications" type="material" color={COLORS.secondary} />
               </TouchableOpacity>
               <TouchableOpacity onPress={navigateToAvatar} style={styles.avatarIcon}>
-                <Icon name="account-circle" type="material" color="#333" />
+                <Icon name="account-circle" type="material" color={COLORS.secondary} />
               </TouchableOpacity>
             </View>
           ),
           headerLeft: () => (
             <Image 
-              source={require('../assets/logo-02.png')} 
+              source={require('../assets/logo-1-4.png')} 
               style={styles.logo}
               resizeMode="contain"
             />
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   logo: {
-    width: 100,
-    height: 40,
+    width: 110,
+    height: 42,
   },
 });

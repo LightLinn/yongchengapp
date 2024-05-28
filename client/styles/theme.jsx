@@ -1,11 +1,11 @@
 const COLORS = {
-  primary: "#312651",
-  secondary: "#444262",
-  tertiary: "#FF7754",
-  gray: "#83829A",
-  gray2: "#C1C0C8",
-  white: "#F3F4F8",
-  lightWhite: "#FAFAFC",
+  primary: "#415b5e",      // 主色
+  secondary: "#617d80",    // 次要色，比主色稍微亮一些
+  tertiary: "#2d4345",     // 第三色，比主色稍微暗一些
+  gray: "#83829A",         // 灰色，保留不變
+  gray2: "#C1C0C8",        // 第二灰色，保留不變
+  white: "#F3F4F8",        // 白色，保留不變
+  lightWhite: "#FAFAFC",   // 淺白色，保留不變
 };
 
 const FONT = {

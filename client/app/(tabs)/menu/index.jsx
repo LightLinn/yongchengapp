@@ -29,6 +29,9 @@ const MenuScreen = () => {
         {isLogging && groups.includes('admin') && renderSection('審核管理', [
           { name: '查看審核', action: () => router.push('/screens/audit') },
         ])}
+        {isLogging && renderSection('後台管理', [
+          { name: '權限管理', action: () => router.push('/screens/group/GroupListScreen') },
+        ])}
         {isLogging && renderSection('場地管理', [
           { name: '新增場地', action: () => router.push('/screens/venue/VenueAddScreen') },
           { name: '查看場地', action: () => router.push('/screens/venue/VenueScreen') },
@@ -63,9 +66,7 @@ const MenuScreen = () => {
           { name: '新增通知', action: () => router.push('/screens/notification/add') },
           { name: '查看通知', action: () => router.push('/screens/notification/view') },
         ])}
-        {isLogging && renderSection('後台管理', [
-          { name: '進入後台', action: () => router.push('/screens/notification/view') },
-        ])}
+        
       </View>
     </ScrollView>
     

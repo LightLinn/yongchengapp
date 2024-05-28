@@ -1,9 +1,18 @@
 import { Tabs } from 'expo-router';
 import { Icon } from 'react-native-elements';
+import { COLORS } from '../../styles/theme';
 
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: COLORS.secondary,
+        tabBarInactiveTintColor: COLORS.gray2,
+        tabBarStyle: {
+          backgroundColor: COLORS.white,
+        },
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{

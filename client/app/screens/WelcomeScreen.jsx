@@ -19,12 +19,12 @@ const WelcomeScreen = () => {
             // 模拟3秒延迟后跳转
             setTimeout(() => {
               router.replace('/(tabs)/home');
-            }, 1500);
+            }, 3000);
           }
         } catch (error) {
           setTimeout(() => {
             router.replace('/LoginScreen');
-          }, 1500);
+          }, 3000);
         }
       } else {
         // 动画淡入效果
@@ -37,7 +37,7 @@ const WelcomeScreen = () => {
         // 模拟3秒延迟后跳转
         const timeoutId = setTimeout(() => {
           router.replace('/(tabs)/home');
-        }, 1500);
+        }, 3000);
 
         // 清除定时器
         return () => clearTimeout(timeoutId);
@@ -50,8 +50,12 @@ const WelcomeScreen = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={{ ...styles.logoContainer, opacity: fadeAnim }}>
-        <Image source={require('../../assets/logo-1-1.jpg')} style={styles.logo} />
+        <Image source={require('../../assets/logo-1-1.png')} style={styles.logo} />
       </Animated.View>
+      <View style={styles.extraLogosContainer}>
+        <Image source={require('../../assets/logo-2-1.png')} style={styles.extraLogo} />
+        <Image source={require('../../assets/logo-2-1.png')} style={styles.extraLogo} />
+      </View>
       <ActivityIndicator size="large" color="#999" />
     </View>
   );
@@ -69,9 +73,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
+  },
+  extraLogosContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginTop: 20,
+    marginBottom: 50,
+  },
+  extraLogo: {
+    width: 100,
+    height: 100,
+    marginHorizontal: 10,
   },
 });
+
 
 export default WelcomeScreen;

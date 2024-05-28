@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.password_validation import validate_password
 from .models import CustomUser
 
@@ -19,12 +19,18 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'phone', 'sex', 'birthday', 'address', 'avatar', 'groups']
 
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ['id', 'name', 'codename']
+
 class GroupSerializer(serializers.ModelSerializer):
-    users = UserSerializer(source='user_set', many=True)
+    users = UserSerializer(source='user_set', many=True, read_only=True)
+    permissions = PermissionSerializer(many=True, read_only=True)
     
     class Meta:
         model = Group
-        fields = ['id', 'name', 'users'] 
+        fields = ['id', 'name', 'users', 'permissions']
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,4 +87,10 @@ class PasswordChangeSerializer(serializers.Serializer):
         validate_password(value)
         return value
 
-        
+
+# 列出所有權限及其對應的 codenames
+# from django.contrib.auth.models import Permission
+
+# permissions = Permission.objects.all()
+# for perm in permissions:
+#     print(f"Name: {perm.name}, Codename: {perm.codename}")

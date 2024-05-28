@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { fetchNotificationDetail } from '../../../api/notificationApi';
+import { fetchNewsDetail } from '../../../api/newsApi';
 
 const NotifyDetailScreen = () => {
   const { id } = useLocalSearchParams();
@@ -10,7 +10,7 @@ const NotifyDetailScreen = () => {
   useEffect(() => {
     const loadNotificationDetail = async () => {
       try {
-        const data = await fetchNotificationDetail(id);
+        const data = await fetchNewsDetail(id);
         setNotification(data);
       } catch (error) {
         console.error('Failed to load notification detail', error);

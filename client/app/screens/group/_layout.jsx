@@ -5,43 +5,9 @@ export default function Layout() {
   return (
     <Stack>
       <Stack.Screen 
-        name="WelcomeScreen"
-        options={{ 
-          headerTitle: '',
-          headerShadowVisible: false,
-        }} 
-      />
-      <Stack.Screen 
-        name="ProfileScreen" 
+        name="GroupListScreen"
         options={({ navigation }) => ({
-          headerTitle: '用戶管理',
-          headerLeft: () => (
-            <Button
-              icon={<Icon name="arrow-back" color="#333" />}
-              buttonStyle={{ backgroundColor: 'transparent' }}
-              onPress={() => navigation.goBack()}
-            />
-          ),
-        })} 
-      />
-      <Stack.Screen 
-        name="group"
-        options={({ navigation }) => ({
-          headerTitle: '',
-          headerShown: false,
-          headerLeft: () => (
-            <Button
-              icon={<Icon name="arrow-back" color="#333" />}
-              buttonStyle={{ backgroundColor: 'transparent' }}
-              onPress={() => navigation.goBack()}
-            />
-          ),
-        })} 
-      />
-      <Stack.Screen 
-        name="news" 
-        options={({ navigation }) => ({
-          headerTitle: '最新消息',
+          headerTitle: '角色管理',
           headerShadowVisible: false,
           headerLeft: () => (
             <Button
@@ -53,10 +19,10 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
-        name="notify" 
+        name="GroupUserListScreen"
         options={({ navigation }) => ({
-          headerTitle: '通知列表',
-          headerShown: false,
+          headerTitle: '角色列表',
+          headerShadowVisible: false,
           headerLeft: () => (
             <Button
               icon={<Icon name="arrow-back" color="#333" />}
@@ -64,23 +30,23 @@ export default function Layout() {
               onPress={() => navigation.goBack()}
             />
           ),
-        })}
+        })} 
       />
       <Stack.Screen 
-        name="venue"
-        options={{
-          headerTitle: '場地管理',
+        name="PermissionEditorScreen"
+        options={({ navigation }) => ({
+          headerTitle: '權限管理',
           headerShadowVisible: false,
-        }}
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
       />
-      <Stack.Screen 
-        name="enrollment"
-        options={{ 
-          headerTitle: '報名管理',
-          headerShadowVisible: false,
-        }}
-      />
-      
     </Stack>
+    
   )
 }

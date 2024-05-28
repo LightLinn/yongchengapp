@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -11,17 +11,17 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from rest_framework import viewsets, permissions
-from rest_framework import status
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import CustomUser
-from .serializers import UserSerializer, UserCreateSerializer, GroupSerializer, PasswordResetSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer
+from humanresources.models import Coach, Lifeguard, Employee, VenueManager
+from .serializers import UserSerializer, UserCreateSerializer, GroupSerializer, PermissionSerializer, PasswordResetSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer
 from authentication.permissions import *
 import qrcode
 import random
@@ -34,6 +34,14 @@ User = get_user_model()
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    group_model_mapping = {
+        '內部_教練': Coach,
+        '內部_救生員': Lifeguard,
+        '內部_行政人員': Employee,
+        '外部_場地管理人員': VenueManager,
+    }
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -41,6 +49,93 @@ class GroupViewSet(viewsets.ModelViewSet):
         if group_name:
             queryset = queryset.filter(name=group_name)
         return queryset
+    
+    @action(detail=True, methods=['get'])
+    def users(self, request, pk=None):
+        group = self.get_object()
+        users = group.user_set.all()
+        user_data = [{"id": user.id, "username": user.username} for user in users]
+        return Response(user_data)
+    
+    @action(detail=True, methods=['get'])
+    def permissions(self, request, pk=None):
+        group = self.get_object()
+        permissions = group.permissions.all()
+        permission_data = [{'id': perm.id, 'name': perm.name, 'codename': perm.codename} for perm in permissions]
+        return Response(permission_data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def add_permission(self, request, pk=None):
+        group = self.get_object()
+        codename = request.data.get('codename')
+        try:
+            permission = Permission.objects.get(codename=codename)
+            group.permissions.add(permission)
+            return Response({'status': 'permission added'}, status=status.HTTP_200_OK)
+        except Permission.DoesNotExist:
+            return Response({'status': 'permission not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['post'])
+    def remove_permission(self, request, pk=None):
+        group = self.get_object()
+        codename = request.data.get('codename')
+        try:
+            permission = Permission.objects.get(codename=codename)
+            group.permissions.remove(permission)
+            return Response({'status': 'permission removed'}, status=status.HTTP_200_OK)
+        except Permission.DoesNotExist:
+            return Response({'status': 'permission not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['post'])
+    def set_permissions(self, request, pk=None):
+        group = self.get_object()
+        codenames = request.data.get('codenames', [])
+        try:
+            permissions = Permission.objects.filter(codename__in=codenames)
+            group.permissions.set(permissions)
+            return Response({'status': 'permissions updated'}, status=status.HTTP_200_OK)
+        except Permission.DoesNotExist:
+            return Response({'status': 'some permissions not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['post'])
+    def add_user(self, request, pk=None):
+        group = self.get_object()
+        username = request.data.get('username')
+        try:
+            user = CustomUser.objects.get(username=username)
+            group.user_set.add(user)
+
+            # 更新相應的模型
+            model = self.group_model_mapping.get(group.name)
+            if model:
+                model.objects.get_or_create(user=user)
+
+            return Response({'status': 'user added'}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['post'])
+    def remove_user(self, request, pk=None):
+        group = self.get_object()
+        username = request.data.get('username')
+        try:
+            user = CustomUser.objects.get(username=username)
+            group.user_set.remove(user)
+
+            # 更新相應的模型
+            model = self.group_model_mapping.get(group.name)
+            if model:
+                model.objects.filter(user=user).delete()
+
+            return Response({'status': 'user removed'}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PermissionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Permission.objects.all()
+    serializer_class = PermissionSerializer
+    # permission_classes = [permissions.IsAuthenticated]
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -49,7 +144,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create':
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated(), IsManagerGroup(), IsAdministratorGroup()]
+        return [permissions.IsAuthenticated()]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -63,7 +158,15 @@ class UserViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(groups__id=group_id)
         return queryset
     
-
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def suggestions(self, request):
+        query = request.query_params.get('q', '')
+        if query:
+            users = User.objects.filter(username__icontains=query)[:10]
+            suggestions = [{'username': user.username} for user in users]
+            return Response(suggestions)
+        return Response([])
+    
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

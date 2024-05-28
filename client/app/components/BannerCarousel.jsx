@@ -13,6 +13,7 @@ const BannerCarousel = ({ banners }) => {
         showsPagination={true}
         height={200}
         width={width}
+        activeDotColor="#415b5e"
       >
         {banners.map((banner) => (
           <View key={banner.id} style={styles.slide}>
