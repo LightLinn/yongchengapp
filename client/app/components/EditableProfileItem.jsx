@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const EditableProfileItem = ({ label, value, onChange }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +22,7 @@ const EditableProfileItem = ({ label, value, onChange }) => {
       <Icon
         name={isEditing ? 'check' : 'edit'}
         type="feather"
+        color={isEditing ? COLORS.success : COLORS.gray2 } 
         onPress={() => setIsEditing(!isEditing)}
         containerStyle={styles.icon}
       />
@@ -50,7 +52,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 10,
-    color: '#999',
   },
 });
 

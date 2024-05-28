@@ -9,6 +9,7 @@ const WelcomeScreen = () => {
   const { isLogging } = useAuth();
   const segments = useSegments();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const seconds = 1000
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -19,12 +20,12 @@ const WelcomeScreen = () => {
             // 模拟3秒延迟后跳转
             setTimeout(() => {
               router.replace('/(tabs)/home');
-            }, 3000);
+            }, seconds);
           }
         } catch (error) {
           setTimeout(() => {
             router.replace('/LoginScreen');
-          }, 3000);
+          }, seconds);
         }
       } else {
         // 动画淡入效果
@@ -37,7 +38,7 @@ const WelcomeScreen = () => {
         // 模拟3秒延迟后跳转
         const timeoutId = setTimeout(() => {
           router.replace('/(tabs)/home');
-        }, 3000);
+        }, seconds);
 
         // 清除定时器
         return () => clearTimeout(timeoutId);

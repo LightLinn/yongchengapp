@@ -47,7 +47,7 @@ const GroupListScreen = () => {
                                 <TouchableOpacity onPress={() => router.push(`/screens/group/PermissionEditorScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
                                     <Icon name="edit" size={SIZES.large} color={COLORS.secondary} />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => router.push(`/screens/group/GroupUserListScreen?groupId=${item.id}`)} style={styles.iconButton}>
+                                <TouchableOpacity onPress={() => router.push(`/screens/group/GroupUserListScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
                                     <Icon name="list" size={SIZES.xLarge} color={COLORS.tertiary} />
                                 </TouchableOpacity>
                             </View>

@@ -4,6 +4,7 @@ import { Input, Button, Text } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '../../api/config';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const ChangePasswordScreen = () => {
   const [oldPassword, setOldPassword] = useState('');

@@ -3,9 +3,10 @@ import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'r
 import { Icon } from 'react-native-elements';
 import { fetchGroupUsers, addUserToGroup, removeUserFromGroup, fetchUserSuggestions } from '../../../api/groupApi';
 import { useLocalSearchParams } from 'expo-router';
+import { COLORS, SIZES, FONT } from '../../../styles/theme';
 
 const GroupUserListScreen = () => {
-  const { groupId } = useLocalSearchParams();
+  const { groupId, groupName } = useLocalSearchParams();
   const [groupUsers, setGroupUsers] = useState([]);
   const [newUsername, setNewUsername] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -77,6 +78,7 @@ const GroupUserListScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.groupName}>{groupName}</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -85,7 +87,7 @@ const GroupUserListScreen = () => {
           onChangeText={handleUsernameChange}
         />
         <TouchableOpacity onPress={handleAddUser}>
-          <Icon name="add" size={30} color="#007bff" />
+          <Icon name="add" size={SIZES.large} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
       {suggestions.length > 0 && (
@@ -104,7 +106,7 @@ const GroupUserListScreen = () => {
           <View style={styles.userRow}>
             <Text style={styles.username}>{item.username}</Text>
             <TouchableOpacity onPress={() => handleRemoveUser(item.username)}>
-              <Icon name="remove" size={24} color="#ff0000" />
+              <Icon name="remove" size={SIZES.large} color={COLORS.alert} />
             </TouchableOpacity>
           </View>
         )}
@@ -115,7 +117,12 @@ const GroupUserListScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 20,
+  },
+  groupName: {
+    fontSize: SIZES.large,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   inputContainer: {
     flexDirection: 'row',

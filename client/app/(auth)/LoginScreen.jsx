@@ -3,6 +3,7 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { useRouter, useSegments } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const LoginScreen = () => {
   const { login } = useAuth();

@@ -5,34 +5,43 @@ import EditableProfileItem from '../components/EditableProfileItem';
 import { fetchUserProfile, updateUserProfile } from '../../api/profileApi';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const ProfileScreen = () => {
   const [profile, setProfile] = useState({
     avatar: '',
     username: '',
-    roles: [],
+    groups: [],
     email: '',
     phone: '',
     address: '',
+    sex: '',
+    birthday: '',
   });
   const router = useRouter();
 
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
-        const profileData = await fetchUserProfile();
-        setProfile(profileData);
+        const userId = await AsyncStorage.getItem('userId');
+        const token = await AsyncStorage.getItem('token');
+        if (userId && token) {
+          const profileData = await fetchUserProfile(userId, token);
+          setProfile({
+            avatar: profileData.avatar,
+            username: profileData.username,
+            groups: profileData.groups || [],
+            email: profileData.email,
+            phone: profileData.phone,
+            address: profileData.address,
+            // sex: profileData.sex,
+            birthday: profileData.birthday,
+          });
+        } else {
+          console.error('User ID or Token not found in storage');
+        }
       } catch (error) {
         console.error('Failed to load user profile', error);
-        // 使用演示数据
-        setProfile({
-          avatar: 'https://via.placeholder.com/150',
-          username: 'John Doe',
-          roles: ['Admin', 'User'],
-          email: 'john.doe@example.com',
-          phone: '123-456-7890',
-          address: '123 Main St, Anytown, USA',
-        });
       }
     };
 
@@ -68,9 +77,9 @@ const ProfileScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileSection}>
-        <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+        <Image source={{ uri: profile.avatar || 'https://via.placeholder.com/150' }} style={styles.avatar} />
         <Text style={styles.username}>{profile.username}</Text>
-        <Text style={styles.roles}>{profile.roles.join(', ')}</Text>
+        <Text style={styles.groups}>{profile.groups.join(', ')}</Text>
       </View>
       <View style={styles.detailsSection}>
         <EditableProfileItem
@@ -87,6 +96,16 @@ const ProfileScreen = () => {
           label="Address"
           value={profile.address}
           onChange={(value) => handleChange('address', value)}
+        />
+        {/* <EditableProfileItem
+          label="Sex"
+          value={profile.sex}
+          onChange={(value) => handleChange('sex', value)}
+        /> */}
+        <EditableProfileItem
+          label="Birthday"
+          value={profile.birthday}
+          onChange={(value) => handleChange('birthday', value)}
         />
         <Button title="更新" onPress={handleSubmit} buttonStyle={styles.submitButton} />
         <Button title="變更密碼" onPress={handleChangePassword} buttonStyle={styles.changePasswordButton} />
@@ -115,7 +134,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  roles: {
+  groups: {
     fontSize: 16,
     color: 'gray',
   },
@@ -125,15 +144,16 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: 20,
     borderRadius: 20,
+    backgroundColor: COLORS.success,
   },
   changePasswordButton: {
     marginTop: 20,
-    backgroundColor: '#f0ad4e',
+    backgroundColor: COLORS.secondary,
     borderRadius: 20,
   },
   logoutButton: {
     marginTop: 20,
-    backgroundColor: '#d9534f',
+    backgroundColor: COLORS.secondary,
     borderRadius: 20,
   },
 });

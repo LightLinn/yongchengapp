@@ -6,7 +6,14 @@ const COLORS = {
   gray2: "#C1C0C8",        // 第二灰色，保留不變
   white: "#F3F4F8",        // 白色，保留不變
   lightWhite: "#FAFAFC",   // 淺白色，保留不變
+
+  warning: "#FFCC00",      
+  warning2: "#f0ad4e",      
+  danger: "#FF4444",
+  alert: "#d9534f",       
+  success: "#4CAF50",      
 };
+
 
 const FONT = {
   regular: "DMRegular",

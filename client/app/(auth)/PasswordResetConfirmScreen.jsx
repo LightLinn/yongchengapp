@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, Alert, StyleSheet, Text } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { API_BASE_URL } from '../../api/config';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const PasswordResetConfirmScreen = () => {
   const router = useRouter();
@@ -53,7 +54,9 @@ const PasswordResetConfirmScreen = () => {
         secureTextEntry
         style={styles.input}
       />
-      <Button title="重設密碼" onPress={handleResetPassword} />
+      <TouchableOpacity onPress={handleResetPassword} style={styles.button}>
+        <Text style={styles.buttonText}>重設密碼</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -75,6 +78,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  button: {
+    backgroundColor: COLORS.success,
+    padding: 15,
+    borderRadius: 20,
+    alignItems: 'center',
+
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontSize: SIZES.medium,
+    fontWeight: 'bold',
   },
 });
 

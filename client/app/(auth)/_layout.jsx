@@ -33,6 +33,13 @@ const AuthLayout = () => {
           headerShadowVisible: false,
         }} 
       />
+      <Stack.Screen 
+        name="PasswordResetConfirmScreen"
+        options={{ 
+          headerTitle: '密碼重設確認',
+          headerShadowVisible: false,
+        }} 
+      />
 
     </Stack>
   )

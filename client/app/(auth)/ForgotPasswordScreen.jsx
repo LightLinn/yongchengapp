@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import { API_BASE_URL } from '../../api/config';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const ForgotPasswordScreen = () => {
   const [username, setUsername] = useState('');
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#2089dc',
+    backgroundColor: COLORS.alert,
     borderRadius: 20,
   },
 });

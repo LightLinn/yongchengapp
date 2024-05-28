@@ -167,6 +167,13 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(suggestions)
         return Response([])
     
+    def update(self, request, *args, **kwargs):
+        try:
+            response = super().update(request, *args, **kwargs)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return response
+    
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

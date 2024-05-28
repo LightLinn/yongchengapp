@@ -1,17 +1,41 @@
-import { API_BASE_URL } from './config'; // 确保路径正确
+import { API_BASE_URL } from './config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const fetchUserProfile = async () => {
-  const response = await fetch(`${API_BASE_URL}/user-profile/`);
+export const fetchUserProfile = async (userId, token) => {
+  const response = await fetch(`${API_BASE_URL}/users/${userId}/`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch user profile');
+  }
   return await response.json();
 };
 
-export const updateUserProfile = async (profileData) => {
-  const response = await fetch(`${API_BASE_URL}/user-profile/`, {
+
+export const updateUserProfile = async (profile) => {
+  const token = await AsyncStorage.getItem('token');
+  const userId = await AsyncStorage.getItem('userId');
+
+  if (!token || !userId) {
+    throw new Error('User not authenticated');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/users/${userId}/`, {
     method: 'PUT',
     headers: {
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(profileData),
+    body: JSON.stringify(profile),
   });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error('Failed to update user profile', errorData);
+    throw new Error('Failed to update user profile');
+  }
+
   return await response.json();
 };
