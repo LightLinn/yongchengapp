@@ -3,6 +3,7 @@ import { View, FlatList, StyleSheet } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { fetchTweets, postTweet } from '../../api/tweetApi';
 import TweetItem from '../components/TweetItem';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const TweetScreen = () => {
   const [tweetContent, setTweetContent] = useState('');
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   button: {
-    backgroundColor: '#1DA1F2',
+    backgroundColor: COLORS.success,
   },
   tweetList: {
     paddingBottom: 20,
