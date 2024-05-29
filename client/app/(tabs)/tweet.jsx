@@ -80,3 +80,6 @@ const styles = StyleSheet.create({
 });
 
 export default TweetScreen;
+
+
+'/home/tcstudio/tcstudioweb'
