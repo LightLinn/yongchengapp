@@ -15,7 +15,6 @@ const PermissionEditorScreen = () => {
         const allPermissions = await fetchPermissions();
         setPermissions(allPermissions);
         const groupPerms = await fetchGroupPermissions(groupId);
-        console.log('Group Permissions:', groupPerms); // 調試信息
         setGroupPermissions(groupPerms);
       } catch (error) {
         console.error('Failed to load permissions', error);

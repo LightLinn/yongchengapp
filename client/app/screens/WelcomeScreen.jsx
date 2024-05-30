@@ -9,7 +9,7 @@ const WelcomeScreen = () => {
   const { isLogging } = useAuth();
   const segments = useSegments();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const seconds = 1000
+  const seconds = 3000
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -51,11 +51,11 @@ const WelcomeScreen = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={{ ...styles.logoContainer, opacity: fadeAnim }}>
-        <Image source={require('../../assets/logo-1-1.png')} style={styles.logo} />
+        <Image source={require('../../assets/logo-1-5.png')} style={styles.logo} />
       </Animated.View>
       <View style={styles.extraLogosContainer}>
         <Image source={require('../../assets/logo-2-1.png')} style={styles.extraLogo} />
-        <Image source={require('../../assets/logo-2-1.png')} style={styles.extraLogo} />
+        <Image source={require('../../assets/logo-3-1.png')} style={styles.extraLogo} />
       </View>
       <ActivityIndicator size="large" color="#999" />
     </View>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 200,
-    height: 200,
+    height: 250,
   },
   extraLogosContainer: {
     flexDirection: 'row',
