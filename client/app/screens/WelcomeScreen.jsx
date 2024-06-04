@@ -9,7 +9,7 @@ const WelcomeScreen = () => {
   const { isLogging } = useAuth();
   const segments = useSegments();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const seconds = 3000
+  const seconds = 1000
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   extraLogosContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '80%',
+    width: '70%',
     marginTop: 20,
     marginBottom: 50,
   },

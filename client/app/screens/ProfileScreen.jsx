@@ -14,6 +14,7 @@ const ProfileScreen = () => {
     groups: [],
     email: '',
     phone: '',
+    nickname: '',
     address: '',
     sex: '',
     birthday: '',
@@ -33,6 +34,7 @@ const ProfileScreen = () => {
             groups: profileData.groups || [],
             email: profileData.email,
             phone: profileData.phone,
+            nickname: profileData.nickname,
             address: profileData.address,
             // sex: profileData.sex,
             birthday: profileData.birthday,
@@ -82,6 +84,11 @@ const ProfileScreen = () => {
         <Text style={styles.groups}>{profile.groups.join(', ')}</Text>
       </View>
       <View style={styles.detailsSection}>
+        <EditableProfileItem
+          label="Nickname"
+          value={profile.nickname}
+          onChange={(value) => handleChange('nickname', value)}
+        />
         <EditableProfileItem
           label="Email"
           value={profile.email}

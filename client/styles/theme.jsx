@@ -3,7 +3,9 @@ const COLORS = {
   secondary: "#617d80",    // 次要色，比主色稍微亮一些
   tertiary: "#2d4345",     // 第三色，比主色稍微暗一些
   gray: "#83829A",         // 灰色，保留不變
-  gray2: "#C1C0C8",        // 第二灰色，保留不變
+  gray2: "#C1C0C8",       // 比gray更淺的灰色
+  gray3: "#444444",       // 比gray更深的灰色    
+          
   white: "#F3F4F8",        // 白色，保留不變
   lightWhite: "#FAFAFC",   // 淺白色，保留不變
 

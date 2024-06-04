@@ -1,4 +1,5 @@
-import { API_BASE_URL } from './config'; // 确保路径正确
+import { API_BASE_URL } from './config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchVenues = async () => {
   // 这里是模拟的API调用，你可以将其替换为真实的API调用
@@ -18,9 +19,11 @@ export const fetchVenueDetails = async (id) => {
 };
 
 export const createVenue = async (venue) => {
+  const token = await AsyncStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/venues/`, {
     method: 'POST',
     headers: {
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(venue),
@@ -32,9 +35,11 @@ export const createVenue = async (venue) => {
 };
 
 export const updateVenue = async (id, venue) => {
+  const token = await AsyncStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/venues/${id}/`, {
     method: 'PUT',
     headers: {
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(venue),

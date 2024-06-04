@@ -19,9 +19,9 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import CustomUser
+from .models import CustomUser, ScreenPermissions
 from humanresources.models import Coach, Lifeguard, Employee, VenueManager
-from .serializers import UserSerializer, UserCreateSerializer, GroupSerializer, PermissionSerializer, PasswordResetSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer
+from .serializers import UserSerializer, UserCreateSerializer, GroupSerializer, PermissionSerializer, PasswordResetSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, ScreenPermissionsSerializer
 from authentication.permissions import *
 import qrcode
 import random
@@ -137,6 +137,20 @@ class PermissionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PermissionSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
+class ScreenPermissionsViewSet(viewsets.ModelViewSet):
+    queryset = ScreenPermissions.objects.all()
+    serializer_class = ScreenPermissionsSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    
+    #透過get方法，取得特定群組的權限
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        group_ids = self.request.query_params.get('group_ids')
+        if group_ids:
+            group_ids_list = group_ids.split(',')
+            queryset = queryset.filter(group__id__in=group_ids_list)
+        return queryset
+    
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
@@ -144,7 +158,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create':
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -193,6 +207,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['user_id'] = self.user.id
         data['username'] = self.user.username
         data['groups'] = [group.name for group in self.user.groups.all()]
+        data['group_ids'] = [group.id for group in self.user.groups.all()]
         
         return data
     

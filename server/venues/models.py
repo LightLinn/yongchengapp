@@ -20,7 +20,7 @@ class Venue(Auditable):
     longitude = models.FloatField(verbose_name='經度', default=0)
     latitude = models.FloatField(verbose_name='緯度', default=0)
     address = models.CharField(max_length=255, verbose_name='地址', default='', blank=True, null=True)
-    managers = models.ManyToManyField('authentication.CustomUser', related_name='venues', verbose_name='場地管理者')
+    managers = models.ManyToManyField('authentication.CustomUser', related_name='venues', verbose_name='場地管理者', blank=True)
 
     class Meta:
         db_table = 'venue'
@@ -83,13 +83,13 @@ class VenueInspectionRecord(Auditable):
     
 class VenueRepairRequest(Auditable):
     REPAIR_STATUS_CHOICES = [
-        ('not_processed', '未處理'),
-        ('processing', '處理中'),
-        ('processed', '已處理'),
+        ('未處理', '未處理'),
+        ('處理中', '處理中'),
+        ('已處理', '已處理'),
     ]
     venue = models.ForeignKey('Venue', on_delete=models.CASCADE, related_name='venue_repair_requests', verbose_name='場地')
     user = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='venue_repair_requests', verbose_name='使用者')
-    repair_status = models.CharField(max_length=20, choices=REPAIR_STATUS_CHOICES, verbose_name='報修狀態', default='not_processed')
+    repair_status = models.CharField(max_length=20, choices=REPAIR_STATUS_CHOICES, verbose_name='報修狀態', default='未處理')
     title = models.CharField(max_length=255, verbose_name='報修標題', blank=True, null=True)
     description = models.TextField(verbose_name='報修描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')

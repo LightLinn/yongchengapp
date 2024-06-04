@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { COLORS, SIZES, FONT } from '../../styles/theme';
 
 const StoreScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>近期開放</Text>
+      <Text >近期開放</Text>
     </View>
   );
 };

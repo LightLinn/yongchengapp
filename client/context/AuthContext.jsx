@@ -10,7 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [username, setUsername] = useState(null);
-  const [groups, setGroups] = useState(['admin']);
+  const [groups, setGroups] = useState([]);
+  const [groupIds, setGroupIds] = useState([]);
 
   useEffect(() => {
     const loadToken = async () => {
@@ -19,12 +20,14 @@ export const AuthProvider = ({ children }) => {
       const storedUserId = await AsyncStorage.getItem('userId');
       const storedUsername = await AsyncStorage.getItem('username');
       const storedGroups = await AsyncStorage.getItem('groups');
+      const storedGroupIds = await AsyncStorage.getItem('group_ids');
       setToken(storedToken);
       setRefreshToken(storedRefreshToken);
       setIsLogging(!!storedToken);
       setUserId(storedUserId);
       setUsername(storedUsername);
       setGroups(JSON.parse(storedGroups));
+      setGroupIds(JSON.parse(storedGroupIds));
     };
     loadToken();
   }, []);
@@ -46,12 +49,14 @@ export const AuthProvider = ({ children }) => {
         await AsyncStorage.setItem('userId', data.user_id.toString());
         await AsyncStorage.setItem('username', data.username);
         await AsyncStorage.setItem('groups', JSON.stringify(data.groups));
+        await AsyncStorage.setItem('group_ids', JSON.stringify(data.group_ids));
         setToken(data.access);
         setRefreshToken(data.refresh);
         setIsLogging(true);
         setUserId(data.user_id);
         setUsername(data.username);
         setGroups(data.groups);
+        setGroupIds(data.group_ids);
       } else {
         Alert.alert('登入失敗', '使用者名稱或密碼無效');
       }
@@ -66,12 +71,14 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.removeItem('userId');
     await AsyncStorage.removeItem('username');
     await AsyncStorage.removeItem('groups');
+    await AsyncStorage.removeItem('group_ids');
     setToken(null);
     setRefreshToken(null);
     setIsLogging(false);
     setUserId(null);
     setUsername(null);
     setGroups([]);
+    setGroupIds([]);
 
   };
 
@@ -103,7 +110,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLogging, token, refreshToken, login, logout, refreshAccessToken }}>
+    <AuthContext.Provider value={{ isLogging, token, refreshToken, userId, username, groups, groupIds, login, logout, refreshAccessToken }}>
       {children}
     </AuthContext.Provider>
   );

@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
   },
   groupName: {
     fontSize: SIZES.large,
+    color: COLORS.primary,
     fontWeight: 'bold',
     marginBottom: 20,
   },
@@ -158,6 +159,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 16,
+    color: COLORS.gray3,
   },
 });
 

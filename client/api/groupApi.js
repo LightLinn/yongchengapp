@@ -127,3 +127,21 @@ export const fetchUserSuggestions = async (query) => {
   }
   return await response.json();
 };
+
+export const fetchUserPermissions = async (groupIds) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/screen_permissions/?group_ids=${groupIds.join(',')}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch user permissions');
+  }
+
+  return await response.json();
+};
+

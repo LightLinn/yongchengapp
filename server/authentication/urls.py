@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-from .views import MyTokenObtainPairView, UserViewSet, GroupViewSet, PermissionViewSet, PasswordResetView, PasswordChangeView, PasswordResetConfirmView
+from .views import MyTokenObtainPairView, UserViewSet, GroupViewSet, PermissionViewSet, PasswordResetView, PasswordChangeView, PasswordResetConfirmView, ScreenPermissionsViewSet
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -10,6 +10,7 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
 router.register(r'permissions', PermissionViewSet)
+router.register(r'screen_permissions', ScreenPermissionsViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

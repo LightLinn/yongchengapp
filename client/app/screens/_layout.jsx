@@ -39,6 +39,34 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
+        name="repair"
+        options={({ navigation }) => ({
+          headerTitle: '',
+          headerShown: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="worklog"
+        options={({ navigation }) => ({
+          headerTitle: '',
+          headerShown: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
         name="news" 
         options={({ navigation }) => ({
           headerTitle: '最新消息',
@@ -69,8 +97,9 @@ export default function Layout() {
       <Stack.Screen 
         name="venue"
         options={{
-          headerTitle: '場地管理',
+          headerTitle: '',
           headerShadowVisible: false,
+          headerShown: false,
         }}
       />
       <Stack.Screen 

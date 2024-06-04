@@ -44,11 +44,11 @@ const GroupListScreen = () => {
                         <View style={styles.groupItem}>
                             <Text style={styles.groupName}>{item.name}</Text>
                             <View style={styles.iconContainer}>
-                                <TouchableOpacity onPress={() => router.push(`/screens/group/PermissionEditorScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
+                                {/* <TouchableOpacity onPress={() => router.push(`/screens/group/PermissionEditorScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
                                     <Icon name="edit" size={SIZES.large} color={COLORS.secondary} />
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                                 <TouchableOpacity onPress={() => router.push(`/screens/group/GroupUserListScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
-                                    <Icon name="list" size={SIZES.xLarge} color={COLORS.tertiary} />
+                                    <Icon name="list" size={SIZES.xLarge} color={COLORS.primary} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
         borderBottomColor: '#ccc',
     },
     groupName: {
-        fontSize: 16,
+        fontSize: SIZES.medium,
+        color: COLORS.gray3,
     },
     iconContainer: {
         flexDirection: 'row',

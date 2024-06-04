@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from .models import CustomUser
+from .models import CustomUser, ScreenPermissions, Screen
 
 # class CustomUserAdmin(UserAdmin):
 #     form = UserChangeForm
@@ -36,6 +36,8 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(ScreenPermissions)
+admin.site.register(Screen)
 admin.site.site_header = "你的網站管理"
 admin.site.site_title = "你的網站管理"
 admin.site.index_title = "歡迎來到你的網站管理"

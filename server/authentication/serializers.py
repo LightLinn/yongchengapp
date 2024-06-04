@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.password_validation import validate_password
-from .models import CustomUser
+from .models import CustomUser, ScreenPermissions, Screen
 from datetime import datetime
 
 
@@ -18,12 +18,25 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone', 'sex', 'birthday', 'address', 'avatar', 'groups']
+        fields = ['id', 'username', 'email', 'phone', 'sex', 'birthday', 'address', 'avatar', 'groups', 'nickname']
 
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
         fields = ['id', 'name', 'codename']
+
+class ScreenSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ScreenPermissions
+        fields = ['id', 'screen_name']
+
+class ScreenPermissionsSerializer(serializers.ModelSerializer):
+    screen_name = ScreenSerializer()
+    
+    class Meta:
+        model = ScreenPermissions
+        fields = '__all__'
 
 class GroupSerializer(serializers.ModelSerializer):
     users = UserSerializer(source='user_set', many=True, read_only=True)

@@ -26,7 +26,7 @@ class Worklog(Auditable):
 
 
 # 每日巡檢項目，針對項目給予評級「優、尚可、需改善」，以及備註欄位
-class DailyChecklist(Auditable):
+class DailyChecklist(models.Model):
     item = models.CharField(max_length=100, verbose_name='項目')
     description = models.TextField(verbose_name='描述', blank=True, null=True)
     
@@ -55,7 +55,7 @@ class DailyCheckRecord(Auditable):
 
 
 # 定時巡檢項目，紀錄溫度與含氧量，包含時間欄位
-class PeriodicChecklist(Auditable):
+class PeriodicChecklist(models.Model):
     item = models.CharField(max_length=100, verbose_name='項目')
     description = models.TextField(verbose_name='描述', blank=True, null=True)
     
@@ -67,7 +67,7 @@ class PeriodicChecklist(Auditable):
         verbose_name = '定時檢點'
         verbose_name_plural = '定時檢點'
 
-class PeriodicCheckRecord(Auditable):
+class PeriodicCheckRecord(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     check_item = models.ForeignKey(PeriodicChecklist, on_delete=models.CASCADE, verbose_name='定時檢點', blank=True, null=True)
     value = models.FloatField(verbose_name='數值')
@@ -97,7 +97,7 @@ class SpecialChecklist(models.Model):
         verbose_name = '特殊處理檢點'
         verbose_name_plural = '特殊處理檢點'
 
-class SpecialCheckRecord(Auditable):
+class SpecialCheckRecord(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     check_item = models.ForeignKey(SpecialChecklist, on_delete=models.CASCADE, verbose_name='特殊處理檢點', blank=True, null=True)
     quantity = models.FloatField(verbose_name='數量')
