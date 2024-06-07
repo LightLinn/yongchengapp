@@ -10,11 +10,11 @@ from reviews.models import Auditable
 
 class Attendance(Auditable):
     ATTEND_STATUS_CHOICES = [
-        ('signed_in', '簽到'),
-        ('signed_in_late', '補簽'),
-        ('admin_signed_in_late', '管理者補簽'),
-        ('not_verified', '未通過驗證'),
-        ('not_signed_in', '未簽到'),
+        ('已簽到', '已簽到'),
+        ('已補簽', '已補簽'),
+        ('管理者補簽', '管理者補簽'),
+        ('未通過驗證', '未通過驗證'),
+        ('未簽到', '未簽到'),
     ]
     user = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='attendances', verbose_name='使用者')
     course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, related_name='attendances', verbose_name='課程')
@@ -35,15 +35,15 @@ class Attendance(Auditable):
 # 救生員簽到簽退紀錄表
 class LifeguardAttendance(Auditable):
     ATTEND_STATUS_CHOICES = [
-        ('signed_in', '簽到'),
-        ('signed_in_late', '補簽'),
-        ('admin_signed_in_late', '管理者補簽'),
-        ('not_signed_in', '未簽到'),
-        ('signed_out', '簽退'),
-        ('signed_out_late', '補簽退'),
-        ('admin_signed_out_late', '管理者補簽退'),
-        ('not_signed_out', '未簽退'),
-        ('not_verified', '未通過驗證'),
+        ('已簽到', '已簽到'),
+        ('已補簽', '已補簽'),
+        ('管理者補簽', '管理者補簽'),
+        ('未簽到', '未簽到'),
+        ('已簽退', '已簽退'),
+        ('補簽退', '補簽退'),
+        ('管理者補簽退', '管理者補簽退'),
+        ('未簽退', '未簽退'),
+        ('未通過驗證', '未通過驗證'),
     ]
     user = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='lifeguard_attendances', verbose_name='使用者')
     attend_status = models.CharField(max_length=50, choices=ATTEND_STATUS_CHOICES, verbose_name='簽到狀態', blank=True, null=True)
@@ -66,15 +66,15 @@ class LifeguardAttendance(Auditable):
 
 class StaffAttendance(Auditable):
     ATTEND_STATUS_CHOICES = [
-        ('signed_in', '簽到'),
-        ('signed_in_late', '補簽'),
-        ('admin_signed_in_late', '管理者補簽'),
-        ('not_signed_in', '未簽到'),
-        ('signed_out', '簽退'),
-        ('signed_out_late', '補簽退'),
-        ('admin_signed_out_late', '管理者補簽退'),
-        ('not_signed_out', '未簽退'),
-        ('not_verified', '未通過驗證'),
+        ('已簽到', '已簽到'),
+        ('已補簽', '已補簽'),
+        ('管理者補簽', '管理者補簽'),
+        ('未簽到', '未簽到'),
+        ('已簽退', '已簽退'),
+        ('補簽退', '補簽退'),
+        ('管理者補簽退', '管理者補簽退'),
+        ('未簽退', '未簽退'),
+        ('未通過驗證', '未通過驗證'),
     ]
     user = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='staff_attendances', verbose_name='使用者')
     attend_status = models.CharField(max_length=50, choices=ATTEND_STATUS_CHOICES, verbose_name='簽到狀態', blank=True, null=True)

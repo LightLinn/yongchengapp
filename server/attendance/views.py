@@ -6,29 +6,27 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import Attendance, StaffAttendance, LifeguardAttendance
-from .serializers import AttendanceSerializer, LifeguardAttendanceSerializer, StaffAttendanceSerializer
+from .serializers import AttendanceListSerializer, LifeguardAttendanceSerializer, StaffAttendanceSerializer
 from authentication.viewset_permissions import VIEWSET_PERMISSIONS
 from django.http import JsonResponse
 import math
 
 # 創建AttendanceViewSet
-class AttendanceViewSet(viewsets.ModelViewSet):
+class AttendanceListViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
-    serializer_class = AttendanceSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = AttendanceListSerializer
 
-    def get_permissions(self):
-        viewset_permissions = VIEWSET_PERMISSIONS.get(self.__class__.__name__, {})
-        return viewset_permissions.get(self.action, [])
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user_id = self.request.query_params.get('user', None)
+        if user_id is not None:
+            queryset = queryset.filter(user_id=user_id)
+        return queryset
     
 class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
     queryset = LifeguardAttendance.objects.all()
     serializer_class = LifeguardAttendanceSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_permissions(self):
-        viewset_permissions = VIEWSET_PERMISSIONS.get(self.__class__.__name__, {})
-        return viewset_permissions.get(self.action, [])
 
     def create(self, request, *args, **kwargs):
         data = request.data

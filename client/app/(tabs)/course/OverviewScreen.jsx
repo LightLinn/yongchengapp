@@ -22,7 +22,7 @@ const OverviewScreen = () => {
       setCoaches(fetchedCoaches);
       setCourseTypes(fetchedCourseTypes);
       setVenues(fetchedVenues);
-      console.log(fetchedEnrollments);
+      
     };
 
     loadData();

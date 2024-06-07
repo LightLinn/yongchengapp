@@ -8,8 +8,8 @@ const NewsItem = ({ news }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{news.title}</Text>
-      <TouchableOpacity onPress={() => router.push(`/screens/news/NewsDetailScreen?id=${news.id}`)}>
+      <TouchableOpacity style={styles.touchable} onPress={() => router.push(`/screens/news/NewsDetailScreen?id=${news.id}`)}>
+        <Text style={styles.title}>{news.title}</Text>
         <Icon name="chevron-right" type="feather" />
       </TouchableOpacity>
     </View>
@@ -18,15 +18,18 @@ const NewsItem = ({ news }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
+  touchable: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   title: {
     fontSize: 16,
+    flex: 1,
   },
 });
 

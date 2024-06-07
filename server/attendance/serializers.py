@@ -2,9 +2,55 @@
 
 from rest_framework import serializers
 from .models import Attendance, StaffAttendance, LifeguardAttendance
+from authentication.models import CustomUser
+from courses.models import Course, EnrollmentList, CourseType
+from venues.models import Venue
+from humanresources.models import Coach
 
-# 創建AttendanceSerializer
-class AttendanceSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'nickname']
+
+
+class VenueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Venue
+        fields = ['id', 'name']
+
+class CoachSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Coach
+        fields = ['id', 'user']
+
+class CourseTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseType
+        fields = ['id', 'name']
+
+class EnrollmentListSerializer(serializers.ModelSerializer):
+    # user = UserSerializer(read_only=True)
+    venue = VenueSerializer(read_only=True)
+    coach = CoachSerializer(read_only=True)
+    coursetype = CourseTypeSerializer(read_only=True)
+
+    class Meta:
+        model = EnrollmentList
+        fields = ['id', 'student', 'enrollment_status', 'venue', 'coach', 'coursetype']
+
+class CourseSerializer(serializers.ModelSerializer):
+    enrollment_list = EnrollmentListSerializer(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = ['id',  'enrollment_list']
+
+class AttendanceListSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    course = CourseSerializer(read_only=True)
+
     class Meta:
         model = Attendance
         fields = '__all__'
