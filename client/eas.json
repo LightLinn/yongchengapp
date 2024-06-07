@@ -13,6 +13,12 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios":{
+        "appleId": "tcstudio2022@gmail.com",
+        "ascAppId":"6503939859",
+        "appleTeamId": "5Z9B2Y9CN8"
+      }
+    }
   }
 }

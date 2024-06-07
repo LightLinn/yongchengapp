@@ -2,6 +2,7 @@
 
 from rest_framework import serializers
 from .models import Coach, Lifeguard, Performance, Salary, SalaryRange, Employee
+from authentication.serializers import UserSerializer
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,6 +10,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CoachSerializer(serializers.ModelSerializer):
+    # 增加教練的Nickname
+    user = UserSerializer()
+
     class Meta:
         model = Coach
         fields = '__all__'

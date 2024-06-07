@@ -103,10 +103,11 @@ export default function Layout() {
         }}
       />
       <Stack.Screen 
-        name="enrollment"
+        name="course"
         options={{ 
-          headerTitle: '報名管理',
+          headerTitle: '課程管理',
           headerShadowVisible: false,
+          headerShown: false,
         }}
       />
       

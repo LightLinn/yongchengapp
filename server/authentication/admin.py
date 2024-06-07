@@ -27,11 +27,11 @@ class CustomUserAdmin(UserAdmin):
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         (('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        (('Extra info'), {'fields': ('phone', 'sex', 'birthday', 'address', 'avatar')}),
+        (('Extra info'), {'fields': ('phone', 'sex', 'birthday', 'address', 'avatar', 'nickname')}),
     )
     add_fieldsets = (
         (None, {'fields': ('username', 'password1', 'password2')}),
-        (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'nickname')}),
         
     )
 

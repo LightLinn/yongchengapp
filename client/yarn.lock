@@ -1489,9 +1489,10 @@
     prompts "^2.4.2"
     semver "^7.5.2"
 
-"@react-native-community/datetimepicker@https://github.com/react-native-community/datetimepicker.git":
+"@react-native-community/datetimepicker@^8.1.0":
   version "8.1.0"
-  resolved "https://github.com/react-native-community/datetimepicker.git#f30dce94d56f7fa290a0c7ee2c750ca564c857da"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-8.1.0.tgz#a0b5b7a3b9129e4c21836b4b66fdf0737a9f73c9"
+  integrity sha512-7WCP4U+cOiTFOxGRb7+w2kzIDDqI0xb2D62dbF1qt8C06KmWIKcNgmzx7gfeCjzJMIDK8v+PoUECU2YZz5PvCQ==
   dependencies:
     invariant "^2.2.4"
 

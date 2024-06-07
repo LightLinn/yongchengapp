@@ -36,6 +36,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.yongcheng.com.tw',
 ]
 
+# APPEND_SLASH=False
 
 
 # Application definition

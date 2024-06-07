@@ -19,22 +19,25 @@ class EnrollmentNumbers(Auditable):
 
 class EnrollmentList(Auditable):
     ENROLLMENT_STATUS_CHOICES = [
-        ('pending_payment', '待付款'),
-        ('in_progress', '審核中'),
-        ('in_assigned', '派課中'),
-        ('assigned', '已派課'),
-        ('completed', '已完成'),
-        ('cancelled', '已取消'),
-        ('refunded', '已退款'),
+        ('待付款', '待付款'),
+        ('未開課', '未開課'),
+        ('審核中', '審核中'),
+        ('派課中', '派課中'),
+        ('已派課', '已派課'),
+        ('進行中', '進行中'),
+        ('已完成', '已完成'),
+        ('已取消', '已取消'),
+        ('已退款', '已退款'),
+        ('已停課', '已停課'),
     ]
     PAYMENT_CHOICES = [
-        ('cash', '現金'),
-        # ('credit_card', '信用卡'),
-        # ('transfer', '轉帳'),
-        # ('other', '其他'),
+        ('現金', '現金'),
+        # ('信用卡', '信用卡'),
+        # ('轉帳', '轉帳'),
+        # ('其他', '其他'),
     ]
 
-    enrollment_status = models.CharField(max_length=20, choices=ENROLLMENT_STATUS_CHOICES, verbose_name='報名狀態', blank=True, null=True)
+    enrollment_status = models.CharField(max_length=20, choices=ENROLLMENT_STATUS_CHOICES, verbose_name='報名狀態', blank=True, null=True, default='待付款')
     coursetype = models.ForeignKey('courses.CourseType', on_delete=models.CASCADE, related_name='enrollments', verbose_name='課程類型', null=True, blank=True)
     user = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='enrollments', null=True, blank=True)
     student = models.CharField(max_length=255, verbose_name='學生姓名')
@@ -58,13 +61,13 @@ class EnrollmentList(Auditable):
         verbose_name_plural = '報名'
 
     def __str__(self):
-        return f'{self.coursetype.name} - {self.student}'
+        return f'{self.student}'
     
 class AssignedCourse(Auditable):
     ASSIGNED_STATUS_CHOICES = [
-        ('pending', '待決定'),
-        ('accepted', '已接受'),
-        ('rejected', '已拒絕'),
+        ('待決定', '待決定'),
+        ('已接受', '已接受'),
+        ('已拒絕', '已拒絕'),
     ]
     coach = models.ForeignKey('humanresources.Coach', on_delete=models.CASCADE, related_name='assigned_courses', verbose_name='教練', null=True, blank=True)
     assigned_status = models.CharField(max_length=20, choices=ASSIGNED_STATUS_CHOICES, verbose_name='狀態', default='pending')
@@ -84,7 +87,7 @@ class AssignedCourse(Auditable):
         return f'{self.enrollment_number}'
 
 class CourseType(Auditable):
-    name = models.CharField(max_length=255, verbose_name='課程類型名稱')
+    name = models.CharField(max_length=255, verbose_name='課程類型名稱', null=True)
     description = models.TextField(verbose_name='課程類型描述')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='價格', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')
@@ -101,18 +104,19 @@ class CourseType(Auditable):
 
 class Course(Auditable):
     COURSE_STATUS_CHOICES = [
-        ('not_started', '未開課'),
-        ('in_progress', '進行中'),
-        ('cancelled', '已取消'),
-        ('completed', '已完成'),
-        ('suspended', '已停課'),
+        ('未開課', '未開課'),
+        ('進行中', '進行中'),
+        ('已取消', '已取消'),
+        ('已完成', '已完成'),
+        ('已停課', '已停課'),
     ]
 
     course_date = models.DateField(verbose_name='課程日期', blank=True, null=True)
-    course_time = models.DateTimeField(verbose_name='課程時間', blank=True, null=True)
+    course_time = models.TimeField(verbose_name='課程時間', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
     course_status = models.CharField(max_length=20, choices=COURSE_STATUS_CHOICES, verbose_name='課程狀態', blank=True, null=True)
+    enrollment_list = models.ForeignKey('EnrollmentList', on_delete=models.CASCADE, related_name='courses', verbose_name='報名表', blank=True, null=True)
     enrollment_number = models.ForeignKey('EnrollmentNumbers', on_delete=models.CASCADE, related_name='courses', verbose_name='報名表單號', blank=True, null=True)
 
     class Meta:

@@ -3,12 +3,19 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import OverviewScreen from './OverviewScreen';
 import EnrollmentScreen from './EnrollmentScreen';
 import AttendanceScreen from './AttendanceScreen';
+import { COLORS, SIZES } from '../../../styles/theme';
 
 const Tab = createMaterialTopTabNavigator();
 
 const CourseLayout = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarLabelStyle: { fontSize: SIZES.medium }, // 修改字體大小
+        tabBarIndicatorStyle: { backgroundColor: COLORS.secondary }, // 修改指示器顏色
+        tabBarStyle: { backgroundColor: COLORS.white }, // 修改標籤背景顏色
+      }}
+    >
       <Tab.Screen
         name="Overview"
         component={OverviewScreen}
