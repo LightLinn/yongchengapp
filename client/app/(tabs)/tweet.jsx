@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   button: {
-    backgroundColor: COLORS.success,
+    backgroundColor: COLORS.primary,
   },
   tweetList: {
     paddingBottom: 20,

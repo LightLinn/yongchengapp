@@ -7,6 +7,16 @@ const getToken = async () => {
   return token;
 };
 
+const getUserId = async () => {
+  try {
+    const userId = await AsyncStorage.getItem('userId');
+    return userId;
+  } catch (error) {
+    console.error('Failed to get user ID:', error);
+    return null;
+  }
+};
+
 export const fetchEnrollments = async () => {
   const userId = await AsyncStorage.getItem('userId'); // 假设用户ID已经存储在AsyncStorage中
   const response = await fetch(`${API_BASE_URL}/enrollment_lists/?user=${userId}`);
@@ -15,6 +25,15 @@ export const fetchEnrollments = async () => {
   }
   return await response.json();
 };
+
+export const fetchEnrollmentsCoach = async () => {
+  const userId = await AsyncStorage.getItem('userId'); // 假设用户ID已经存储在AsyncStorage中
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/?coach=${userId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch courses');
+  }
+  return await response.json();
+}
 
 export const fetchEnrollmentDetails = async (enrollment_list_id) => {
   const token = await getToken();
@@ -57,16 +76,29 @@ export const fetchVenues = async (id = null) => {
 };
 
 export const fetchLatestEnrollment = async () => {
-  const response = await fetch(`${API_BASE_URL}/enrollment_lists/latest/`);
+  const token = await getToken();
+  const userId = await AsyncStorage.getItem('userId');
+  
+  if (!userId) {
+    throw new Error('User ID is not available');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/latest/?user=${userId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
   if (!response.ok) {
     throw new Error('Failed to fetch latest enrollment');
   }
+
   return await response.json();
 };
 
 export const createEnrollment = async (data) => {
   const token = await getToken();
-  const response = await fetch(`${API_BASE_URL}/enrollment_lists_create/`, {
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -82,6 +114,7 @@ export const createEnrollment = async (data) => {
 
 export const fetchCourseDetails = async (enrollment_list_id) => {
   const token = await getToken();
+  const userId = await AsyncStorage.getItem('userId');
   const response = await fetch(`${API_BASE_URL}/courses/?enrollment_list_id=${enrollment_list_id}`, {
     headers: {
       'Authorization': `Bearer ${token}`

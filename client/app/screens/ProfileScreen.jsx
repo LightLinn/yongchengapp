@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: 20,
     borderRadius: 20,
-    backgroundColor: COLORS.success,
+    backgroundColor: COLORS.primary,
   },
   changePasswordButton: {
     marginTop: 20,

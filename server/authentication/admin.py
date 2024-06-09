@@ -35,11 +35,20 @@ class CustomUserAdmin(UserAdmin):
         
     )
 
+class ScreenAdmin(admin.ModelAdmin):
+    list_display = ['screen_name']
+    search_fields = ['screen_name']
+    fields = ['screen_name']
+
+class ScreenPermissionsAdmin(admin.ModelAdmin):
+    list_display = ['screen_name', 'group', 'can_view', 'can_edit', 'can_create', 'can_delete']
+    search_fields = ['screen_name__screen_name', 'group__name']
+    fields = ['screen_name', 'group', 'can_view', 'can_edit', 'can_create', 'can_delete']
+    
+
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(ScreenPermissions)
-admin.site.register(Screen)
+admin.site.register(ScreenPermissions, ScreenPermissionsAdmin)
+admin.site.register(Screen, ScreenAdmin)
 admin.site.site_header = "你的網站管理"
 admin.site.site_title = "你的網站管理"
 admin.site.index_title = "歡迎來到你的網站管理"
-
-

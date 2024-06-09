@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, Text } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, Text, RefreshControl } from 'react-native';
 import EnrollCard from '../../components/EnrollCard';
-import { fetchEnrollments, fetchCoaches, fetchCourseTypes, fetchVenues } from '../../../api/courseApi';
+import { fetchEnrollments, fetchEnrollmentsCoach, fetchCoaches, fetchCourseTypes, fetchVenues } from '../../../api/courseApi';
+import { useAuth } from '../../../context/AuthContext'; 
 import { COLORS, SIZES } from '../../../styles/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OverviewScreen = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -11,21 +13,37 @@ const OverviewScreen = () => {
   const [venues, setVenues] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [selectedSort, setSelectedSort] = useState('newest');
+  const [refreshing, setRefreshing] = useState(false);
+  const { refreshAccessToken } = useAuth();
+  
+  const checkIsCoach = async () => {
+    const role = await AsyncStorage.getItem('groups');
+    return role.includes("內部_教練");
+  };
 
+  const loadData = async () => {
+    // await refreshAccessToken();
+    const isCoach = await checkIsCoach();
+    const fetchedEnrollments = isCoach ? await fetchEnrollmentsCoach() : await fetchEnrollments();
+    
+    const fetchedCoaches = await fetchCoaches();
+    const fetchedCourseTypes = await fetchCourseTypes();
+    const fetchedVenues = await fetchVenues();
+    setEnrollments(fetchedEnrollments);
+    setCoaches(fetchedCoaches);
+    setCourseTypes(fetchedCourseTypes);
+    setVenues(fetchedVenues);
+    
+  };
+  
   useEffect(() => {
-    const loadData = async () => {
-      const fetchedEnrollments = await fetchEnrollments();
-      const fetchedCoaches = await fetchCoaches();
-      const fetchedCourseTypes = await fetchCourseTypes();
-      const fetchedVenues = await fetchVenues();
-      setEnrollments(fetchedEnrollments);
-      setCoaches(fetchedCoaches);
-      setCourseTypes(fetchedCourseTypes);
-      setVenues(fetchedVenues);
-      
-    };
-
     loadData();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
   }, []);
 
   const handleSearch = (text) => {
@@ -83,7 +101,10 @@ const OverviewScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         {filteredEnrollments.map((enroll) => (
           <EnrollCard key={enroll.id} enroll={enroll} coaches={coaches} courseTypes={courseTypes} venues={venues} />
         ))}
@@ -95,7 +116,7 @@ const OverviewScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg,
     paddingHorizontal: 10,
   },
   searchSortContainer: {

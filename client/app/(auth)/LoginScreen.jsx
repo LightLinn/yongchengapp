@@ -40,18 +40,21 @@ const LoginScreen = () => {
       <Button
         title="登入"
         buttonStyle={styles.button}
+        titleStyle={styles.buttonText}
         onPress={handleLogin}
       />
       <Button
         title="註冊"
         type="outline"
         buttonStyle={styles.linkButton}
+        titleStyle={styles.linkButtonText}
         onPress={() => router.push('/RegisterScreen')}
       />
       <Button
         title="忘記密碼"
         type="outline"
         buttonStyle={styles.linkButton}
+        titleStyle={styles.linkButtonText}
         onPress={() => router.push('/ForgotPasswordScreen')}
       />
     </View>
@@ -72,12 +75,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#2089dc',
+    backgroundColor: COLORS.primary,
     borderRadius: 20,
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontSize: SIZES.medium,
   },
   linkButton: {
     marginTop: 10,
     borderRadius: 20,
+    borderColor: COLORS.primary,
+  },
+  linkButtonText: {
+    color: COLORS.primary,
+    fontSize: SIZES.medium,
   },
 });
 

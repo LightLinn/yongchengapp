@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useLocalSearchParams } from 'expo-router';
 import { fetchCourseDetails, fetchEnrollmentDetails } from '../../../api/courseApi';
@@ -11,24 +11,31 @@ const CourseDetailScreen = () => {
   const [courseDetails, setCourseDetails] = useState([]);
   const [enrollmentDetails, setEnrollmentDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadDetails = async () => {
+    try {
+      const enrollmentData = await fetchEnrollmentDetails(enrollment_list_id);
+      setEnrollmentDetails(enrollmentData);
+
+      const courseData = await fetchCourseDetails(enrollment_list_id);
+      setCourseDetails(courseData);
+    } catch (error) {
+      console.error('Failed to fetch details:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const loadDetails = async () => {
-      try {
-        const enrollmentData = await fetchEnrollmentDetails(enrollment_list_id);
-        setEnrollmentDetails(enrollmentData);
-
-        const courseData = await fetchCourseDetails(enrollment_list_id);
-        setCourseDetails(courseData);
-      } catch (error) {
-        console.error('Failed to fetch details:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadDetails();
   }, [enrollment_list_id]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadDetails();
+  };
 
   if (loading) {
     return (
@@ -39,11 +46,14 @@ const CourseDetailScreen = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       {enrollmentDetails && (
         <Card containerStyle={styles.enrollmentCard}>
-          {/* <Text style={styles.title}>課程資訊</Text>
-          <Card.Divider style={styles.divider} /> */}
           <Text style={styles.text}><Text style={styles.label}>報名狀態 </Text>{enrollmentDetails.enrollment_status}</Text>
           <Text style={styles.text}><Text style={styles.label}>課程類型 </Text>{enrollmentDetails.coursetype?.name || 'N/A'}</Text>
           <Text style={styles.text}><Text style={styles.label}>學生姓名 </Text>{enrollmentDetails.student}</Text>
@@ -61,10 +71,8 @@ const CourseDetailScreen = () => {
         courseDetails.map((course) => (
           <CourseDetailItem
             key={course.id}
+            enroll={enrollmentDetails}
             course={course}
-            student={enrollmentDetails.student}
-            venue={enrollmentDetails.venue?.name || 'N/A'}
-            coach={enrollmentDetails.coach?.user?.nickname || 'N/A'}
           />
         ))
       ) : (
@@ -118,8 +126,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   noDataText: {
-    fontSize: SIZES.large,
-    color: COLORS.gray3,
+    fontSize: SIZES.medium,
+    color: COLORS.alert,
     textAlign: 'center',
     marginTop: 20,
   },

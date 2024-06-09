@@ -7,8 +7,10 @@ const COLORS = {
   gray3: "#444444",       // 比gray更深的灰色    
           
   white: "#F3F4F8",        // 白色，保留不變
-  lightWhite: "#FAFAFC",   // 淺白色，保留不變
-
+  lightWhite: "#FAFAFC",  // 淺白色，保留不變
+  bg: "#FAFAFC",          // 背景色，保留不變   
+  
+  contrast: "#f8f9fa",
   warning: "#FFCC00",      
   warning2: "#f0ad4e",      
   danger: "#FF4444",

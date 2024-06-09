@@ -103,7 +103,7 @@ class CourseType(Auditable):
         return self.name
 
 class Course(Auditable):
-    COURSE_STATUS_CHOICES = [
+    COURSE_STATUS_CHOICES = [       
         ('未開課', '未開課'),
         ('進行中', '進行中'),
         ('已取消', '已取消'),
@@ -115,7 +115,7 @@ class Course(Auditable):
     course_time = models.TimeField(verbose_name='課程時間', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
-    course_status = models.CharField(max_length=20, choices=COURSE_STATUS_CHOICES, verbose_name='課程狀態', blank=True, null=True)
+    course_status = models.CharField(max_length=20, choices=COURSE_STATUS_CHOICES, verbose_name='課程狀態', blank=True, null=True, default='進行中')
     enrollment_list = models.ForeignKey('EnrollmentList', on_delete=models.CASCADE, related_name='courses', verbose_name='報名表', blank=True, null=True)
     enrollment_number = models.ForeignKey('EnrollmentNumbers', on_delete=models.CASCADE, related_name='courses', verbose_name='報名表單號', blank=True, null=True)
 

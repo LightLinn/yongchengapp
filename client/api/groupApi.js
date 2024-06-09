@@ -6,6 +6,11 @@ const getToken = async () => {
   return token;
 };
 
+const getUserId = async () => {
+  const userId = await AsyncStorage.getItem('userId');
+  return userId;
+}
+
 export const fetchGroups = async () => {
   const response = await fetch(`${API_BASE_URL}/groups/`);
   if (response.ok) {
@@ -14,6 +19,19 @@ export const fetchGroups = async () => {
     throw new Error('Failed to fetch groups');
   }
 };
+
+export const fetchUserGroups = async () => {
+  const userId = await getUserId();
+  const response = await fetch(`${API_BASE_URL}/groups/user_groups/?user=${userId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch user groups');
+  }
+  return await response.json();
+}
 
 export const fetchPermissions = async () => {
   const response = await fetch(`${API_BASE_URL}/permissions/`);

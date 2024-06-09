@@ -2,8 +2,21 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 import { COLORS, SIZES } from '../../styles/theme';
+import { useNavigation } from '@react-navigation/native';
 
-const CourseDetailItem = ({ course, student, venue, coach }) => {
+const CourseDetailItem = ({ enroll, course }) => {
+  const navigation = useNavigation();
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0); // 將時間設置為午夜
+
+  const courseDate = new Date(course.course_date);
+  courseDate.setHours(0, 0, 0, 0); // 將時間設置為午夜
+  
+
+  const handlePress = () => {
+    navigation.navigate('Attendance', { enroll, course });
+  };
+  
   return (
     <Card containerStyle={styles.card}>
       <View style={styles.header}>
@@ -15,17 +28,25 @@ const CourseDetailItem = ({ course, student, venue, coach }) => {
       </View>
       <Card.Divider style={styles.divider} />
       
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button2} onPress={() => {}}>
-          <Text style={styles.buttonText}>請假</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button2} onPress={() => {}}>
-          <Text style={styles.buttonText}>調課</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button1} onPress={() => {}}>
-          <Text style={styles.buttonText}>簽到</Text>
-        </TouchableOpacity>
-      </View>
+      {course.course_status == '進行中' && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button2} onPress={() => {}}>
+            <Text style={styles.buttonText}>請假</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button2} onPress={() => {}}>
+            <Text style={styles.buttonText}>調課</Text>
+          </TouchableOpacity>
+          {currentDate <= courseDate ? (
+            <TouchableOpacity style={styles.button1} onPress={handlePress}>
+              <Text style={styles.buttonText}>簽到</Text>
+            </TouchableOpacity>
+          ):(
+            <TouchableOpacity style={styles.button1} onPress={handlePress}>
+              <Text style={styles.buttonText}>補簽</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
     </Card>
   );
 };

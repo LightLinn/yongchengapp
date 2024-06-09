@@ -42,7 +42,6 @@ class ScreenPermissions(models.Model):
     def __str__(self):
         return f"{self.group.name} - {self.screen_name}"
 
-'authentication'
 class Screen(models.Model):
     screen_name = models.CharField(max_length=255, unique=True)
 

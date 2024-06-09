@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useRouter } from 'expo-router';
+import { COLORS, SIZES } from '../../styles/theme';
 
 const NewsItem = ({ news }) => {
   const router = useRouter();
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: COLORS.lightWhite,
   },
   touchable: {
     flexDirection: 'row',
@@ -28,8 +29,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 16,
+    fontSize: SIZES.medium,
     flex: 1,
+    color: COLORS.gray3,
+    
   },
 });
 

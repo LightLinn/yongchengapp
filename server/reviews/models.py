@@ -18,16 +18,16 @@ class ReviewStage(models.Model):
 
 class Auditable(models.Model):
     STATUS_CHOICES = [
-        ('pending', '待審核'),
-        ('reviewing', '審核中'),
-        ('approved', '已批准'),
-        ('rejected', '已拒絕'),
-        ('requires_more_info', '需要更多信息'),
-        ('cancelled', '已取消'),
-        ('on_hold', '暫停'),
-        ('re_review', '重新審核'),
-        ('auto_approved', '自動批准'),
-        ('expired', '已過期')
+        ('待審核', '待審核'),
+        ('審核中', '審核中'),
+        ('已批准', '已批准'),
+        ('已拒絕', '已拒絕'),
+        ('需要更多信息', '需要更多信息'),
+        ('已取消', '已取消'),
+        ('暫停', '暫停'),
+        ('重新審核', '重新審核'),
+        ('自動批准', '自動批准'),
+        ('已過期', '已過期')
     ]
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='審核狀態')

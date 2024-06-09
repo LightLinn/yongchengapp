@@ -130,6 +130,15 @@ class GroupViewSet(viewsets.ModelViewSet):
             return Response({'status': 'user removed'}, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    # 前端/groups/?user=${userId}，取得特定使用者所在的群組
+    @action(detail=False, methods=['get'])
+    def user_groups(self, request):
+        user_id = request.query_params.get('user')
+        user = get_object_or_404(CustomUser, id=user_id)
+        groups = user.groups.all()
+        group_data = [{'id': group.id, 'name': group.name} for group in groups]
+        return Response(group_data, status=status.HTTP_200_OK)
 
 
 class PermissionViewSet(viewsets.ReadOnlyModelViewSet):

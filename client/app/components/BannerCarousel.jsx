@@ -20,6 +20,7 @@ const BannerCarousel = ({ banners }) => {
             <Image 
               source={{ uri: banner.image ? banner.image : banner.link }} 
               style={styles.image} 
+              resizeMode="contain" // 使用 contain 縮放模式
             />
           </View>
         ))}

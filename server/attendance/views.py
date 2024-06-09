@@ -23,6 +23,10 @@ class AttendanceListViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(user_id=user_id)
         return queryset
     
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(user=user)
+    
 class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
     queryset = LifeguardAttendance.objects.all()
     serializer_class = LifeguardAttendanceSerializer

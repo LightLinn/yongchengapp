@@ -10,10 +10,8 @@ from reviews.models import Auditable
 
 class Attendance(Auditable):
     ATTEND_STATUS_CHOICES = [
-        ('已簽到', '已簽到'),
-        ('已補簽', '已補簽'),
-        ('管理者補簽', '管理者補簽'),
-        ('未通過驗證', '未通過驗證'),
+        ('簽到', '簽到'),
+        ('補簽', '補簽'),
         ('未簽到', '未簽到'),
     ]
     user = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='attendances', verbose_name='使用者')
@@ -35,13 +33,11 @@ class Attendance(Auditable):
 # 救生員簽到簽退紀錄表
 class LifeguardAttendance(Auditable):
     ATTEND_STATUS_CHOICES = [
-        ('已簽到', '已簽到'),
-        ('已補簽', '已補簽'),
-        ('管理者補簽', '管理者補簽'),
+        ('簽到', '簽到'),
+        ('補簽', '補簽'),
         ('未簽到', '未簽到'),
-        ('已簽退', '已簽退'),
+        ('簽退', '簽退'),
         ('補簽退', '補簽退'),
-        ('管理者補簽退', '管理者補簽退'),
         ('未簽退', '未簽退'),
         ('未通過驗證', '未通過驗證'),
     ]

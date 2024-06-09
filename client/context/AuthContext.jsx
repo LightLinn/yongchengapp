@@ -1,3 +1,4 @@
+// AuthProvider.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '../api/config';
@@ -79,13 +80,10 @@ export const AuthProvider = ({ children }) => {
     setUsername(null);
     setGroups([]);
     setGroupIds([]);
-
   };
 
   const refreshAccessToken = async () => {
     try {
-      if (!refreshToken) throw new Error('No refresh token available');
-      
       const response = await fetch(`${API_BASE_URL}/token/refresh/`, {
         method: 'POST',
         headers: {
@@ -97,7 +95,18 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem('token', data.access);
+        await AsyncStorage.setItem('refresh_token', data.refresh);
+        await AsyncStorage.setItem('userId', data.user_id.toString());
+        await AsyncStorage.setItem('username', data.username);
+        await AsyncStorage.setItem('groups', JSON.stringify(data.groups));
+        await AsyncStorage.setItem('group_ids', JSON.stringify(data.group_ids));
         setToken(data.access);
+        setRefreshToken(data.refresh);
+        setIsLogging(true);
+        setUserId(data.user_id);
+        setUsername(data.username);
+        setGroups(data.groups);
+        setGroupIds(data.group_ids);
         return data.access;
       } else {
         throw new Error('Failed to refresh token');

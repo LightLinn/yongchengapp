@@ -8,11 +8,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EnrollmentScreen = () => {
-  const [step, setStep] = useState(0);
-  const [enrollmentData, setEnrollmentData] = useState({
+  const initialEnrollmentData = {
     student: '',
     enrollment_status: '待付款',
-    status: 'pending',
+    status: '待審核',
     start_date: null,
     start_time: null,
     payment_date: null,
@@ -20,16 +19,24 @@ const EnrollmentScreen = () => {
     payment_amount: null,
     remark: '',
     degree: '',
-    coursetype: '',
-    user: '', 
-    enrollment_number: '',
-    venue: '',
-    coach: ''
-  });
+    coursetype_id: '',
+    user_id: null, 
+    enrollment_number_id: '',
+    venue_id: '',
+    coach_id: null
+  };
+
+  const [step, setStep] = useState(0);
+  const [enrollmentData, setEnrollmentData] = useState(initialEnrollmentData);
   const [courseTypes, setCourseTypes] = useState([]);
   const [venues, setVenues] = useState([]);
   const [latestEnrollment, setLatestEnrollment] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const checkIsCoach = async () => {
+    const role = await AsyncStorage.getItem('groups');
+    return role.includes("內部_教練");
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -49,6 +56,23 @@ const EnrollmentScreen = () => {
   const handleExistingEnrollment = async () => {
     const latest = await fetchLatestEnrollment();
     setLatestEnrollment(latest);
+    setEnrollmentData({
+      student: latest.student,
+      enrollment_status: '待付款',
+      status: '待審核',
+      start_date: latest.start_date,
+      start_time: latest.start_time,
+      payment_date: latest.payment_date,
+      payment_method: latest.payment_method,
+      payment_amount: latest.payment_amount,
+      remark: latest.remark,
+      degree: latest.degree,
+      coursetype_id: latest.coursetype.id,
+      user_id: latest.user.id,
+      enrollment_number_id: latest.enrollment_number ? latest.enrollment_number.id : '',
+      venue_id: latest.venue.id,
+      coach_id: latest.coach && latest.coach.id ? latest.coach.id : null
+    });
     setStep(2);
   };
 
@@ -57,9 +81,20 @@ const EnrollmentScreen = () => {
   };
 
   const handleSubmit = async () => {
+    const formattedStartDate = enrollmentData.start_date ? new Date(enrollmentData.start_date).toISOString().split('T')[0] : null;
+    const formattedPaymentDate = enrollmentData.payment_date ? new Date(enrollmentData.payment_date).toISOString().split('T')[0] : null;
+
+    const dataToSubmit = {
+      ...enrollmentData,
+      start_date: formattedStartDate,
+      payment_date: formattedPaymentDate
+    };
+
+    console.log(dataToSubmit);
     try {
-      await createEnrollment(enrollmentData);
+      await createEnrollment(dataToSubmit);
       alert('報名成功！');
+      setEnrollmentData(initialEnrollmentData);
       setStep(0);
     } catch (error) {
       alert('報名失敗，請重試');
@@ -79,7 +114,7 @@ const EnrollmentScreen = () => {
 
   return (
     <View style={styles.container}>
-      {step === 0 && (
+      {!checkIsCoach && step === 0 && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleNewEnrollment}>
             <Text style={styles.buttonText}>新生報名</Text>
@@ -102,10 +137,11 @@ const EnrollmentScreen = () => {
 
             <Text style={styles.label}>課程類型</Text>
             <Picker
-              selectedValue={enrollmentData.coursetype}
+              selectedValue={enrollmentData.coursetype_id}
               style={styles.picker}
-              onValueChange={(itemValue) => handleInputChange('coursetype', itemValue)}
+              onValueChange={(itemValue) => handleInputChange('coursetype_id', itemValue)}
             >
+              <Picker.Item label="請選擇" value={null} />
               {courseTypes.map((courseType) => (
                 <Picker.Item key={courseType.id} label={courseType.name} value={courseType.id} />
               ))}
@@ -115,19 +151,19 @@ const EnrollmentScreen = () => {
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
               <TextInput
                 style={styles.input}
-                value={enrollmentData.start_date ? enrollmentData.start_date.toLocaleDateString() : ''}
+                value={enrollmentData.start_date ? enrollmentData.start_date : ''}
                 editable={false}
                 pointerEvents="none"
               />
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker
-                value={enrollmentData.start_date || new Date()}
+                value={enrollmentData.start_date ? new Date(enrollmentData.start_date) : new Date()}
                 mode="date"
                 display="default"
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false);
-                  handleInputChange('start_date', selectedDate || enrollmentData.start_date);
+                  handleInputChange('start_date', selectedDate.toISOString().split('T')[0]);
                 }}
               />
             )}
@@ -138,6 +174,7 @@ const EnrollmentScreen = () => {
               style={styles.picker}
               onValueChange={(itemValue) => handleInputChange('start_time', itemValue)}
             >
+              <Picker.Item label="請選擇" value={null} />
               {timeOptions.map((time) => (
                 <Picker.Item key={time} label={time} value={time} />
               ))}
@@ -145,10 +182,11 @@ const EnrollmentScreen = () => {
 
             <Text style={styles.label}>場地</Text>
             <Picker
-              selectedValue={enrollmentData.venue}
+              selectedValue={enrollmentData.venue_id}
               style={styles.picker}
-              onValueChange={(itemValue) => handleInputChange('venue', itemValue)}
+              onValueChange={(itemValue) => handleInputChange('venue_id', itemValue)}
             >
+              <Picker.Item label="請選擇" value={null} />
               {venues.map((venue) => (
                 <Picker.Item key={venue.id} label={venue.name} value={venue.id} />
               ))}
@@ -160,7 +198,8 @@ const EnrollmentScreen = () => {
               style={styles.picker}
               onValueChange={(itemValue) => handleInputChange('payment_method', itemValue)}
             >
-              <Picker.Item label="現金" value="cash" />
+              <Picker.Item label="請選擇" value={null} />
+              <Picker.Item label="現金" value="現金" />
             </Picker>
 
             <Text style={styles.label}>程度描述</Text>
@@ -194,7 +233,7 @@ const EnrollmentScreen = () => {
             <Text style={styles.text}>{latestEnrollment.student}</Text>
 
             <Text style={styles.label}>課程類型</Text>
-            <Text style={styles.text}>{latestEnrollment.coursetype}</Text>
+            <Text style={styles.text}>{latestEnrollment.coursetype.name}</Text>
 
             <Text style={styles.label}>開始上課日期</Text>
             <Text style={styles.text}>{latestEnrollment.start_date}</Text>
@@ -203,7 +242,7 @@ const EnrollmentScreen = () => {
             <Text style={styles.text}>{latestEnrollment.start_time}</Text>
 
             <Text style={styles.label}>場地</Text>
-            <Text style={styles.text}>{latestEnrollment.venue}</Text>
+            <Text style={styles.text}>{latestEnrollment.venue.name}</Text>
 
             <Text style={styles.label}>付款方式</Text>
             <Text style={styles.text}>{latestEnrollment.payment_method}</Text>
@@ -230,7 +269,7 @@ const EnrollmentScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg,
     paddingHorizontal: 10,
   },
   buttonContainer: {
@@ -268,20 +307,22 @@ const styles = StyleSheet.create({
     fontSize: SIZES.medium,
     fontWeight: 'bold',
     color: COLORS.primary,
-    marginBottom: 5,
+    marginBottom: 10,
   },
   input: {
     borderWidth: 1,
     borderColor: COLORS.gray2,
     borderRadius: 10,
     padding: 10,
-    marginBottom: 10,
+    marginTop: 0,
+    marginBottom: 30,
+    
     fontSize: SIZES.medium,
   },
   picker: {
-    height: 50,
+    height: 150,
     width: '100%',
-    marginBottom: 10,
+    marginBottom: 50,
   },
   text: {
     fontSize: SIZES.medium,

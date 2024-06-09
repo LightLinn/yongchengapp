@@ -31,14 +31,14 @@ class CourseTypeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class EnrollmentListSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
     venue = VenueSerializer(read_only=True)
     coach = CoachSerializer(read_only=True)
     coursetype = CourseTypeSerializer(read_only=True)
 
     class Meta:
         model = EnrollmentList
-        fields = ['id', 'student', 'enrollment_status', 'venue', 'coach', 'coursetype']
+        fields = ['id', 'student', 'user', 'enrollment_status', 'venue', 'coach', 'coursetype']
 
 class CourseSerializer(serializers.ModelSerializer):
     enrollment_list = EnrollmentListSerializer(read_only=True)
@@ -50,6 +50,8 @@ class CourseSerializer(serializers.ModelSerializer):
 class AttendanceListSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     course = CourseSerializer(read_only=True)
+
+    course_id = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all(), source='course', write_only=True)
 
     class Meta:
         model = Attendance

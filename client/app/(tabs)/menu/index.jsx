@@ -1,28 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../../context/AuthContext';
 import { fetchUserPermissions } from '../../../api/groupApi'; // 假設您已經設置好這個API
 import SectionCard from '../../components/SectionCard';
+import { COLORS, SIZES } from '../../../styles/theme';
 
 const MenuScreen = () => {
   const router = useRouter();
   const { isLogging, groupIds } = useAuth(); // 獲取當前使用者信息
   const [permissions, setPermissions] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadPermissions = async () => {
+    try {
+      const userPermissions = await fetchUserPermissions(groupIds); // 傳入使用者的群組名稱
+      setPermissions(userPermissions);
+    } catch (error) {
+      console.error('Failed to load permissions', error);
+    }
+  };
 
   useEffect(() => {
-    const loadPermissions = async () => {
-      try {
-        const userPermissions = await fetchUserPermissions(groupIds); // 傳入使用者的群組名稱
-        setPermissions(userPermissions);
-      } catch (error) {
-        console.error('Failed to load permissions', error);
-      }
-    };
-
     if (groupIds && groupIds.length > 0) {
       loadPermissions();
     }
+  }, [groupIds]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadPermissions();
+    setRefreshing(false);
   }, [groupIds]);
 
   const hasPermission = (screenName, action) => {
@@ -33,11 +41,11 @@ const MenuScreen = () => {
   const sections = [
     {
       title: '後台管理',
-      screenName: 'admin_screen', // 改成驗證admin
+      screenName: 'admin', // 改成驗證admin
       features: [
-        { name: '角色', icon: 'people', screenName: 'admin_screen', screen: '/screens/group/GroupListScreen', action: 'can_view' },
-        { name: '人員', icon: 'person', screenName: 'admin_screen', screen: '/screens/roster/view', action: 'can_view' },
-        { name: '創建課程', icon: 'school', screenName: 'admin_screen', screen: '/screens/course/CreateCourseScreen', action: 'can_create' },
+        { name: '角色', icon: 'people', screenName: 'role_screen', screen: '/screens/group/GroupListScreen', action: 'can_view' },
+        { name: '人員', icon: 'person', screenName: 'human_screen', screen: '/screens/roster/view', action: 'can_view' },
+        { name: '創建課程', icon: 'school', screenName: 'create_course_screen', screen: '/screens/course/CreateCourseScreen', action: 'can_create' },
       ],
     },
     {
@@ -60,12 +68,12 @@ const MenuScreen = () => {
       title: '出勤管理',
       screenName: 'attendance_screen', // 改成驗證attendance
       features: [
-        { name: '打卡', icon: 'time', screenName: 'attendance_screen', screen: '/screens/clockin/view', action: 'can_view' },
-        { name: '紀錄', icon: 'clipboard', screenName: 'attendance_screen', screen: '/screens/attendance/view', action: 'can_view' },
+        { name: '出勤簽到', icon: 'time', screenName: 'attendance_screen', screen: '/screens/clockin/view', action: 'can_view' },
+        { name: '出勤紀錄', icon: 'clipboard', screenName: 'attendance_screen', screen: '/screens/attendance/view', action: 'can_view' },
         { name: '調班', icon: 'swap-horizontal', screenName: 'attendance_screen', screen: '/screens/reschedule/view', action: 'can_view' },
         { name: '請假', icon: 'calendar', screenName: 'attendance_screen', screen: '/screens/leave_request/view', action: 'can_view' },
-        { name: '排休', icon: 'bed', screenName: 'attendance_screen', screen: '/screens/leave/view', action: 'can_view' },
-        { name: '排班', icon: 'calendar', screenName: 'attendance_screen', screen: '/screens/scheduling/view', action: 'can_view' },
+        { name: '救生員排休', icon: 'bed', screenName: 'attendance_screen', screen: '/screens/leave/view', action: 'can_view' },
+        { name: '教練排班', icon: 'calendar', screenName: 'attendance_screen', screen: '/screens/scheduling/view', action: 'can_view' },
       ],
     },
     {
@@ -89,7 +97,12 @@ const MenuScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView
+      style={styles.scrollView}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.container}>
         {sections.map(section => (
           isLogging && hasPermission(section.screenName, 'can_view') && (
@@ -109,13 +122,13 @@ const MenuScreen = () => {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg,
   },
 
   container: {
     flex: 1,
     padding: 0,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg,
     marginBottom: 50,
   },
 });

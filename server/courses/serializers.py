@@ -5,10 +5,7 @@ from venues.models import Venue
 from authentication.models import CustomUser
 
 # 創建CourseSerializer
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = '__all__'
+
 
 # 創建CourseTypeSerializer
 class CourseTypeSerializer(serializers.ModelSerializer):
@@ -47,19 +44,27 @@ class VenueSerializer(serializers.ModelSerializer):
 
 # 創建EnrollmentListSerializer
 class EnrollmentListSerializer(serializers.ModelSerializer):
-    coursetype = CourseTypeSerializer()
-    user = UserSerializer()
-    venue = VenueSerializer()
-    coach = CoachSerializer()
-    enrollment_number = EnrollmentNumbersSerializer()
-
+    coursetype = CourseTypeSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    venue = VenueSerializer(read_only=True)
+    coach = CoachSerializer(read_only=True)
+    enrollment_number = EnrollmentNumbersSerializer(read_only=True)
+    
+    coursetype_id = serializers.PrimaryKeyRelatedField(queryset=CourseType.objects.all(), source='coursetype', write_only=True, allow_null=True)
+    user_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), source='user', write_only=True, allow_null=True)
+    venue_id = serializers.PrimaryKeyRelatedField(queryset=Venue.objects.all(), source='venue', write_only=True, allow_null=True)
+    coach_id = serializers.PrimaryKeyRelatedField(queryset=Coach.objects.all(), source='coach', write_only=True, allow_null=True)
+    enrollment_number_id = serializers.PrimaryKeyRelatedField(queryset=EnrollmentNumbers.objects.all(), source='enrollment_number', write_only=True, allow_null=True)
+    
     class Meta:
         model = EnrollmentList
         fields = '__all__'
 
-class EnrollmentListCreateSerializer(serializers.ModelSerializer):
+class CourseSerializer(serializers.ModelSerializer):
+    enrollment_list = EnrollmentListSerializer(read_only=True)
+
     class Meta:
-        model = EnrollmentList
+        model = Course
         fields = '__all__'
         
 
