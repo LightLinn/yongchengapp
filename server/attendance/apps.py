@@ -6,6 +6,6 @@ class AttendanceConfig(AppConfig):
     name = 'attendance'
     verbose_name = '簽到管理'
 
-    def ready(self):
-        from .scheduler import start_scheduler
-        start_scheduler()
+    # def ready(self):
+    #     from .scheduler import start_scheduler
+    #     start_scheduler()
