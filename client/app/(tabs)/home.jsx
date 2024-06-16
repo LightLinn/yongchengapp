@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BannerCarousel from '../components/BannerCarousel';
 import NewsItem from '../components/NewsItem';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { fetchNews } from '../../api/newsApi';
 import { fetchBannerImages } from '../../api/bannerApi'; 
 import { COLORS, SIZES } from '../../styles/theme';
@@ -13,6 +14,7 @@ const HomeScreen = () => {
   const [banners, setBanners] = useState([]);
   const [news, setNews] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loadUserData = async () => {
     try {
@@ -35,11 +37,14 @@ const HomeScreen = () => {
   };
 
   const loadNews = async () => {
+    setLoading(true);
     try {
       const newsData = await fetchNews();
       setNews(newsData);
     } catch (error) {
       console.error('Failed to load news', error);
+    } finally {
+      setLoading(false); // 結束加載數據
     }
   };
 
@@ -58,6 +63,10 @@ const HomeScreen = () => {
     await loadData();
     setRefreshing(false);
   }, []);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <View style={styles.container}>

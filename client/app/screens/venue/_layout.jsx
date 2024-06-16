@@ -19,21 +19,7 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
-        name="VenueAddScreen"
-        options={({ navigation }) => ({
-          headerTitle: '新增場地',
-          headerShadowVisible: false,
-          headerLeft: () => (
-            <Button
-              icon={<Icon name="arrow-back" color="#333" />}
-              buttonStyle={{ backgroundColor: 'transparent' }}
-              onPress={() => navigation.goBack()}
-            />
-          ),
-        })} 
-      />
-      <Stack.Screen 
-        name="VenueDetailScreen"
+        name="VenueFormScreen"
         options={({ navigation }) => ({
           headerTitle: '場地資訊',
           headerShadowVisible: false,

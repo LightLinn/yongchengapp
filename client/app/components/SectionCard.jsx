@@ -7,7 +7,7 @@ import { COLORS, SIZES } from '../../styles/theme';
 const SectionCard = ({ title, features, onFeaturePress }) => {
   return (
     <Card containerStyle={styles.card}>
-      {/* <Text style={styles.title}>{title}</Text> */}
+      <Text style={styles.title}>{title}</Text>
       {features.map((feature, index) => (
         <TouchableOpacity key={index} onPress={() => onFeaturePress(feature.screen)} style={styles.featureContainer}>
           <View style={styles.featureContent}>
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
+    backgroundColor: COLORS.lightWhite,
     elevation: 2,
   },
   title: {

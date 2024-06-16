@@ -1,21 +1,19 @@
-// src/screens/repair/RepairDetailScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Picker } from '@react-native-picker/picker';
 import { fetchRepairDetail, updateRepair } from '../../../api/repairApi';
 import { fetchVenueDetails } from '../../../api/venueApi';
-import { fetchUserPermissions } from '../../../api/groupApi';
 import { COLORS, SIZES } from '../../../styles/theme';
-import { useAuth } from '../../../context/AuthContext';
+import { usePermissions } from '../../../context/PermissionsContext';
 
 const RepairDetailScreen = () => {
   const [repair, setRepair] = useState(null);
   const [venueName, setVenueName] = useState('');
-  const [permissions, setPermissions] = useState([]);
   const { repairId } = useLocalSearchParams();
   const router = useRouter();
-  const { groupIds } = useAuth();
+  const { permissions, loading } = usePermissions();
 
   useEffect(() => {
     const loadRepairDetail = async () => {
@@ -29,21 +27,8 @@ const RepairDetailScreen = () => {
       }
     };
 
-    const loadPermissions = async () => {
-      try {
-        const userPermissions = await fetchUserPermissions(groupIds);
-        setPermissions(userPermissions);
-      } catch (error) {
-        console.error('Failed to load permissions', error);
-      }
-    };
-
-    if (groupIds && groupIds.length > 0) {
-      loadPermissions();
-    }
-
     loadRepairDetail();
-  }, [repairId, groupIds]);
+  }, [repairId]);
 
   const handleUpdate = async () => {
     try {
@@ -55,8 +40,8 @@ const RepairDetailScreen = () => {
     }
   };
 
-  const hasPermission = (action) => {
-    const permission = permissions.find(p => p.screen_name.screen_name === 'repair_screen');
+  const hasPermission = (screenName, action) => {
+    const permission = permissions.find(p => p.screen_name === screenName);
     return permission && permission[action];
   };
 
@@ -69,7 +54,7 @@ const RepairDetailScreen = () => {
     );
   }
 
-  const canEdit = hasPermission('can_edit');
+  const canEdit = hasPermission('repair_screen', 'can_edit');
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -84,21 +69,23 @@ const RepairDetailScreen = () => {
         disabled={!canEdit}
       />
       <Input
-        label="狀態"
-        value={repair.repair_status}
-        onChangeText={(value) => setRepair({ ...repair, repair_status: value })}
-        inputStyle={styles.input}
-        labelStyle={styles.label}
-        editable={false}
-        disabled={!canEdit}
-      />
-      <Input
         label="場地"
         value={venueName}
         inputStyle={styles.input}
         labelStyle={styles.label}
         editable={false}
       />
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={repair.repair_status}
+          onValueChange={(value) => setRepair({ ...repair, repair_status: value })}
+          enabled={canEdit}
+        >
+          <Picker.Item label="未處理" value="未處理" />
+          <Picker.Item label="處理中" value="處理中" />
+          <Picker.Item label="已處理" value="已處理" />
+        </Picker>
+      </View>
       {canEdit && (
         <Button
           title="更新報修信息"
@@ -137,6 +124,17 @@ const styles = StyleSheet.create({
     color: COLORS.tertiary,
     fontSize: SIZES.medium,
     marginBottom: 10,
+  },
+  pickerContainer: {
+    marginBottom: 20,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: COLORS.gray,
+    borderRadius: 5,
+    backgroundColor: COLORS.white,
   },
   updateButton: {
     backgroundColor: COLORS.primary,

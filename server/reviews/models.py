@@ -30,7 +30,7 @@ class Auditable(models.Model):
         ('已過期', '已過期')
     ]
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='審核狀態')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='待審核', verbose_name='審核狀態')
 
     class Meta:
         abstract = True

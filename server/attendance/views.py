@@ -4,12 +4,15 @@ from django.shortcuts import render
 
 # 創建views.py文件，並將以下代碼添加到其中：
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from .models import Attendance, StaffAttendance, LifeguardAttendance
 from .serializers import AttendanceListSerializer, LifeguardAttendanceSerializer, StaffAttendanceSerializer
 from authentication.viewset_permissions import VIEWSET_PERMISSIONS
 from django.http import JsonResponse
 import math
+import random
+from datetime import date
 
 # 創建AttendanceViewSet
 class AttendanceListViewSet(viewsets.ModelViewSet):
@@ -26,6 +29,25 @@ class AttendanceListViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         serializer.save(user=user)
+
+    @action(detail=False, methods=['get'])
+    def get_checkcode(self, request):
+        user_id = request.query_params.get('user')
+        if not user_id:
+            return JsonResponse({'error': 'User ID is required'}, status=400)
+        
+        return self.create_check_code(user_id)
+
+    def create_check_code(self, user_id):
+        # 生成一個四位數的隨機碼
+        random_code = random.randint(1000, 9999)
+        # 獲取當天日期
+        today = date.today().isoformat()
+
+        # 生成驗證碼
+        verification_code = f"{user_id},{today},{random_code}"
+
+        return JsonResponse({"checkcode": verification_code})
     
 class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
     queryset = LifeguardAttendance.objects.all()

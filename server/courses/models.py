@@ -20,10 +20,10 @@ class EnrollmentNumbers(Auditable):
 class EnrollmentList(Auditable):
     ENROLLMENT_STATUS_CHOICES = [
         ('待付款', '待付款'),
-        ('未開課', '未開課'),
+        # ('未開課', '未開課'),
         ('審核中', '審核中'),
         ('派課中', '派課中'),
-        ('已派課', '已派課'),
+        # ('已派課', '已派課'),
         ('進行中', '進行中'),
         ('已完成', '已完成'),
         ('已取消', '已取消'),
@@ -46,14 +46,14 @@ class EnrollmentList(Auditable):
     start_date = models.DateField(verbose_name='開始上課日期', blank=True, null=True)
     start_time = models.TimeField(verbose_name='上課時間', blank=True, null=True)
     payment_date = models.DateField(verbose_name='付款日期', blank=True, null=True)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, verbose_name='付款方式', blank=True, null=True, default='cash')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, verbose_name='付款方式', blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='付款金額', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', null=True, blank=True)
     degree = models.CharField(max_length=255, verbose_name='程度描述', blank=True, null=True)
     enrollment_number = models.ForeignKey('EnrollmentNumbers', on_delete=models.SET_NULL, related_name='enrollment_lists', verbose_name='報名單編號', null=True, blank=True)
     venue = models.ForeignKey('venues.Venue', on_delete=models.CASCADE, related_name='enrollments', verbose_name='場地', null=True, blank=True)
     coach = models.ForeignKey('humanresources.Coach', on_delete=models.CASCADE, related_name='enrollments', verbose_name='教練', null=True, blank=True)
-
+    age = models.IntegerField(verbose_name='年齡', blank=True, null=True)
 
     class Meta:
         db_table = 'enrollment'

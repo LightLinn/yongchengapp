@@ -28,7 +28,7 @@ class PermissionSerializer(serializers.ModelSerializer):
 class ScreenSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model = ScreenPermissions
+        model = Screen
         fields = ['id', 'screen_name']
 
 class ScreenPermissionsSerializer(serializers.ModelSerializer):

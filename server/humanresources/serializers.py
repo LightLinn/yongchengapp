@@ -5,6 +5,8 @@ from .models import Coach, Lifeguard, Performance, Salary, SalaryRange, Employee
 from authentication.serializers import UserSerializer
 
 class EmployeeSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    
     class Meta:
         model = Employee
         fields = '__all__'
@@ -18,6 +20,8 @@ class CoachSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LifeguardSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = Lifeguard
         fields = '__all__'

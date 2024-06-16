@@ -4,10 +4,11 @@ import QrCodeScanner from '../../components/QrCodeScanner';
 import { fetchAttendanceRecords, createAttendance } from '../../../api/attendApi';
 import { fetchEnrollments, fetchEnrollmentsCoach, fetchCourseDetails } from '../../../api/courseApi';
 import AttendanceRecordItem from '../../components/AttendanceRecordItem';
+import AttendanceItem from '../../components/AttendanceItem';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { COLORS, SIZES } from '../../../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
-import AttendanceItem from '../../components/AttendanceItem';
 
 const AttendanceScreen = () => {
   const [isScanning, setIsScanning] = useState(false);
@@ -19,6 +20,7 @@ const AttendanceScreen = () => {
   const [courses, setCourses] = useState([]);
   const [todayCourses, setTodayCourses] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const route = useRoute();
 
   const checkIsCoach = async () => {
@@ -27,6 +29,7 @@ const AttendanceScreen = () => {
   };
 
   const loadData = async () => {
+    setLoading(true); // 開始加載數據
     try {
       const userId = await AsyncStorage.getItem('userId');
       const isCoach = await checkIsCoach();
@@ -55,6 +58,7 @@ const AttendanceScreen = () => {
       console.error('Failed to load data:', error);
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   };
 
@@ -107,6 +111,10 @@ const AttendanceScreen = () => {
       record.status.includes(searchText)
     );
   });
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <View style={styles.container}>

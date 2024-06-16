@@ -1,8 +1,8 @@
-# from django.db.models.signals import m2m_changed
-# from django.dispatch import receiver
-# from django.contrib.auth.models import Group, User
-# from .models import Employee, Coach, Lifeguard, VenueManager
-# from authentication.models import CustomUser
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
+from django.contrib.auth.models import Group, User
+from .models import Employee, Coach, Lifeguard, VenueManager
+from authentication.models import CustomUser
 
 # @receiver(m2m_changed, sender=CustomUser.groups.through)
 # def update_user_groups(sender, instance, action, pk_set, **kwargs):

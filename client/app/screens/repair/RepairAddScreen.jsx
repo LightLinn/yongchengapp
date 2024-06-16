@@ -3,11 +3,11 @@ import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import { useRouter } from 'expo-router';
 import { createRepair } from '../../../api/repairApi';
-import { fetchUserPermissions } from '../../../api/groupApi';
 import { fetchVenues } from '../../../api/venueApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { useAuth } from '../../../context/AuthContext';
 import { Picker } from '@react-native-picker/picker';
+import { usePermissions } from '../../../context/PermissionsContext';
 
 const RepairAddScreen = () => {
   const [repair, setRepair] = useState({
@@ -17,21 +17,12 @@ const RepairAddScreen = () => {
     venue: null,
     user: '',
   });
-  const [permissions, setPermissions] = useState([]);
   const [venues, setVenues] = useState([]);
   const router = useRouter();
-  const { groupIds, userId } = useAuth();
+  const { userId } = useAuth();
+  const { permissions, loading } = usePermissions();
 
   useEffect(() => {
-    const loadPermissions = async () => {
-      try {
-        const userPermissions = await fetchUserPermissions(groupIds);
-        setPermissions(userPermissions);
-      } catch (error) {
-        console.error('Failed to load permissions', error);
-      }
-    };
-
     const loadVenues = async () => {
       try {
         const fetchedVenues = await fetchVenues();
@@ -41,11 +32,8 @@ const RepairAddScreen = () => {
       }
     };
 
-    if (groupIds && groupIds.length > 0) {
-      loadPermissions();
-      loadVenues();
-    }
-  }, [groupIds]);
+    loadVenues();
+  }, []);
 
   useEffect(() => {
     if (userId) {
@@ -59,7 +47,7 @@ const RepairAddScreen = () => {
       await createRepair({
         title: repair.title,
         description: repair.description,
-        repair_status: '未處理', 
+        repair_status: '未處理',
         venue: repair.venue,
         user: userId,
       });
@@ -71,9 +59,17 @@ const RepairAddScreen = () => {
   };
 
   const hasPermission = (action) => {
-    const permission = permissions.find(p => p.screen_name.screen_name === 'repair_screen');
+    const permission = permissions.find(p => p.screen_name === 'repair_screen');
     return permission && permission[action];
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   if (!hasPermission('can_create')) {
     return (
@@ -98,8 +94,8 @@ const RepairAddScreen = () => {
         onChangeText={(value) => setRepair({ ...repair, description: value })}
         inputStyle={styles.input}
         labelStyle={styles.label}
+        multiline
       />
-      <Text style={styles.label}>場地</Text>
       <Picker
         selectedValue={repair.venue}
         onValueChange={(value) => setRepair({ ...repair, venue: value })}
@@ -121,7 +117,8 @@ const RepairAddScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 10,
+    paddingTop: 50,
     backgroundColor: COLORS.lightWhite,
   },
   input: {
@@ -144,6 +141,12 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   permissionDeniedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.lightWhite,
+  },
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

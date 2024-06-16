@@ -18,13 +18,48 @@ export default function Layout() {
           ),
         })} 
       />
-      {/* <Stack.Screen 
-        name="AttendDetailScreen"
-        options={{ 
-          headerTitle: '',
-          headerShown: false,
-        }} 
-      /> */}
+      <Stack.Screen 
+        name="CoachAssignmentScreen"
+        options={({ navigation }) => ({
+          headerTitle: '教練接課',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="EnrollmentListScreen"
+        options={({ navigation }) => ({
+          headerTitle: '報名列表',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="AttendQrcodeScreen"
+        options={({ navigation }) => ({
+          headerTitle: '簽到驗證',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
     </Stack>
     
   )

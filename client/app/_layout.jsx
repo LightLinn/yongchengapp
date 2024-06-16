@@ -3,9 +3,9 @@ import { Stack } from 'expo-router';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthProvider } from '../context/AuthContext'
 import { ThemeProvider } from '../context/ThemeContext';
+import { PermissionsProvider } from '../context/PermissionsContext';
 import { COLORS } from '../styles/theme';
 
 export default function Layout() {
@@ -21,6 +21,7 @@ export default function Layout() {
 
   return (
     <AuthProvider>
+    <PermissionsProvider>
     <ThemeProvider>
     <Stack>
       <Stack.Screen 
@@ -69,6 +70,7 @@ export default function Layout() {
       />
     </Stack>
     </ThemeProvider>
+    </PermissionsProvider>
     </AuthProvider>
   );
 }

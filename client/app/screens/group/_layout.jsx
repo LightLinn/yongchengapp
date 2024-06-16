@@ -35,7 +35,7 @@ export default function Layout() {
       <Stack.Screen 
         name="PermissionEditorScreen"
         options={({ navigation }) => ({
-          headerTitle: '權限管理',
+          headerTitle: '權限設定',
           headerShadowVisible: false,
           headerLeft: () => (
             <Button
@@ -46,6 +46,7 @@ export default function Layout() {
           ),
         })} 
       />
+      
     </Stack>
     
   )

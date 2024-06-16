@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { COLORS } from '../../styles/theme';
+import dayjs from 'dayjs';
 
 const RepairItem = ({ repair, venueName }) => {
   const router = useRouter();
@@ -25,10 +26,10 @@ const RepairItem = ({ repair, venueName }) => {
       onPress={() => router.push(`/screens/repair/RepairDetailScreen?repairId=${repair.id}&venueName=${venueName}`)}
     >
       <Text style={styles.title}>{repair.title}</Text>
-      <Text style={styles.description}>{repair.description}</Text>
-      <Text style={styles.status}>狀態: {getStatusText(repair.repair_status)}</Text>
-      <Text style={styles.venue}>場地: {venueName}</Text>
-      <Text style={styles.createdAt}>創建時間: {new Date(repair.created_at).toLocaleString()}</Text>
+      <Text style={styles.description} multiline>描述 {repair.description}</Text>
+      <Text style={styles.status}>狀態 {getStatusText(repair.repair_status)}</Text>
+      <Text style={styles.venue}>場地 {venueName}</Text>
+      <Text style={styles.createdAt}>日期 {dayjs(repair.created_at).format('YYYY/MM/DD HH:MM')}</Text>
     </TouchableOpacity>
   );
 };
@@ -48,27 +49,27 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.primary,
+    color: COLORS.secondary,
   },
   description: {
     marginTop: 5,
-    fontSize: 14,
+    fontSize: 12,
     color: COLORS.gray,
   },
   status: {
     marginTop: 5,
     fontSize: 12,
-    color: COLORS.secondary,
+    color: COLORS.gray,
   },
   venue: {
     marginTop: 5,
     fontSize: 12,
-    color: COLORS.secondary,
+    color: COLORS.gray,
   },
   createdAt: {
     marginTop: 5,
     fontSize: 12,
-    color: COLORS.secondary,
+    color: COLORS.gray,
   },
 });
 

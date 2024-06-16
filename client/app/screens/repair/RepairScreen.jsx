@@ -1,24 +1,25 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, TextInput, Text } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, FlatList, StyleSheet, TouchableOpacity, TextInput, Text, RefreshControl } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { fetchRepairs } from '../../../api/repairApi';
-import { fetchUserPermissions } from '../../../api/groupApi';
 import { fetchVenueDetails } from '../../../api/venueApi';
 import RepairItem from '../../components/RepairItem';
 import { COLORS, SIZES } from '../../../styles/theme';
+import { usePermissions } from '../../../context/PermissionsContext';
 import { useAuth } from '../../../context/AuthContext';
 
 const RepairScreen = () => {
   const [repairs, setRepairs] = useState([]);
-  const [permissions, setPermissions] = useState([]);
   const [venues, setVenues] = useState({});
   const [filter, setFilter] = useState('');
   const [sortedBy, setSortedBy] = useState('created_at');
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
   const { groupIds } = useAuth();
+  const { permissions, loading, refresh } = usePermissions();
 
   const loadRepairs = async () => {
     try {
@@ -36,27 +37,16 @@ const RepairScreen = () => {
     }
   };
 
-  const loadPermissions = async () => {
-    try {
-      const userPermissions = await fetchUserPermissions(groupIds);
-      setPermissions(userPermissions);
-    } catch (error) {
-      console.error('Failed to load permissions', error);
-    }
-  };
-
-  useEffect(() => {
-    if (groupIds && groupIds.length > 0) {
-      loadPermissions();
-    }
-    loadRepairs();
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       loadRepairs();
     }, [])
   );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadRepairs().then(() => setRefreshing(false));
+  }, []);
 
   const handleSort = (criteria) => {
     let sortedData = [...repairs];
@@ -76,8 +66,8 @@ const RepairScreen = () => {
     setStatusFilter(status);
   };
 
-  const hasPermission = (action) => {
-    const permission = permissions.find(p => p.screen_name.screen_name === 'repair_screen');
+  const hasPermission = (screenName, action) => {
+    const permission = permissions.find(p => p.screen_name === screenName);
     return permission && permission[action];
   };
 
@@ -86,24 +76,28 @@ const RepairScreen = () => {
     (statusFilter ? item.repair_status === statusFilter : true)
   );
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <Icon name="search" size={24} color={COLORS.primary} />
+          <Icon name="search" size={SIZES.xLarge} color={COLORS.primary} />
           <TextInput
-            placeholder="搜索"
+            placeholder="搜尋"
             value={filter}
             onChangeText={setFilter}
             style={styles.searchInput}
           />
         </View>
         <TouchableOpacity onPress={() => setShowSortMenu(!showSortMenu)}>
-          <Icon name="sort" size={30} color={COLORS.primary} />
+          <Icon name="sort" size={SIZES.xLarge} color={COLORS.primary} />
         </TouchableOpacity>
-        {hasPermission('can_create') && (
+        {hasPermission('repair_screen', 'can_create') && (
           <TouchableOpacity onPress={() => router.push('/screens/repair/RepairAddScreen')}>
-            <Icon name="add" size={30} color={COLORS.primary} />
+            <Icon name="add" size={SIZES.xLarge} color={COLORS.primary} />
           </TouchableOpacity>
         )}
       </View>
@@ -135,6 +129,7 @@ const RepairScreen = () => {
         data={filteredRepairs}
         renderItem={({ item }) => <RepairItem repair={item} venueName={venues[item.venue]} />}
         keyExtractor={(item) => item.id.toString()}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </View>
   );
@@ -189,7 +184,7 @@ const styles = StyleSheet.create({
   },
   statusFilter: {
     padding: 5,
-    color: COLORS.secondary,
+    color: COLORS.gray2,
   },
   activeFilter: {
     fontWeight: 'bold',

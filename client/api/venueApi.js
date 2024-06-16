@@ -2,8 +2,13 @@ import { API_BASE_URL } from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchVenues = async () => {
-  // 这里是模拟的API调用，你可以将其替换为真实的API调用
-  const response = await fetch(`${API_BASE_URL}/venues/`);
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/venues/`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch venues');
   }
@@ -11,7 +16,13 @@ export const fetchVenues = async () => {
 };
 
 export const fetchVenueDetails = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/venues/${id}/`);
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/venues/${id}/`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch venue details');
   }
@@ -50,3 +61,15 @@ export const updateVenue = async (id, venue) => {
   return await response.json();
 };
 
+export const deleteVenue = async (id) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/venues/${id}/`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete venue');
+  }
+};

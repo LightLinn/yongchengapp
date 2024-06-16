@@ -71,6 +71,7 @@ export default function Layout() {
         options={({ navigation }) => ({
           headerTitle: '最新消息',
           headerShadowVisible: false,
+          headerShown: false,
           headerLeft: () => (
             <Button
               icon={<Icon name="arrow-back" color="#333" />}
@@ -109,6 +110,21 @@ export default function Layout() {
           headerShadowVisible: false,
           headerShown: false,
         }}
+      />
+      <Stack.Screen 
+        name="schedule" 
+        options={({ navigation }) => ({
+          headerTitle: '排班管理',
+          headerShadowVisible: false,
+          headerShown: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
       />
       
     </Stack>

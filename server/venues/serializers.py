@@ -6,11 +6,42 @@ from authentication.models import CustomUser
 
 # 創建VenueSerializer
 class VenueSerializer(serializers.ModelSerializer):
-    managers = UserSerializer(many=True)
+    managers = UserSerializer(many=True, read_only=True)
+    managers_id = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all(),
+        write_only=True,
+        source='managers',
+        many=True
+    )
 
     class Meta:
         model = Venue
         fields = '__all__'
+
+    def create(self, validated_data):
+        managers_data = validated_data.pop('managers')
+        venue = Venue.objects.create(**validated_data)
+        venue.managers.set(managers_data)
+        return venue
+
+    def update(self, instance, validated_data):
+        managers_data = validated_data.pop('managers')
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.capacity = validated_data.get('capacity', instance.capacity)
+        instance.weekday_open_time = validated_data.get('weekday_open_time', instance.weekday_open_time)
+        instance.weekday_close_time = validated_data.get('weekday_close_time', instance.weekday_close_time)
+        instance.holiday_open_time = validated_data.get('holiday_open_time', instance.holiday_open_time)
+        instance.holiday_close_time = validated_data.get('holiday_close_time', instance.holiday_close_time)
+        instance.longitude = validated_data.get('longitude', instance.longitude)
+        instance.latitude = validated_data.get('latitude', instance.latitude)
+        instance.address = validated_data.get('address', instance.address)
+        instance.save()
+
+        if managers_data:
+            instance.managers.set(managers_data)
+
+        return instance
 
 class VenuePartialSerializer(serializers.ModelSerializer):
    

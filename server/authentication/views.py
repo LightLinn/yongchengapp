@@ -11,6 +11,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.db import transaction
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
@@ -19,9 +20,9 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import CustomUser, ScreenPermissions
+from .models import CustomUser, ScreenPermissions, Screen
 from humanresources.models import Coach, Lifeguard, Employee, VenueManager
-from .serializers import UserSerializer, UserCreateSerializer, GroupSerializer, PermissionSerializer, PasswordResetSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, ScreenPermissionsSerializer
+from .serializers import UserSerializer, UserCreateSerializer, GroupSerializer, PermissionSerializer, PasswordResetSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, ScreenPermissionsSerializer, ScreenSerializer
 from authentication.permissions import *
 import qrcode
 import random
@@ -60,44 +61,51 @@ class GroupViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def permissions(self, request, pk=None):
         group = self.get_object()
-        permissions = group.permissions.all()
-        permission_data = [{'id': perm.id, 'name': perm.name, 'codename': perm.codename} for perm in permissions]
-        return Response(permission_data, status=status.HTTP_200_OK)
+        permissions = ScreenPermissions.objects.filter(group=group)
+        serializer = ScreenPermissionsSerializer(permissions, many=True)
+        return Response(serializer.data)
+    
+    def perform_create(self, serializer):
+        group = serializer.save()
+        screens = Screen.objects.all()
+        for screen in screens:
+            ScreenPermissions.objects.create(group=group, screen_name=screen)
+
+    # @action(detail=True, methods=['post'])
+    # def add_permission(self, request, pk=None):
+    #     group = self.get_object()
+    #     codename = request.data.get('codename')
+    #     try:
+    #         permission = Permission.objects.get(codename=codename)
+    #         group.permissions.add(permission)
+    #         return Response({'status': 'permission added'}, status=status.HTTP_200_OK)
+    #     except Permission.DoesNotExist:
+    #         return Response({'status': 'permission not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # @action(detail=True, methods=['post'])
+    # def remove_permission(self, request, pk=None):
+    #     group = self.get_object()
+    #     codename = request.data.get('codename')
+    #     try:
+    #         permission = Permission.objects.get(codename=codename)
+    #         group.permissions.remove(permission)
+    #         return Response({'status': 'permission removed'}, status=status.HTTP_200_OK)
+    #     except Permission.DoesNotExist:
+    #         return Response({'status': 'permission not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # @action(detail=True, methods=['post'])
+    # def set_permissions(self, request, pk=None):
+    #     group = self.get_object()
+    #     codenames = request.data.get('codenames', [])
+    #     try:
+    #         permissions = Permission.objects.filter(codename__in=codenames)
+    #         group.permissions.set(permissions)
+    #         return Response({'status': 'permissions updated'}, status=status.HTTP_200_OK)
+    #     except Permission.DoesNotExist:
+    #         return Response({'status': 'some permissions not found'}, status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=True, methods=['post'])
-    def add_permission(self, request, pk=None):
-        group = self.get_object()
-        codename = request.data.get('codename')
-        try:
-            permission = Permission.objects.get(codename=codename)
-            group.permissions.add(permission)
-            return Response({'status': 'permission added'}, status=status.HTTP_200_OK)
-        except Permission.DoesNotExist:
-            return Response({'status': 'permission not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    @action(detail=True, methods=['post'])
-    def remove_permission(self, request, pk=None):
-        group = self.get_object()
-        codename = request.data.get('codename')
-        try:
-            permission = Permission.objects.get(codename=codename)
-            group.permissions.remove(permission)
-            return Response({'status': 'permission removed'}, status=status.HTTP_200_OK)
-        except Permission.DoesNotExist:
-            return Response({'status': 'permission not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    @action(detail=True, methods=['post'])
-    def set_permissions(self, request, pk=None):
-        group = self.get_object()
-        codenames = request.data.get('codenames', [])
-        try:
-            permissions = Permission.objects.filter(codename__in=codenames)
-            group.permissions.set(permissions)
-            return Response({'status': 'permissions updated'}, status=status.HTTP_200_OK)
-        except Permission.DoesNotExist:
-            return Response({'status': 'some permissions not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    @action(detail=True, methods=['post'])
+    @transaction.atomic
     def add_user(self, request, pk=None):
         group = self.get_object()
         username = request.data.get('username')
@@ -113,8 +121,11 @@ class GroupViewSet(viewsets.ModelViewSet):
             return Response({'status': 'user added'}, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['post'])
+    @transaction.atomic
     def remove_user(self, request, pk=None):
         group = self.get_object()
         username = request.data.get('username')
@@ -130,6 +141,8 @@ class GroupViewSet(viewsets.ModelViewSet):
             return Response({'status': 'user removed'}, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response({'status': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     # 前端/groups/?user=${userId}，取得特定使用者所在的群組
     @action(detail=False, methods=['get'])
@@ -159,6 +172,11 @@ class ScreenPermissionsViewSet(viewsets.ModelViewSet):
             group_ids_list = group_ids.split(',')
             queryset = queryset.filter(group__id__in=group_ids_list)
         return queryset
+
+class ScreenViewSet(viewsets.ModelViewSet):
+    queryset = Screen.objects.all()
+    serializer_class = ScreenSerializer
+    # permission_classes = [permissions.IsAuthenticated]
     
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -276,25 +294,3 @@ class PasswordChangeView(APIView):
             request.user.save()
             return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# 創建QR碼
-def create_qr_code(request):
-    # 生成一個四位數的隨機碼
-    random_code = random.randint(1000, 9999)
-    # 獲取當天日期
-    today = date.today().isoformat()
-    # 獲取用戶ID
-    user_id = request.user.id
-    # 獲取用戶所在地點
-    location = request.user.location
-
-    # 生成驗證碼
-    verification_code = f"{user_id}-{today}-{location}-{random_code}"
-
-    # 將驗證碼轉換為QR碼
-    #img = qrcode.make(verification_code)
-
-    # 儲存QR碼為圖片
-    #img.save("verification_code.png")
-
-    return JsonResponse({"verification_code": verification_code})

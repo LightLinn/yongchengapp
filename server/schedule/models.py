@@ -15,8 +15,8 @@ from reviews.models import Auditable
 class UnavailableSlot(Auditable):
     lifeguard = models.ForeignKey('humanresources.Lifeguard', on_delete=models.CASCADE)
     date = models.DateField()
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_time = models.TimeField(default='07:00')
+    end_time = models.TimeField(default='22:00')
     allow = models.BooleanField(default=None)
 
     class Meta:
@@ -55,33 +55,6 @@ class LifeguardSchedule(Auditable):
         return f'{self.lifeguard.user.username} - {self.start_time}'
 
 # 教練每週可以安排課程的時間段------------------------------------------------
-class CoachAvailableSlot(Auditable):
-    DAY_OF_WEEK_CHOICES = [
-        (1, 'Monday'),
-        (2, 'Tuesday'),
-        (3, 'Wednesday'),
-        (4, 'Thursday'),
-        (5, 'Friday'),
-        (6, 'Saturday'),
-        (7, 'Sunday'),
-    ]
-
-    coach = models.ForeignKey('humanresources.Coach', on_delete=models.CASCADE, related_name='coach_schedules', verbose_name='教练')
-    location = models.ForeignKey('Location', on_delete=models.CASCADE, related_name='coach_schedules', verbose_name='地点', null=True, blank=True)
-    schedule_slot = models.ForeignKey('ScheduleSlot', on_delete=models.CASCADE, related_name='coach_schedules', verbose_name='时间段', null=True, blank=True)
-    day_of_week = models.IntegerField(choices=DAY_OF_WEEK_CHOICES, verbose_name='星期', default=1)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立时间')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')
-    
-    class Meta:
-        db_table = 'coach_available_slot'
-        verbose_name = '教练可上班週排表'
-        verbose_name_plural = '教练可上班週排表'
-        unique_together = ['coach', 'day_of_week', 'schedule_slot', 'location']
-    
-    def __str__(self):
-        return f'{self.coach.user.username}'
-    
 class Location(Auditable):
     name = models.CharField(max_length=255, verbose_name='名称')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立时间')
@@ -95,16 +68,26 @@ class Location(Auditable):
     def __str__(self):
         return self.name
     
-class ScheduleSlot(models.Model):
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+class CoahcSchedule(models.Model):
+    coach = models.ForeignKey('humanresources.Coach', on_delete=models.CASCADE, related_name='schedules')
+    location = models.ForeignKey('Location', on_delete=models.CASCADE, related_name='schedules')
+    day_of_week = models.CharField(max_length=10, choices=[
+        ('週一', '週一'),
+        ('週二', '週二'),
+        ('週三', '週三'),
+        ('週四', '週四'),
+        ('週五', '週五'),
+        ('週六', '週六'),
+        ('週日', '週日'),
+    ])
+    time_slot = models.CharField(max_length=20)
+    is_available = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'schedule_slot'
-        verbose_name = '教练排班时间段'
-        verbose_name_plural = '教练排班时间段'
+        unique_together = ('coach', 'location', 'day_of_week', 'time_slot')
+        verbose_name = '教練排班'
+        verbose_name_plural = '教練排班'
 
     def __str__(self):
-        return f"{self.start_time} - {self.end_time}"
+        return f'{self.coach.user.username} - {self.location.name} - {self.day_of_week} - {self.time_slot}'
     
-# Path: server/humanresources/serializers.py

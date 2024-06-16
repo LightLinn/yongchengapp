@@ -53,16 +53,5 @@ class Screen(models.Model):
     def __str__(self):
         return self.screen_name
     
-# Path: server/authentication/serializers.py
+
     
-SCREEN_NAMES = (
-        ('admin_screen', 'Admin Management'),
-        ('review_screen', 'Review Management'),
-        ('venue_screen', 'Venue Management'),
-        ('attendance_screen', 'Attendance Management'),
-        ('news_screen', 'News Management'),
-        ('notification_screen', 'Notification Management'),
-        {'worklog_screen', 'Worklog Management'},
-        {'repair_screen', 'Repair Management'},
-        {'checkin_screen', 'Check Management'},
-    )

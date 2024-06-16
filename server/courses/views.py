@@ -74,5 +74,23 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except EnrollmentList.DoesNotExist:
             return Response({"detail": "No enrollment records found for this user."}, status=status.HTTP_404_NOT_FOUND)
-# Path: server/courses/urls.py
+
+    @action(detail=True, methods=['patch'])
+    def update_status(self, request, pk=None):
+        enrollment = self.get_object()
+        enrollment_status = request.data.get('enrollment_status', None)
+        payment_amount = request.data.get('payment_amount', None)
+        payment_method = request.data.get('payment_method', None)
+        print(enrollment_status, payment_amount, payment_method)
+
+        if enrollment_status:
+            enrollment.enrollment_status = enrollment_status
+        if payment_amount is not None:
+            enrollment.payment_amount = payment_amount
+        if payment_method:
+            enrollment.payment_method = payment_method
+        
+        enrollment.save()
+        serializer = self.get_serializer(enrollment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     

@@ -5,7 +5,6 @@ import { fetchCourseTypes, fetchVenues, fetchLatestEnrollment, createEnrollment 
 import { COLORS, SIZES } from '../../../styles/theme';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EnrollmentScreen = () => {
   const initialEnrollmentData = {
@@ -32,11 +31,6 @@ const EnrollmentScreen = () => {
   const [venues, setVenues] = useState([]);
   const [latestEnrollment, setLatestEnrollment] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const checkIsCoach = async () => {
-    const role = await AsyncStorage.getItem('groups');
-    return role.includes("內部_教練");
-  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -114,7 +108,7 @@ const EnrollmentScreen = () => {
 
   return (
     <View style={styles.container}>
-      {!checkIsCoach && step === 0 && (
+      {step === 0 && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleNewEnrollment}>
             <Text style={styles.buttonText}>新生報名</Text>

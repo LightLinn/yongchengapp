@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, Text, RefreshControl } from 'react-native';
-import EnrollCard from '../../components/EnrollCard';
+import EnrollItem from '../../components/EnrollItem';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { fetchEnrollments, fetchEnrollmentsCoach, fetchCoaches, fetchCourseTypes, fetchVenues } from '../../../api/courseApi';
 import { useAuth } from '../../../context/AuthContext'; 
 import { COLORS, SIZES } from '../../../styles/theme';
@@ -14,6 +15,7 @@ const OverviewScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedSort, setSelectedSort] = useState('newest');
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { refreshAccessToken } = useAuth();
   
   const checkIsCoach = async () => {
@@ -22,18 +24,22 @@ const OverviewScreen = () => {
   };
 
   const loadData = async () => {
-    // await refreshAccessToken();
-    const isCoach = await checkIsCoach();
-    const fetchedEnrollments = isCoach ? await fetchEnrollmentsCoach() : await fetchEnrollments();
-    
-    const fetchedCoaches = await fetchCoaches();
-    const fetchedCourseTypes = await fetchCourseTypes();
-    const fetchedVenues = await fetchVenues();
-    setEnrollments(fetchedEnrollments);
-    setCoaches(fetchedCoaches);
-    setCourseTypes(fetchedCourseTypes);
-    setVenues(fetchedVenues);
-    
+    setLoading(true); // 開始加載數據
+    try {
+      const isCoach = await checkIsCoach();
+      const fetchedEnrollments = isCoach ? await fetchEnrollmentsCoach() : await fetchEnrollments();
+      const fetchedCoaches = await fetchCoaches();
+      const fetchedCourseTypes = await fetchCourseTypes();
+      const fetchedVenues = await fetchVenues();
+      setEnrollments(fetchedEnrollments);
+      setCoaches(fetchedCoaches);
+      setCourseTypes(fetchedCourseTypes);
+      setVenues(fetchedVenues);
+    } catch (error) {
+      console.error('Failed to load data', error);
+    } finally {
+      setLoading(false); // 結束加載數據
+    }
   };
   
   useEffect(() => {
@@ -77,6 +83,10 @@ const OverviewScreen = () => {
     );
   });
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.searchSortContainer}>
@@ -106,7 +116,7 @@ const OverviewScreen = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {filteredEnrollments.map((enroll) => (
-          <EnrollCard key={enroll.id} enroll={enroll} coaches={coaches} courseTypes={courseTypes} venues={venues} />
+          <EnrollItem key={enroll.id} enroll={enroll} coaches={coaches} courseTypes={courseTypes} venues={venues} />
         ))}
       </ScrollView>
     </View>

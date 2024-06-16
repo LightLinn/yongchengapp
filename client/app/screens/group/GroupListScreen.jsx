@@ -1,15 +1,16 @@
-// src/screens/GroupListScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { fetchGroups, createGroup } from '../../../api/groupApi';
 import { useRouter } from 'expo-router';
 import { Icon } from 'react-native-elements';
 import { COLORS, FONT, SIZES } from '../../../styles/theme';
+import { usePermissions } from '../../../context/PermissionsContext';
 
 const GroupListScreen = () => {
     const [groups, setGroups] = useState([]);
     const [newGroupName, setNewGroupName] = useState('');
     const router = useRouter();
+    const { permissions } = usePermissions();
 
     useEffect(() => {
         fetchGroups().then(setGroups);
@@ -21,6 +22,15 @@ const GroupListScreen = () => {
             setNewGroupName('');
             fetchGroups().then(setGroups);
         }
+    };
+
+    const hasPermission = (action) => {
+        const permission = permissions.find(p => p.screen_name === 'admin');
+        return permission && permission[action];
+    };
+
+    const hasAllPermissions = () => {
+        return hasPermission('can_edit') && hasPermission('can_view') && hasPermission('can_create') && hasPermission('can_delete');
     };
 
     return (
@@ -43,14 +53,16 @@ const GroupListScreen = () => {
                     renderItem={({ item }) => (
                         <View style={styles.groupItem}>
                             <Text style={styles.groupName}>{item.name}</Text>
-                            <View style={styles.iconContainer}>
-                                {/* <TouchableOpacity onPress={() => router.push(`/screens/group/PermissionEditorScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
-                                    <Icon name="edit" size={SIZES.large} color={COLORS.secondary} />
-                                </TouchableOpacity> */}
-                                <TouchableOpacity onPress={() => router.push(`/screens/group/GroupUserListScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
-                                    <Icon name="list" size={SIZES.xLarge} color={COLORS.primary} />
-                                </TouchableOpacity>
-                            </View>
+                            {hasAllPermissions() && (
+                                <View style={styles.iconContainer}>
+                                    <TouchableOpacity onPress={() => router.push(`/screens/group/PermissionEditorScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
+                                        <Icon name="edit" size={SIZES.large} color={COLORS.secondary} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => router.push(`/screens/group/GroupUserListScreen?groupId=${item.id}&groupName=${item.name}`)} style={styles.iconButton}>
+                                        <Icon name="list" size={SIZES.xLarge} color={COLORS.primary} />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     )}
                 />
