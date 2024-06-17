@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, RefreshControl } from 'react-native';
-import { fetchEnrollments, updateEnrollmentStatus } from '../../../api/enrollmentApi';
+import { View, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, RefreshControl, Alert, Modal } from 'react-native';
+import { fetchEnrollments, updateEnrollmentStatus, fetchEnrollmentDetails, fetchCourses } from '../../../api/enrollmentApi';
 import EnrollmentItem from '../../components/EnrollmentItem';
 import PaymentModal from '../../components/PaymentModal';
 import ReviewModal from '../../components/ReviewModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import EnrollmentStopModal from '../../components/EnrollmentStopModal';
+import EnrollmentCancelModal from '../../components/EnrollmentCancelModal';
 import { COLORS, SIZES } from '../../../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const EnrollmentListScreen = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -16,11 +19,16 @@ const EnrollmentListScreen = () => {
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [reviewModalVisible, setReviewModalVisible] = useState(false);
+  const [enrollmentViewModalVisible, setEnrollmentViewModalVisible] = useState(false);
+  const [enrollmentStopModalVisible, setEnrollmentStopModalVisible] = useState(false);
+  const [enrollmentCancelModalVisible, setEnrollmentCancelModalVisible] = useState(false);
+  const [remark, setRemark] = useState('');
   const [filter, setFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [sortField, setSortField] = useState('created_at');
   const [sortAscending, setSortAscending] = useState(true);
+  const router = useRouter();
 
   const loadData = async () => {
     setLoading(true);
@@ -55,17 +63,64 @@ const EnrollmentListScreen = () => {
     setReviewModalVisible(true);
   };
 
-  const handleSort = (field) => {
-    const sortedData = [...enrollments].sort((a, b) => {
-      if (field === 'created_at') {
-        return sortAscending ? new Date(a[field]) - new Date(b[field]) : new Date(b[field]) - new Date(a[field]);
-      }
-      return 0;
-    });
-    setEnrollments(sortedData);
-    setSortField(field);
-    setSortAscending(!sortAscending);
-    setShowSortMenu(false);
+  const handleCancel = (enrollment) => {
+    Alert.alert(
+      '確認取消',
+      '確定要取消這筆報名嗎？',
+      [
+        {
+          text: '取消',
+          style: 'cancel',
+        },
+        {
+          text: '確認',
+          onPress: () => {
+            setSelectedEnrollment(enrollment);
+            setRemark('');
+            setEnrollmentCancelModalVisible(true);
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleStop = (enrollment) => {
+    Alert.alert(
+      '確認停課',
+      '確定要停課這筆報名嗎？',
+      [
+        {
+          text: '取消',
+          style: 'cancel',
+        },
+        {
+          text: '確認',
+          onPress: () => {
+            setSelectedEnrollment(enrollment);
+            setRemark('');
+            setEnrollmentStopModalVisible(true);
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleView = (enrollment) => {
+    router.push(`/screens/course/EnrollmentDetailsScreen?enrollmentId=${enrollment.id}`);
+  };
+
+  const handleConfirmCancel = async () => {
+    await updateEnrollmentStatus(selectedEnrollment.id, '已取消', null, null, `已取消 - ${remark}`);
+    setEnrollmentCancelModalVisible(false);
+    loadData();
+  };
+
+  const handleConfirmStop = async () => {
+    await updateEnrollmentStatus(selectedEnrollment.id, '已停課', null, null, `已停課 - ${remark}`);
+    setEnrollmentStopModalVisible(false);
+    loadData();
   };
 
   const handleStatusFilter = (status) => {
@@ -84,7 +139,6 @@ const EnrollmentListScreen = () => {
     ) &&
     (statusFilter ? enrollment.enrollment_status === statusFilter : true)
   );
-  
 
   if (loading) {
     return <LoadingSpinner />;
@@ -100,20 +154,7 @@ const EnrollmentListScreen = () => {
           value={filter}
           onChangeText={setFilter}
         />
-        {/* <TouchableOpacity onPress={() => setShowSortMenu(!showSortMenu)} style={styles.sortButton}>
-          <Ionicons name="sort" size={SIZES.xLarge} color={COLORS.primary} />
-        </TouchableOpacity> */}
       </View>
-      {/* {showSortMenu && (
-        <View style={styles.dropdownMenu}>
-          <TouchableOpacity onPress={() => handleSort('start_date')}>
-            <Text style={styles.dropdownMenuItem}>創建時間舊至新</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSort('start_date_desc')}>
-            <Text style={styles.dropdownMenuItem}>創建時間新至舊</Text>
-          </TouchableOpacity>
-        </View>
-      )} */}
       <ScrollView 
         horizontal 
         style={styles.statusFilterContainer}
@@ -128,9 +169,6 @@ const EnrollmentListScreen = () => {
         <TouchableOpacity onPress={() => handleStatusFilter('審核中')}>
           <Text style={[styles.statusFilter, statusFilter === '審核中' && styles.activeFilter]}>審核中</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleStatusFilter('派課中')}>
-          <Text style={[styles.statusFilter, statusFilter === '派課中' && styles.activeFilter]}>派課中</Text>
-        </TouchableOpacity>
         <TouchableOpacity onPress={() => handleStatusFilter('進行中')}>
           <Text style={[styles.statusFilter, statusFilter === '進行中' && styles.activeFilter]}>進行中</Text>
         </TouchableOpacity>
@@ -139,9 +177,6 @@ const EnrollmentListScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleStatusFilter('已取消')}>
           <Text style={[styles.statusFilter, statusFilter === '已取消' && styles.activeFilter]}>已取消</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleStatusFilter('已退款')}>
-          <Text style={[styles.statusFilter, statusFilter === '已退款' && styles.activeFilter]}>已退款</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleStatusFilter('已停課')}>
           <Text style={[styles.statusFilter, statusFilter === '已停課' && styles.activeFilter]}>已停課</Text>
@@ -157,6 +192,9 @@ const EnrollmentListScreen = () => {
             enrollment={enrollment}
             onPayment={handlePayment}
             onReview={handleReview}
+            onCancel={handleCancel}
+            onStop={handleStop}
+            onView={handleView}
           />
         ))}
       </ScrollView>
@@ -176,6 +214,26 @@ const EnrollmentListScreen = () => {
           onUpdate={() => loadData()}
         />
       )}
+      {selectedEnrollment && (
+        <EnrollmentStopModal
+          visible={enrollmentStopModalVisible}
+          enrollment={selectedEnrollment}
+          remark={remark}
+          onRemarkChange={setRemark}
+          onConfirmStop={handleConfirmStop}
+          onClose={() => setEnrollmentStopModalVisible(false)}
+        />
+      )}
+      {selectedEnrollment && (
+        <EnrollmentCancelModal
+          visible={enrollmentCancelModalVisible}
+          enrollment={selectedEnrollment}
+          remark={remark}
+          onRemarkChange={setRemark}
+          onConfirmCancel={handleConfirmCancel}
+          onClose={() => setEnrollmentCancelModalVisible(false)}
+        />
+      )}
     </View>
   );
 };
@@ -189,34 +247,14 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 10,
-    borderRadius: 20,
     marginBottom: 10,
   },
   searchInput: {
     flex: 1,
-    marginLeft: 10,
-  },
-  sortButton: {
-    padding: 10,
-  },
-  dropdownMenu: {
     backgroundColor: COLORS.white,
     padding: 10,
     borderRadius: 5,
-    position: 'absolute',
-    top: 40,
-    right: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 3,
-    elevation: 3,
-    zIndex: 10,
-  },
-  dropdownMenuItem: {
-    padding: 5,
+    marginLeft: 10,
   },
   statusFilterContainer: {
     flexDirection: 'row',
@@ -225,7 +263,6 @@ const styles = StyleSheet.create({
   statusFilter: {
     padding: 5,
     color: COLORS.gray2,
-    marginHorizontal: 5,
   },
   activeFilter: {
     fontWeight: 'bold',

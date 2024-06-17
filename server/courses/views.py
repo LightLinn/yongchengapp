@@ -81,7 +81,7 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
         enrollment_status = request.data.get('enrollment_status', None)
         payment_amount = request.data.get('payment_amount', None)
         payment_method = request.data.get('payment_method', None)
-        print(enrollment_status, payment_amount, payment_method)
+        remark = request.data.get('remark', None)
 
         if enrollment_status:
             enrollment.enrollment_status = enrollment_status
@@ -89,7 +89,9 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
             enrollment.payment_amount = payment_amount
         if payment_method:
             enrollment.payment_method = payment_method
-        
+        if remark:
+            enrollment.remark = remark
+
         enrollment.save()
         serializer = self.get_serializer(enrollment)
         return Response(serializer.data, status=status.HTTP_200_OK)
