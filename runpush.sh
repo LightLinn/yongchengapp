@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # 定義變數
-REPO_PATH="/Users/lightlin/Desktop/TCStudio/Sourcecode/Projects/YongchengApp"
+REPO_PATH="/Users/lightlin/Desktop/TCStudio/Sourcecode/yongchengapp"
 BRANCH_NAME="main"
 
 # 獲取當前日期和時間
 DATE_TIME=$(date +"%Y-%m-%d %H:%M:%S")
 
-# 切換到本地 Git repository 路徑
+
 cd $REPO_PATH
 
 git add .
