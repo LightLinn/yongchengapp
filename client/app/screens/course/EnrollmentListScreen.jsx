@@ -169,6 +169,9 @@ const EnrollmentListScreen = () => {
         <TouchableOpacity onPress={() => handleStatusFilter('審核中')}>
           <Text style={[styles.statusFilter, statusFilter === '審核中' && styles.activeFilter]}>審核中</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleStatusFilter('派課中')}>
+          <Text style={[styles.statusFilter, statusFilter === '派課中' && styles.activeFilter]}>派課中</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => handleStatusFilter('進行中')}>
           <Text style={[styles.statusFilter, statusFilter === '進行中' && styles.activeFilter]}>進行中</Text>
         </TouchableOpacity>

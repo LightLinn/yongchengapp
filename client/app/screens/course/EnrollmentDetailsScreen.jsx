@@ -48,13 +48,13 @@ const EnrollmentDetailsScreen = () => {
     <ScrollView style={styles.container}>
       {enrollmentDetails && (
         <>
-          <Text style={styles.details}>報名表編號: {enrollmentDetails.enrollment_number ? enrollmentDetails.enrollment_number.name : ''}</Text>
-          <Text style={styles.details}>學生姓名: {enrollmentDetails.student}</Text>
-          <Text style={styles.details}>開課日期: {enrollmentDetails.start_date ? enrollmentDetails.start_date : ''}</Text>
-          <Text style={styles.details}>教練姓名: {enrollmentDetails.coach && enrollmentDetails.coach.user ? enrollmentDetails.coach.user.nickname : ''}</Text>
-          <Text style={styles.details}>上課場地: {enrollmentDetails.venue ? enrollmentDetails.venue.name : ''}</Text>
-          <Text style={styles.details}>狀態: {enrollmentDetails.enrollment_status}</Text>
-          <Text style={styles.details}>備註: {enrollmentDetails.remark}</Text>
+          <Text style={styles.details}>報名表編號 {enrollmentDetails.enrollment_number ? enrollmentDetails.enrollment_number.name : ''}</Text>
+          <Text style={styles.details}>學生姓名 {enrollmentDetails.student}</Text>
+          <Text style={styles.details}>開課日期 {enrollmentDetails.start_date ? enrollmentDetails.start_date : ''}</Text>
+          <Text style={styles.details}>教練姓名 {enrollmentDetails.coach && enrollmentDetails.coach.user ? enrollmentDetails.coach.user.nickname : ''}</Text>
+          <Text style={styles.details}>上課場地 {enrollmentDetails.venue ? enrollmentDetails.venue.name : ''}</Text>
+          <Text style={styles.details}>狀態 {enrollmentDetails.enrollment_status}</Text>
+          <Text style={styles.details}>備註 {enrollmentDetails.remark}</Text>
           {/* Add more details if necessary */}
         </>
       )}
@@ -63,12 +63,12 @@ const EnrollmentDetailsScreen = () => {
           <Text style={styles.header}>課程詳細資料</Text>
           {courses.map((course) => (
             <View key={course.id} style={styles.courseItem}>
-              <Text style={styles.details}>課程名稱: {course.enrollment_list.coursetype.name}</Text>
-              <Text style={styles.details}>課程描述: {course.enrollment_list.coursetype.description}</Text>
-              <Text style={styles.details}>課程價格: {course.enrollment_list.coursetype.price}</Text>
-              <Text style={styles.details}>課程日期: {course.course_date}</Text>
-              <Text style={styles.details}>課程時間: {course.course_time}</Text>
-              <Text style={styles.details}>課程狀態: {course.course_status}</Text>
+              <Text style={styles.details}>課程名稱 {course.enrollment_list.coursetype.name}</Text>
+              <Text style={styles.details}>課程描述 {course.enrollment_list.coursetype.description}</Text>
+              <Text style={styles.details}>課程價格 {course.enrollment_list.coursetype.price}</Text>
+              <Text style={styles.details}>課程日期 {course.course_date}</Text>
+              <Text style={styles.details}>課程時間 {course.course_time}</Text>
+              <Text style={styles.details}>課程狀態 {course.course_status}</Text>
             </View>
           ))}
         </>

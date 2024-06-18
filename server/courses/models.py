@@ -20,14 +20,11 @@ class EnrollmentNumbers(Auditable):
 class EnrollmentList(Auditable):
     ENROLLMENT_STATUS_CHOICES = [
         ('待付款', '待付款'),
-        # ('未開課', '未開課'),
         ('審核中', '審核中'),
         ('派課中', '派課中'),
-        # ('已派課', '已派課'),
         ('進行中', '進行中'),
         ('已完成', '已完成'),
         ('已取消', '已取消'),
-        ('已退款', '已退款'),
         ('已停課', '已停課'),
     ]
     PAYMENT_CHOICES = [
