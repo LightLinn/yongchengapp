@@ -41,7 +41,7 @@ export default function Layout() {
             <Button
               icon={<Icon name="arrow-back" color="#333" />}
               buttonStyle={{ backgroundColor: 'transparent' }}
-              onPress={() => navigation.goBack()}
+              onPress={() => navigation.navigate('menu')}
             />
           ),
         })} 
@@ -50,6 +50,34 @@ export default function Layout() {
         name="EnrollmentDetailsScreen"
         options={({ navigation }) => ({
           headerTitle: '詳細資訊',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="EnrollmentReviewScreen"
+        options={({ navigation }) => ({
+          headerTitle: '報名審核',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="EnrollmentAssignedCourseScreen"
+        options={({ navigation }) => ({
+          headerTitle: '指派教練',
           headerShadowVisible: false,
           headerLeft: () => (
             <Button

@@ -47,28 +47,24 @@ const EnrollmentDetailsScreen = () => {
   return (
     <ScrollView style={styles.container}>
       {enrollmentDetails && (
-        <>
-          <Text style={styles.details}>報名表編號 {enrollmentDetails.enrollment_number ? enrollmentDetails.enrollment_number.name : ''}</Text>
-          <Text style={styles.details}>學生姓名 {enrollmentDetails.student}</Text>
+        <View style={styles.headerContainer}>
+          <Text style={styles.details}>報名編號 {enrollmentDetails.enrollment_number ? enrollmentDetails.enrollment_number.name : ''}</Text>
+          <Text style={styles.details}>課程名稱 {enrollmentDetails.coursetype.name}</Text>
           <Text style={styles.details}>開課日期 {enrollmentDetails.start_date ? enrollmentDetails.start_date : ''}</Text>
+          <Text style={styles.details}>學生姓名 {enrollmentDetails.student}</Text>
           <Text style={styles.details}>教練姓名 {enrollmentDetails.coach && enrollmentDetails.coach.user ? enrollmentDetails.coach.user.nickname : ''}</Text>
           <Text style={styles.details}>上課場地 {enrollmentDetails.venue ? enrollmentDetails.venue.name : ''}</Text>
-          <Text style={styles.details}>狀態 {enrollmentDetails.enrollment_status}</Text>
+          <Text style={styles.details}>報名狀態 {enrollmentDetails.enrollment_status}</Text>
           <Text style={styles.details}>備註 {enrollmentDetails.remark}</Text>
-          {/* Add more details if necessary */}
-        </>
+        </View>
       )}
       {courses && courses.length > 0 ? (
         <>
-          <Text style={styles.header}>課程詳細資料</Text>
           {courses.map((course) => (
             <View key={course.id} style={styles.courseItem}>
-              <Text style={styles.details}>課程名稱 {course.enrollment_list.coursetype.name}</Text>
-              <Text style={styles.details}>課程描述 {course.enrollment_list.coursetype.description}</Text>
-              <Text style={styles.details}>課程價格 {course.enrollment_list.coursetype.price}</Text>
-              <Text style={styles.details}>課程日期 {course.course_date}</Text>
-              <Text style={styles.details}>課程時間 {course.course_time}</Text>
-              <Text style={styles.details}>課程狀態 {course.course_status}</Text>
+              <Text style={styles.courseDetails}>課程日期 {course.course_date}</Text>
+              <Text style={styles.courseDetails}>課程時間 {course.course_time}</Text>
+              <Text style={styles.courseDetails}>課程狀態 {course.course_status}</Text>
             </View>
           ))}
         </>
@@ -86,19 +82,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.bg,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.white,
   },
-  header: {
-    fontSize: SIZES.large,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    marginTop: 10,
+  headerContainer: {
+    padding: 10,
+    marginBottom: 20,
+    marginTop: 20,
   },
   details: {
     fontSize: SIZES.medium,
@@ -109,6 +104,14 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: COLORS.lightWhite,
     borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  courseDetails: {
+    fontSize: SIZES.medium,
+    marginBottom: 5,
   },
   buttonClose: {
     backgroundColor: COLORS.gray,

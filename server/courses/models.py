@@ -4,10 +4,10 @@ from reviews.models import Auditable
 # Create your models here.
 
 class EnrollmentNumbers(Auditable):
-    name = models.CharField(max_length=255, verbose_name='報名單編號')
+    name = models.CharField(max_length=255, verbose_name='報名單編號', unique=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
-    enrollments = models.ManyToManyField('EnrollmentList', related_name='enrollment_numbers', verbose_name='報名單編號', blank=True)
+    # enrollments = models.ManyToManyField('EnrollmentList', related_name='enrollment_numbers', verbose_name='報名單編號', blank=True)
     
     class Meta:
         db_table = 'enrollment_number'
@@ -67,7 +67,7 @@ class AssignedCourse(Auditable):
         ('已拒絕', '已拒絕'),
     ]
     coach = models.ForeignKey('humanresources.Coach', on_delete=models.CASCADE, related_name='assigned_courses', verbose_name='教練', null=True, blank=True)
-    assigned_status = models.CharField(max_length=20, choices=ASSIGNED_STATUS_CHOICES, verbose_name='狀態', default='pending')
+    assigned_status = models.CharField(max_length=20, choices=ASSIGNED_STATUS_CHOICES, verbose_name='狀態', default='待決定')
     assigned_time = models.DateTimeField(verbose_name='指派時間', blank=True, null=True)
     deadline = models.DateTimeField(verbose_name='截止時間', blank=True, null=True)
     decide_hours = models.IntegerField(verbose_name='決定時間(小時)', blank=True, null=True, default=24)

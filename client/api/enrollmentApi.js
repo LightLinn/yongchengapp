@@ -62,3 +62,89 @@ export const fetchCourses = async (enrollmentListId, enrollmentNumber) => {
   }
   return response.json();
 };
+
+export const updateEnrollment = async (enrollmentId, updatedData) => {
+  const token = await AsyncStorage.getItem('token');
+  console.log('updatedData:', updatedData);
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(updatedData),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update enrollment');
+  }
+  return await response.json();
+};
+
+export const createAssignedCourse = async (assignedCourseData) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/create_assigned_course/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(assignedCourseData),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to create assigned course');
+  }
+  return await response.json();
+};
+
+export const fetchCoaches = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/coaches/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch coaches');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching coaches:', error);
+    throw error;
+  }
+};
+
+export const fetchEnrollmentNumbers = async () => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/enrollment_numbers/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch enrollment numbers');
+  }
+
+  return response.json();
+};
+
+export const createEnrollmentNumber = async (enrollmentNumberData) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/enrollment_numbers/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(enrollmentNumberData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create enrollment number');
+  }
+
+  return response.json();
+};

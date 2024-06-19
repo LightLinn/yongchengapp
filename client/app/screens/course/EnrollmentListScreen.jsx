@@ -25,9 +25,6 @@ const EnrollmentListScreen = () => {
   const [remark, setRemark] = useState('');
   const [filter, setFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [showSortMenu, setShowSortMenu] = useState(false);
-  const [sortField, setSortField] = useState('created_at');
-  const [sortAscending, setSortAscending] = useState(true);
   const router = useRouter();
 
   const loadData = async () => {
@@ -59,8 +56,7 @@ const EnrollmentListScreen = () => {
   };
 
   const handleReview = (enrollment) => {
-    setSelectedEnrollment(enrollment);
-    setReviewModalVisible(true);
+    router.push(`/screens/course/EnrollmentReviewScreen?enrollmentId=${enrollment.id}`);
   };
 
   const handleCancel = (enrollment) => {
@@ -265,6 +261,7 @@ const styles = StyleSheet.create({
   },
   statusFilter: {
     padding: 5,
+    marginRight: 10,
     color: COLORS.gray2,
   },
   activeFilter: {

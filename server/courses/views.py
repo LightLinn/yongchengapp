@@ -38,8 +38,15 @@ class CourseTypeViewSet(viewsets.ModelViewSet):
 class AssignedCourseViewSet(viewsets.ModelViewSet):
     queryset = AssignedCourse.objects.all()
     serializer_class = AssignedCourseSerializer
-    
 
+    @action(detail=False, methods=['post'], url_path='create_assigned_course')
+    def create_assigned_course(self, request):
+        serializer = AssignedCourseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class EnrollmentNumbersViewSet(viewsets.ModelViewSet):
     queryset = EnrollmentNumbers.objects.all()
     serializer_class = EnrollmentNumbersSerializer
@@ -48,7 +55,6 @@ class EnrollmentNumbersViewSet(viewsets.ModelViewSet):
 class EnrollmentListViewSet(viewsets.ModelViewSet):
     queryset = EnrollmentList.objects.all()
     serializer_class = EnrollmentListSerializer
-    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -95,4 +101,14 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
         enrollment.save()
         serializer = self.get_serializer(enrollment)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['patch'])
+    def update_enrollment(self, request, pk=None):
+        enrollment = self.get_object()
+        serializer = EnrollmentListSerializer(enrollment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     

@@ -8,6 +8,7 @@ export default function Layout() {
         options={{ 
           headerTitle: '',
           headerShadowVisible: false,
+          headerShown: false,
         }} 
       />
       
