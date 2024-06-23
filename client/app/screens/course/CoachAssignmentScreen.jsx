@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Text, TouchableOpacity, RefreshControl } from 'react-native';
-import { fetchAssignments, updateAssignmentStatus } from '../../../api/assignmentApi';
+import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { fetchAssignmentsCoach, updateAssignmentStatus } from '../../../api/assignmentApi';
 import AssignmentItem from '../../components/AssignmentItem';
-import AssignmentDetailModal from '../../components/AssignmentDetailModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { COLORS, SIZES } from '../../../styles/theme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CoachAssignmentScreen = () => {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const coachId = await AsyncStorage.getItem('userId');
-      const assignmentsData = await fetchAssignments(coachId);
+      const assignmentsData = await fetchAssignmentsCoach();
       setAssignments(assignmentsData);
     } catch (error) {
       console.error('Failed to load data:', error);
@@ -37,9 +32,22 @@ const CoachAssignmentScreen = () => {
     loadData();
   };
 
-  const handleDetail = (assignment) => {
-    setSelectedAssignment(assignment);
-    setDetailModalVisible(true);
+  const handleAccept = async (assignmentId) => {
+    try {
+      await updateAssignmentStatus(assignmentId, '已接受');
+      loadData();
+    } catch (error) {
+      console.error('Failed to accept assignment:', error);
+    }
+  };
+
+  const handleReject = async (assignmentId) => {
+    try {
+      await updateAssignmentStatus(assignmentId, '已拒絕');
+      loadData();
+    } catch (error) {
+      console.error('Failed to reject assignment:', error);
+    }
   };
 
   if (loading) {
@@ -56,18 +64,11 @@ const CoachAssignmentScreen = () => {
           <AssignmentItem
             key={assignment.id}
             assignment={assignment}
-            onDetail={handleDetail}
+            onAccept={() => handleAccept(assignment.id)}
+            onReject={() => handleReject(assignment.id)}
           />
         ))}
       </ScrollView>
-      {selectedAssignment && (
-        <AssignmentDetailModal
-          visible={detailModalVisible}
-          assignment={selectedAssignment}
-          onClose={() => setDetailModalVisible(false)}
-          onUpdate={() => loadData()}
-        />
-      )}
     </View>
   );
 };
@@ -75,8 +76,9 @@ const CoachAssignmentScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 5,
     backgroundColor: COLORS.bg,
+    paddingHorizontal: 10,
+    paddingTop: 20,
   },
   contentContainer: {
     flexGrow: 1,

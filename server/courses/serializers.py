@@ -13,12 +13,6 @@ class CourseTypeSerializer(serializers.ModelSerializer):
         model = CourseType
         fields = '__all__'
 
-# 創建AssignedCourseSerializer
-class AssignedCourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssignedCourse
-        fields = '__all__'
-
 # 創建EnrollmentNumbersSerializer
 class EnrollmentNumbersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,7 +60,18 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
-        
+
+# 創建AssignedCourseSerializer
+class AssignedCourseSerializer(serializers.ModelSerializer):
+    enrollment_details = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AssignedCourse
+        fields = '__all__'
+
+    def get_enrollment_details(self, obj):
+        enrollment_list = EnrollmentList.objects.filter(enrollment_number=obj.enrollment_number)
+        return EnrollmentListSerializer(enrollment_list, many=True).data
 
 
 

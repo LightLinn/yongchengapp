@@ -2,13 +2,23 @@ import React, { useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { updateEnrollmentStatus } from '../../api/enrollmentApi';
 import { COLORS, SIZES } from '../../styles/theme';
+import moment from 'moment';
 
 const PaymentModal = ({ visible, enrollment, onClose, onUpdate }) => {
   const [amount, setAmount] = useState('');
 
   const handlePayment = async () => {
     try {
-      await updateEnrollmentStatus(enrollment.id, '審核中', amount, '現金');
+      const paymentDate = moment().format('YYYY-MM-DD');
+      await updateEnrollmentStatus(
+        enrollment.id, 
+        '審核中', 
+        amount, 
+        '現金', 
+        enrollment.remark, 
+        enrollment.coach, 
+        paymentDate
+      );
       onUpdate();
       onClose();
     } catch (error) {

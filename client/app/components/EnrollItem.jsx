@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'; // 使用 Expo 提供的圖標庫
 import { COLORS, SIZES } from '../../styles/theme';
 import { useRouter } from 'expo-router';
 
-const EnrollCard = ({ enroll, coaches, courseTypes, venues }) => {
+const EnrollCard = ({ enroll, course }) => {
   const router = useRouter();
 
   const coach = enroll.coach?.user?.nickname || '安排中';

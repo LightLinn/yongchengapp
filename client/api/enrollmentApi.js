@@ -28,8 +28,9 @@ export const fetchEnrollmentDetails = async (enrollmentId) => {
   return response.json();
 };
 
-export const updateEnrollmentStatus = async (enrollmentId, status, paymentAmount, paymentMethod, remark) => {
+export const updateEnrollmentStatus = async (enrollmentId, status, paymentAmount, paymentMethod, remark, coach, paymentDate) => {
   const token = await AsyncStorage.getItem('token');
+  console.log('paymentDate:', paymentDate);
   const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/`, {
     method: 'PATCH',
     headers: {
@@ -40,6 +41,8 @@ export const updateEnrollmentStatus = async (enrollmentId, status, paymentAmount
       enrollment_status: status,
       payment_amount: paymentAmount,
       payment_method: paymentMethod,
+      payment_date: paymentDate,
+      coach: coach,
       remark: remark,
     }),
   });
@@ -81,8 +84,9 @@ export const updateEnrollment = async (enrollmentId, updatedData) => {
 };
 
 export const createAssignedCourse = async (assignedCourseData) => {
+  console.log('assignedCourseData:', assignedCourseData);
   const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/enrollment_lists/create_assigned_course/`, {
+  const response = await fetch(`${API_BASE_URL}/assigned_courses/create_assigned_course/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -110,6 +114,24 @@ export const fetchCoaches = async () => {
     return await response.json();
   } catch (error) {
     console.error('Error fetching coaches:', error);
+    throw error;
+  }
+};
+
+export const fetchAvailableCoaches = async (enrollmentId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/coaches/available_coach?enrollmentId=${enrollmentId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch available coaches');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching available coaches:', error);
     throw error;
   }
 };

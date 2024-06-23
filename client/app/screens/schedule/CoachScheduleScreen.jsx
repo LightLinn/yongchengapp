@@ -5,12 +5,13 @@ import { fetchScheduleDetail, createOrUpdateSchedule, fetchCoachId } from '../..
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const timeSlots = Array.from({ length: 17 }, (_, i) => {
-  const hour = 6 + i;
-  return `${hour < 10 ? '0' : ''}${hour}:00 - ${hour + 1 < 10 ? '0' : ''}${hour + 1}:00`;
+const timeSlots = Array.from({ length: 34 }, (_, i) => {
+  const hour = Math.floor(i / 2) + 6;
+  const minute = i % 2 === 0 ? '00' : '30';
+  return `${hour < 10 ? '0' : ''}${hour}:${minute}`;
 });
 
-const daysOfWeek = ['一', '二', '三', '四', '五', '六', '日'];
+const daysOfWeek = ['週一', '週二', '週三', '週四', '週五', '週六', '週日'];
 
 const CoachScheduleScreen = () => {
   const router = useRouter();

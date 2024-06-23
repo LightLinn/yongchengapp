@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { View, ScrollView, StyleSheet, RefreshControl, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import SectionCard from '../../components/SectionCard';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -81,8 +81,14 @@ const MenuScreen = () => {
   ];
 
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <View style={styles.noAccessContainer}>
+        <Text style={styles.noAccessText}>您無訪問權限</Text>
+      </View>
+    );
   }
+
+  
 
   return (
     <ScrollView
@@ -117,6 +123,12 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: COLORS.bg,
     marginBottom: 50,
+  },
+  noAccessContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.bg,
   },
 });
 

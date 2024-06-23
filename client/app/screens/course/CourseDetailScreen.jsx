@@ -55,12 +55,12 @@ const CourseDetailScreen = () => {
       {enrollmentDetails && (
         <Card containerStyle={styles.enrollmentCard}>
           <Text style={styles.text}><Text style={styles.label}>報名狀態 </Text>{enrollmentDetails.enrollment_status}</Text>
-          <Text style={styles.text}><Text style={styles.label}>課程類型 </Text>{enrollmentDetails.coursetype?.name || 'N/A'}</Text>
+          <Text style={styles.text}><Text style={styles.label}>課程類型 </Text>{enrollmentDetails.coursetype?.name || ''}</Text>
           <Text style={styles.text}><Text style={styles.label}>學生姓名 </Text>{enrollmentDetails.student}</Text>
-          <Text style={styles.text}><Text style={styles.label}>教練姓名 </Text>{enrollmentDetails.coach?.user?.nickname || 'N/A'}</Text>
-          <Text style={styles.text}><Text style={styles.label}>場地名稱 </Text>{enrollmentDetails.venue?.name || 'N/A'}</Text>
-          <Text style={styles.text}><Text style={styles.label}>課程費用 </Text>{enrollmentDetails.payment_amount}</Text>
-          <Text style={styles.text}><Text style={styles.label}>付款日期 </Text>{enrollmentDetails.payment_date}</Text>
+          <Text style={styles.text}><Text style={styles.label}>教練姓名 </Text>{enrollmentDetails.coach?.user?.nickname || '指派中'}</Text>
+          <Text style={styles.text}><Text style={styles.label}>場地名稱 </Text>{enrollmentDetails.venue?.name || ''}</Text>
+          <Text style={styles.text}><Text style={styles.label}>課程費用 </Text>{enrollmentDetails.payment_amount ? enrollmentDetails.payment_amount : enrollmentDetails.coursetype.price}元</Text>
+          <Text style={styles.text}><Text style={styles.label}>付款日期 </Text>{enrollmentDetails.payment_date ? enrollmentDetails.payment_date : '待付款'}</Text>
           <Text style={styles.text}><Text style={styles.label}>付款方式 </Text>{enrollmentDetails.payment_method}</Text>
           <Text style={styles.text}><Text style={styles.label}>程度描述 </Text>{enrollmentDetails.degree}</Text>
           <Text style={styles.text}><Text style={styles.label}>開課日期 </Text>{enrollmentDetails.start_date}</Text>

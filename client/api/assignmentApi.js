@@ -1,7 +1,9 @@
 import { API_BASE_URL } from './config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const fetchAssignments = async (coachId) => {
-  const response = await fetch(`${API_BASE_URL}/assigned_courses/?coach_id=${coachId}`, {
+export const fetchAssignmentsCoach = async () => {
+  const userId = await AsyncStorage.getItem('userId');
+  const response = await fetch(`${API_BASE_URL}/assigned_courses/?coach=${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

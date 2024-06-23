@@ -44,7 +44,7 @@ class EnrollmentList(Auditable):
     start_time = models.TimeField(verbose_name='上課時間', blank=True, null=True)
     payment_date = models.DateField(verbose_name='付款日期', blank=True, null=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, verbose_name='付款方式', blank=True, null=True)
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='付款金額', blank=True, null=True)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='付款金額', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', null=True, blank=True)
     degree = models.CharField(max_length=255, verbose_name='程度描述', blank=True, null=True)
     enrollment_number = models.ForeignKey('EnrollmentNumbers', on_delete=models.SET_NULL, related_name='enrollment_lists', verbose_name='報名單編號', null=True, blank=True)

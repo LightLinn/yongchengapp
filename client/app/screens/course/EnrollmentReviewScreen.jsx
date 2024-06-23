@@ -106,6 +106,7 @@ const EnrollmentReviewScreen = () => {
     return <Text>Loading...</Text>;
   }
 
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
@@ -114,6 +115,7 @@ const EnrollmentReviewScreen = () => {
           <ModalDropdown
             options={enrollmentNumbers.map((num) => num.name)}
             defaultValue={enrollmentDetails.enrollment_number?.name || '選擇單號'}
+            initialScrollIndex={0}
             style={styles.dropdown}
             textStyle={styles.dropdownText}
             dropdownStyle={styles.dropdownOptions}
@@ -133,7 +135,7 @@ const EnrollmentReviewScreen = () => {
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>學生姓名</Text>
+        <Text style={styles.label}>學生姓名（不可編輯）</Text>
         <TextInput
           style={styles.input}
           value={enrollmentDetails.student}
@@ -142,7 +144,7 @@ const EnrollmentReviewScreen = () => {
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>年齡</Text>
+        <Text style={styles.label}>年齡（不可編輯）</Text>
         <TextInput
           style={styles.input}
           value={enrollmentDetails.age ? enrollmentDetails.age.toString() : ''}
@@ -176,7 +178,7 @@ const EnrollmentReviewScreen = () => {
       </View>
       
       <View style={styles.section}>
-        <Text style={styles.label}>課程類型</Text>
+        <Text style={styles.label}>課程類型（不可編輯）</Text>
         <TextInput
           style={styles.input}
           value={enrollmentDetails.coursetype?.name}
@@ -185,7 +187,7 @@ const EnrollmentReviewScreen = () => {
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>場地</Text>
+        <Text style={styles.label}>場地（不可編輯）</Text>
         <TextInput
           style={styles.input}
           value={enrollmentDetails.venue?.name}
@@ -194,7 +196,7 @@ const EnrollmentReviewScreen = () => {
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>報名狀態</Text>
+        <Text style={styles.label}>報名狀態（不可編輯）</Text>
         <TextInput
           style={styles.input}
           value={enrollmentDetails.enrollment_status}
@@ -203,7 +205,7 @@ const EnrollmentReviewScreen = () => {
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>付款方式</Text>
+        <Text style={styles.label}>付款方式（不可編輯）</Text>
         <TextInput
           style={styles.input}
           value={enrollmentDetails.payment_method}
@@ -212,7 +214,7 @@ const EnrollmentReviewScreen = () => {
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>付款日期</Text>
+        <Text style={styles.label}>付款日期（不可編輯）</Text>
         <TextInput
           style={styles.input}
           value={enrollmentDetails.payment_date}

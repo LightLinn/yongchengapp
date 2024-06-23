@@ -24,7 +24,7 @@ const CourseDetailItem = ({ enroll, course }) => {
           <Text style={styles.titleDate}>{course.course_date}</Text>
           <Text style={styles.titleTime}>{course.course_time}</Text>
         </View>
-        <Text style={styles.status}>{course.course_status || '未設定'}</Text>
+        <Text style={styles.status}>{course.course_status || ''}</Text>
       </View>
       <Card.Divider style={styles.divider} />
       

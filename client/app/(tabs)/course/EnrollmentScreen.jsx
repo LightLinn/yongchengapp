@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Card } from 'react-native-elements';
-import { fetchCourseTypes, fetchVenues, fetchLatestEnrollment, createEnrollment } from '../../../api/courseApi';
+import { fetchCourseTypes, fetchVenues, fetchLatestEnrollment, createEnrollment, fetchCourseDetails } from '../../../api/courseApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,7 +22,8 @@ const EnrollmentScreen = () => {
     user_id: null, 
     enrollment_number_id: '',
     venue_id: '',
-    coach_id: null
+    coach_id: null,
+    age: ''
   };
 
   const [step, setStep] = useState(0);
@@ -48,26 +49,36 @@ const EnrollmentScreen = () => {
   };
 
   const handleExistingEnrollment = async () => {
-    const latest = await fetchLatestEnrollment();
-    setLatestEnrollment(latest);
-    setEnrollmentData({
-      student: latest.student,
-      enrollment_status: '待付款',
-      status: '待審核',
-      start_date: latest.start_date,
-      start_time: latest.start_time,
-      payment_date: latest.payment_date,
-      payment_method: latest.payment_method,
-      payment_amount: latest.payment_amount,
-      remark: latest.remark,
-      degree: latest.degree,
-      coursetype_id: latest.coursetype.id,
-      user_id: latest.user.id,
-      enrollment_number_id: latest.enrollment_number ? latest.enrollment_number.id : '',
-      venue_id: latest.venue.id,
-      coach_id: latest.coach && latest.coach.id ? latest.coach.id : null
-    });
-    setStep(2);
+    try {
+      const latest = await fetchLatestEnrollment();
+      setLatestEnrollment(latest);
+      setEnrollmentData({
+        student: latest.student,
+        enrollment_status: '待付款',
+        status: '待審核',
+        start_date: latest.start_date,
+        start_time: latest.start_time,
+        payment_date: latest.payment_date,
+        payment_method: latest.payment_method,
+        payment_amount: latest.payment_amount,
+        remark: latest.remark,
+        degree: latest.degree,
+        coursetype_id: latest.coursetype.id,
+        user_id: latest.user.id,
+        enrollment_number_id: latest.enrollment_number ? latest.enrollment_number.id : '',
+        venue_id: latest.venue.id,
+        coach_id: latest.coach && latest.coach.id ? latest.coach.id : null,
+        age: latest.age || ''
+      });
+      setStep(2);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        Alert.alert("Alert", "查無歷史報名紀錄");
+      } else {
+        Alert.alert("Alert", "查詢歷史報名紀錄失敗，請重試");
+        console.error(error);
+      }
+    }
   };
 
   const handleInputChange = (name, value) => {
@@ -81,7 +92,8 @@ const EnrollmentScreen = () => {
     const dataToSubmit = {
       ...enrollmentData,
       start_date: formattedStartDate,
-      payment_date: formattedPaymentDate
+      payment_date: formattedPaymentDate,
+      age: parseInt(enrollmentData.age, 10)
     };
 
     console.log(dataToSubmit);
@@ -100,8 +112,8 @@ const EnrollmentScreen = () => {
     setStep(0);
   };
 
-  const timeOptions = Array.from({ length: 29 }, (_, index) => {
-    const hours = Math.floor(index / 2) + 7;
+  const timeOptions = Array.from({ length: 33 }, (_, index) => {
+    const hours = Math.floor(index / 2) + 6;
     const minutes = index % 2 === 0 ? '00' : '30';
     return `${String(hours).padStart(2, '0')}:${minutes}`;
   });
@@ -128,7 +140,15 @@ const EnrollmentScreen = () => {
               value={enrollmentData.student}
               onChangeText={(value) => handleInputChange('student', value)}
             />
-
+            <View style={styles.section}>
+              <Text style={styles.label}>年齡</Text>
+              <TextInput
+                style={styles.input}
+                value={enrollmentData.age}
+                onChangeText={(value) => handleInputChange('age', value)}
+                keyboardType="numeric"
+              />
+            </View>
             <Text style={styles.label}>課程類型</Text>
             <Picker
               selectedValue={enrollmentData.coursetype_id}
@@ -225,6 +245,9 @@ const EnrollmentScreen = () => {
           <Card containerStyle={styles.card}>
             <Text style={styles.label}>學生姓名</Text>
             <Text style={styles.text}>{latestEnrollment.student}</Text>
+
+            <Text style={styles.label}>年齡</Text>
+            <Text style={styles.text}>{latestEnrollment.age}</Text>
 
             <Text style={styles.label}>課程類型</Text>
             <Text style={styles.text}>{latestEnrollment.coursetype.name}</Text>

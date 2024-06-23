@@ -7,15 +7,6 @@ const getToken = async () => {
   return token;
 };
 
-const getUserId = async () => {
-  try {
-    const userId = await AsyncStorage.getItem('userId');
-    return userId;
-  } catch (error) {
-    console.error('Failed to get user ID:', error);
-    return null;
-  }
-};
 
 export const fetchEnrollments = async () => {
   const userId = await AsyncStorage.getItem('userId'); // 假设用户ID已经存储在AsyncStorage中
