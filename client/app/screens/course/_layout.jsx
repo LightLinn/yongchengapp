@@ -33,6 +33,20 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
+        name="AssignedStatusScreen"
+        options={({ navigation }) => ({
+          headerTitle: '派課進度',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
         name="EnrollmentListScreen"
         options={({ navigation }) => ({
           headerTitle: '報名列表',

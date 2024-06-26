@@ -30,7 +30,6 @@ export const fetchEnrollmentDetails = async (enrollmentId) => {
 
 export const updateEnrollmentStatus = async (enrollmentId, status, paymentAmount, paymentMethod, remark, coach, paymentDate) => {
   const token = await AsyncStorage.getItem('token');
-  console.log('paymentDate:', paymentDate);
   const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/`, {
     method: 'PATCH',
     headers: {
@@ -168,5 +167,36 @@ export const createEnrollmentNumber = async (enrollmentNumberData) => {
     throw new Error('Failed to create enrollment number');
   }
 
+  return response.json();
+};
+
+export const fetchEnrollmentNumberDetails = async (enrollmentNumberId) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/enrollment_numbers/${enrollmentNumberId}/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch enrollment number details');
+  }
+  return response.json();
+};
+
+export const updateEnrollmentStatusByNumber = async (enrollmentNumber, enrollmentStatus) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/update_status_by_number/`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ enrollment_number: enrollmentNumber, enrollment_status: enrollmentStatus }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update enrollment status by number');
+  }
   return response.json();
 };

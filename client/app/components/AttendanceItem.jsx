@@ -12,7 +12,7 @@ const CourseCard = ({ course, onSignIn }) => {
       </View>
       <Card.Divider style={styles.divider} />
       <Text style={styles.text}>學生姓名 {course.enrollment_list.student}</Text>
-      <Text style={styles.text}>教練姓名 {course.enrollment_list.coach.user.nickname}</Text>
+      <Text style={styles.text}>教練姓名 {course.enrollment_list.coach?.user.nickname || ''}</Text>
       <Text style={styles.text}>課程類型 {course.enrollment_list.coursetype.name}</Text>
       <Text style={styles.text}>上課場地 {course.enrollment_list.venue.name}</Text>
       <TouchableOpacity style={styles.signInButton} onPress={onSignIn}>

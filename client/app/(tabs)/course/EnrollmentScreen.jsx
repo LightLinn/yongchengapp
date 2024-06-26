@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Card } from 'react-native-elements';
-import { fetchCourseTypes, fetchVenues, fetchLatestEnrollment, createEnrollment, fetchCourseDetails } from '../../../api/courseApi';
+import ModalDropdown from 'react-native-modal-dropdown';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { fetchCourseTypes, fetchVenues, fetchLatestEnrollment, createEnrollment } from '../../../api/courseApi';
 import { COLORS, SIZES } from '../../../styles/theme';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 const EnrollmentScreen = () => {
   const initialEnrollmentData = {
@@ -19,7 +19,7 @@ const EnrollmentScreen = () => {
     remark: '',
     degree: '',
     coursetype_id: '',
-    user_id: null, 
+    user_id: null,
     enrollment_number_id: '',
     venue_id: '',
     coach_id: null,
@@ -32,6 +32,7 @@ const EnrollmentScreen = () => {
   const [venues, setVenues] = useState([]);
   const [latestEnrollment, setLatestEnrollment] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -73,9 +74,9 @@ const EnrollmentScreen = () => {
       setStep(2);
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        Alert.alert("Alert", "查無歷史報名紀錄");
+        Alert.alert("查無紀錄", "查無歷史報名紀錄");
       } else {
-        Alert.alert("Alert", "查詢歷史報名紀錄失敗，請重試");
+        Alert.alert("查詢失敗", "查詢歷史報名紀錄失敗，請重試");
         console.error(error);
       }
     }
@@ -99,11 +100,11 @@ const EnrollmentScreen = () => {
     console.log(dataToSubmit);
     try {
       await createEnrollment(dataToSubmit);
-      alert('報名成功！');
+      Alert.alert("報名成功！",'報名成功！');
       setEnrollmentData(initialEnrollmentData);
       setStep(0);
     } catch (error) {
-      alert('報名失敗，請重試');
+      Alert.alert("報名失敗",'報名失敗，請重試');
       console.error(error);
     }
   };
@@ -134,14 +135,14 @@ const EnrollmentScreen = () => {
       {step === 1 && (
         <ScrollView contentContainerStyle={styles.formContainer}>
           <Card containerStyle={styles.card}>
-            <Text style={styles.label}>學生姓名</Text>
+            <Text style={styles.label}>*學生姓名</Text>
             <TextInput
               style={styles.input}
               value={enrollmentData.student}
               onChangeText={(value) => handleInputChange('student', value)}
             />
             <View style={styles.section}>
-              <Text style={styles.label}>年齡</Text>
+              <Text style={styles.label}>*年齡</Text>
               <TextInput
                 style={styles.input}
                 value={enrollmentData.age}
@@ -149,19 +150,18 @@ const EnrollmentScreen = () => {
                 keyboardType="numeric"
               />
             </View>
-            <Text style={styles.label}>課程類型</Text>
-            <Picker
-              selectedValue={enrollmentData.coursetype_id}
-              style={styles.picker}
-              onValueChange={(itemValue) => handleInputChange('coursetype_id', itemValue)}
-            >
-              <Picker.Item label="請選擇" value={null} />
-              {courseTypes.map((courseType) => (
-                <Picker.Item key={courseType.id} label={courseType.name} value={courseType.id} />
-              ))}
-            </Picker>
+            <Text style={styles.label}>*課程類型</Text>
+            <ModalDropdown
+              options={courseTypes.map(courseType => courseType.name)}
+              defaultValue={courseTypes.find(courseType => courseType.id === enrollmentData.coursetype_id)?.name || '請選擇'}
+              style={styles.dropdown}
+              textStyle={styles.dropdownText}
+              dropdownStyle={styles.dropdownOptions}
+              dropdownTextStyle={styles.dropdownOptionText}
+              onSelect={(index, value) => handleInputChange('coursetype_id', courseTypes[index].id)}
+            />
 
-            <Text style={styles.label}>開始上課日期</Text>
+            <Text style={styles.label}>*開始上課日期</Text>
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
               <TextInput
                 style={styles.input}
@@ -170,53 +170,51 @@ const EnrollmentScreen = () => {
                 pointerEvents="none"
               />
             </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={enrollmentData.start_date ? new Date(enrollmentData.start_date) : new Date()}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  handleInputChange('start_date', selectedDate.toISOString().split('T')[0]);
-                }}
-              />
-            )}
+            <DateTimePickerModal
+              isVisible={showDatePicker}
+              mode="date"
+              onConfirm={(date) => {
+                setShowDatePicker(false);
+                setSelectedDate(date);
+                handleInputChange('start_date', date.toISOString().split('T')[0]);
+              }}
+              onCancel={() => setShowDatePicker(false)}
+            />
 
-            <Text style={styles.label}>上課時間</Text>
-            <Picker
-              selectedValue={enrollmentData.start_time}
-              style={styles.picker}
-              onValueChange={(itemValue) => handleInputChange('start_time', itemValue)}
-            >
-              <Picker.Item label="請選擇" value={null} />
-              {timeOptions.map((time) => (
-                <Picker.Item key={time} label={time} value={time} />
-              ))}
-            </Picker>
+            <Text style={styles.label}>*上課時間</Text>
+            <ModalDropdown
+              options={timeOptions}
+              defaultValue={enrollmentData.start_time || '請選擇'}
+              style={styles.dropdown}
+              textStyle={styles.dropdownText}
+              dropdownStyle={styles.dropdownOptions}
+              dropdownTextStyle={styles.dropdownOptionText}
+              onSelect={(index, value) => handleInputChange('start_time', value)}
+            />
 
-            <Text style={styles.label}>場地</Text>
-            <Picker
-              selectedValue={enrollmentData.venue_id}
-              style={styles.picker}
-              onValueChange={(itemValue) => handleInputChange('venue_id', itemValue)}
-            >
-              <Picker.Item label="請選擇" value={null} />
-              {venues.map((venue) => (
-                <Picker.Item key={venue.id} label={venue.name} value={venue.id} />
-              ))}
-            </Picker>
+            <Text style={styles.label}>*上課場地</Text>
+            <ModalDropdown
+              options={venues.map(venue => venue.name)}
+              defaultValue={venues.find(venue => venue.id === enrollmentData.venue_id)?.name || '請選擇'}
+              style={styles.dropdown}
+              textStyle={styles.dropdownText}
+              dropdownStyle={styles.dropdownOptions}
+              dropdownTextStyle={styles.dropdownOptionText}
+              onSelect={(index, value) => handleInputChange('venue_id', venues[index].id)}
+            />
 
             <Text style={styles.label}>付款方式</Text>
-            <Picker
-              selectedValue={enrollmentData.payment_method}
-              style={styles.picker}
-              onValueChange={(itemValue) => handleInputChange('payment_method', itemValue)}
-            >
-              <Picker.Item label="請選擇" value={null} />
-              <Picker.Item label="現金" value="現金" />
-            </Picker>
+            <ModalDropdown
+              options={['現金']}
+              defaultValue={enrollmentData.payment_method}
+              style={styles.dropdown}
+              textStyle={styles.dropdownText}
+              dropdownStyle={styles.dropdownOptions}
+              dropdownTextStyle={styles.dropdownOptionText}
+              onSelect={(index, value) => handleInputChange('payment_method', value)}
+            />
 
-            <Text style={styles.label}>程度描述</Text>
+            <Text style={styles.label}>*程度描述</Text>
             <TextInput
               style={styles.input}
               value={enrollmentData.degree}
@@ -243,28 +241,28 @@ const EnrollmentScreen = () => {
       {step === 2 && latestEnrollment && (
         <ScrollView contentContainerStyle={styles.formContainer}>
           <Card containerStyle={styles.card}>
-            <Text style={styles.label}>學生姓名</Text>
+            <Text style={styles.label}>*學生姓名</Text>
             <Text style={styles.text}>{latestEnrollment.student}</Text>
 
-            <Text style={styles.label}>年齡</Text>
+            <Text style={styles.label}>*年齡</Text>
             <Text style={styles.text}>{latestEnrollment.age}</Text>
 
-            <Text style={styles.label}>課程類型</Text>
+            <Text style={styles.label}>*課程類型</Text>
             <Text style={styles.text}>{latestEnrollment.coursetype.name}</Text>
 
-            <Text style={styles.label}>開始上課日期</Text>
+            <Text style={styles.label}>*開始上課日期</Text>
             <Text style={styles.text}>{latestEnrollment.start_date}</Text>
 
-            <Text style={styles.label}>上課時間</Text>
+            <Text style={styles.label}>*上課時間</Text>
             <Text style={styles.text}>{latestEnrollment.start_time}</Text>
 
-            <Text style={styles.label}>場地</Text>
+            <Text style={styles.label}>*上課場地</Text>
             <Text style={styles.text}>{latestEnrollment.venue.name}</Text>
 
             <Text style={styles.label}>付款方式</Text>
             <Text style={styles.text}>{latestEnrollment.payment_method}</Text>
 
-            <Text style={styles.label}>程度描述</Text>
+            <Text style={styles.label}>*程度描述</Text>
             <Text style={styles.text}>{latestEnrollment.degree}</Text>
 
             <Text style={styles.label}>備註</Text>
@@ -333,7 +331,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 0,
     marginBottom: 30,
-    
     fontSize: SIZES.medium,
   },
   picker: {
@@ -369,6 +366,26 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: SIZES.medium,
     color: COLORS.white,
+  },
+  dropdown: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: COLORS.gray2,
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 30,
+  },
+  dropdownText: {
+    fontSize: SIZES.medium,
+    color: COLORS.gray3,
+  },
+  dropdownOptions: {
+    width: '70%',
+    borderRadius: 10,
+  },
+  dropdownOptionText: {
+    fontSize: SIZES.medium,
+    color: COLORS.gray3,
   },
 });
 

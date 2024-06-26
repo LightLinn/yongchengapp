@@ -14,6 +14,7 @@ from humanresources.models import Coach
 from .serializers import CourseSerializer, CourseTypeSerializer, AssignedCourseSerializer, EnrollmentNumbersSerializer, EnrollmentListSerializer
 from authentication.permissions import *
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
@@ -29,7 +30,6 @@ class CourseViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(enrollment_list__enrollment_number__name=enrollment_number)
         return queryset
     
-    
 
 class CourseTypeViewSet(viewsets.ModelViewSet):
     queryset = CourseType.objects.all()
@@ -43,6 +43,8 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         coach_id = self.request.query_params.get('coach', None)
+        enrollment_number_id = self.request.query_params.get('enrollment_number', None)
+
         if coach_id is not None:
             try:
                 coach = Coach.objects.get(user_id=coach_id)
@@ -51,6 +53,10 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(assigned_time__lte=datetime.now(), deadline__gte=datetime.now())
             except Coach.DoesNotExist:
                 return queryset.none()
+
+        if enrollment_number_id is not None:
+            queryset = queryset.filter(enrollment_number__id=enrollment_number_id)
+        
         return queryset
 
     @action(detail=True, methods=['patch'])
@@ -59,9 +65,55 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
         status = request.data.get('status')
         if status not in ['已接受', '已拒絕']:
             return Response({'detail': 'Invalid status'}, status=400)
+        
         assignment.assigned_status = status
         assignment.save()
+
+        if status == '已拒絕':
+            self.update_following_assignments(assignment)
+
+        elif status == '已接受':
+            self.handle_accept_assignment(assignment)
+
         return Response(self.get_serializer(assignment).data)
+
+    def update_following_assignments(self, rejected_assignment):
+        enrollment_number = rejected_assignment.enrollment_number
+        following_assignments = AssignedCourse.objects.filter(
+            enrollment_number=enrollment_number,
+            rank__gt=rejected_assignment.rank
+        ).order_by('rank')
+
+        current_time = timezone.now()
+        for assignment in following_assignments:
+            assignment.assigned_time = current_time
+            assignment.deadline = current_time + timedelta(hours=assignment.consider_hours)
+            assignment.save()
+            current_time = assignment.deadline
+
+    def handle_accept_assignment(self, accepted_assignment):
+        enrollment_number = accepted_assignment.enrollment_number
+        enrollment_lists = EnrollmentList.objects.filter(enrollment_number=enrollment_number)
+
+        enrollment_lists.update(enrollment_status='進行中')
+        enrollment_lists.update(coach=accepted_assignment.coach)
+
+        for enrollment in enrollment_lists:
+            course_type = enrollment.coursetype
+            if course_type:
+                start_date = enrollment.start_date
+                course_time = enrollment.start_time
+                number_of_sessions = course_type.number_of_sessions
+
+                for i in range(number_of_sessions):
+                    course_date = start_date + timedelta(days=i*7)
+                    Course.objects.create(
+                        course_date=course_date,
+                        course_time=course_time,
+                        course_status='未開課',
+                        enrollment_list=enrollment, 
+                        enrollment_number=enrollment_number
+                    )
 
     @action(detail=False, methods=['post'], url_path='create_assigned_course')
     def create_assigned_course(self, request):
@@ -170,4 +222,17 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
+    @action(detail=False, methods=['patch'], url_path='update_status_by_number')
+    def update_status_by_number(self, request):
+        enrollment_number = request.data.get('enrollment_number', None)
+        enrollment_status = request.data.get('enrollment_status', None)
+        
+        if not enrollment_number or not enrollment_status:
+            return Response({"detail": "enrollment_number and enrollment_status are required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        enrollments = EnrollmentList.objects.filter(enrollment_number__name=enrollment_number)
+        if enrollments.exists():
+            enrollments.update(enrollment_status=enrollment_status)
+            return Response({"detail": "Enrollment statuses updated successfully."}, status=status.HTTP_200_OK)
+        
+        return Response({"detail": "No enrollments found with the given enrollment number."}, status=status.HTTP_404_NOT_FOUND)

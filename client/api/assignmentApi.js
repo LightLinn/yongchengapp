@@ -16,15 +16,46 @@ export const fetchAssignmentsCoach = async () => {
 };
 
 export const updateAssignmentStatus = async (assignmentId, status) => {
+  console.log('updateAssignmentStatus', assignmentId, status);
   const response = await fetch(`${API_BASE_URL}/assigned_courses/${assignmentId}/`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ assigned_status: status }),
   });
   if (!response.ok) {
     throw new Error('Failed to update assignment status');
+  }
+  return response.json();
+};
+
+export const fetchAssignedCourses = async (enrollmentNumberId) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/assigned_courses/?enrollment_number=${enrollmentNumberId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch assigned courses');
+  }
+  return response.json();
+};
+
+export const fetchEnrollmentNumberDetails = async (enrollmentNumberId) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/enrollment_numbers/${enrollmentNumberId}/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch enrollment number details');
   }
   return response.json();
 };

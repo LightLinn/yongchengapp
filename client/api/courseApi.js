@@ -116,3 +116,20 @@ export const fetchCourseDetails = async (enrollment_list_id) => {
   }
   return await response.json();
 };
+
+export const fetchCoursesByEnrollmentListId = async (enrollmentListId) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/courses?enrollment_list_id=${enrollmentListId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch courses');
+  }
+  
+  return await response.json();
+};

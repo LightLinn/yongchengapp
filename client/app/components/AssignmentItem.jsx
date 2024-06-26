@@ -17,23 +17,25 @@ const AssignmentItem = ({ assignment, onAccept, onReject }) => {
       <Text style={styles.dt}>截止時間 {formattedDeadline}</Text>
       {assignment.enrollment_details.map((enrollment, index) => (
         <View key={index} style={styles.enrollmentContainer}>
-          <Text style={styles.details}>{enrollment.coursetype.name}</Text>
-          <Text style={styles.details}>{enrollment.student}</Text>
-          <Text style={styles.details}>{enrollment.age} 歲</Text>
+          <Text style={styles.details}>課程 {enrollment.coursetype.name}</Text>
+          <Text style={styles.details}>學生 {enrollment.student}</Text>
+          <Text style={styles.details}>年齡 {enrollment.age} 歲</Text>
           <Text style={styles.details}>程度 {enrollment.degree}</Text>
           <Text style={styles.details}>日期 {enrollment.start_date}</Text>
           <Text style={styles.details}>時間 {enrollment.start_time}</Text>
           <Text style={styles.details}>地點 {enrollment.venue.name}</Text>
         </View>
       ))}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={onAccept} style={styles.acceptButton}>
-          <Text style={styles.buttonText}>接受</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onReject} style={styles.rejectButton}>
-          <Text style={styles.buttonText}>拒絕</Text>
-        </TouchableOpacity>
-      </View>
+      {assignment.assigned_status === '待決定' && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={onAccept} style={styles.acceptButton}>
+            <Text style={styles.buttonText}>接受</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onReject} style={styles.rejectButton}>
+            <Text style={styles.buttonText}>拒絕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };

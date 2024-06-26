@@ -5,6 +5,7 @@ import { COLORS, SIZES } from '../../../styles/theme';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ModalDropdown from 'react-native-modal-dropdown';
 import moment from 'moment';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 const EnrollmentReviewScreen = () => {
   const { enrollmentId } = useLocalSearchParams();
@@ -14,6 +15,8 @@ const EnrollmentReviewScreen = () => {
   const [enrollmentNumbers, setEnrollmentNumbers] = useState([]);
   const [newNumberModalVisible, setNewNumberModalVisible] = useState(false);
   const [newNumber, setNewNumber] = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   useEffect(() => {
     const loadEnrollmentDetails = async () => {
@@ -58,7 +61,7 @@ const EnrollmentReviewScreen = () => {
         enrollment_number: undefined,
       });
       Alert.alert('保存成功', '報名資料已成功保存');
-      router.push(`/screens/course/EnrollmentAssignedCourseScreen?enrollmentId=${enrollmentId}`);
+      router.push(`/screens/course/EnrollmentAssignedCourseScreen?enrollmentId=${enrollmentId}&enrollmentNumberId=${enrollmentDetails.enrollment_number.id}`);
     } catch (error) {
       console.error('Failed to save enrollment', error);
       Alert.alert('保存失敗', '報名資料保存失敗');
@@ -102,10 +105,41 @@ const EnrollmentReviewScreen = () => {
     }
   };
 
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleDateConfirm = (date) => {
+    setEnrollmentDetails((prevState) => ({
+      ...prevState,
+      start_date: moment(date).format('YYYY-MM-DD'),
+    }));
+    hideDatePicker();
+  };
+
+  const showTimePicker = () => {
+    setTimePickerVisibility(true);
+  };
+
+  const hideTimePicker = () => {
+    setTimePickerVisibility(false);
+  };
+
+  const handleTimeConfirm = (time) => {
+    setEnrollmentDetails((prevState) => ({
+      ...prevState,
+      start_time: moment(time).format('HH:mm:ss'),
+    }));
+    hideTimePicker();
+  };
+
   if (loading) {
     return <Text>Loading...</Text>;
   }
-
 
   return (
     <ScrollView style={styles.container}>
@@ -135,18 +169,18 @@ const EnrollmentReviewScreen = () => {
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>學生姓名（不可編輯）</Text>
+        <Text style={styles.label}>學生姓名</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input2}
           value={enrollmentDetails.student}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, student: text })}
           editable={false}
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>年齡（不可編輯）</Text>
+        <Text style={styles.label}>年齡</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input2}
           value={enrollmentDetails.age ? enrollmentDetails.age.toString() : ''}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, age: text })}
           editable={false}
@@ -154,18 +188,26 @@ const EnrollmentReviewScreen = () => {
       </View>
       <View style={styles.section}>
         <Text style={styles.label}>開課日期</Text>
-        <TextInput
-          style={styles.input}
-          value={moment(enrollmentDetails.start_date).format('YYYY-MM-DD')}
-          onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, start_date: text })}
+        <TouchableOpacity onPress={showDatePicker} style={styles.input}>
+          <Text>{enrollmentDetails.start_date ? moment(enrollmentDetails.start_date).format('YYYY-MM-DD') : '選擇日期'}</Text>
+        </TouchableOpacity>
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleDateConfirm}
+          onCancel={hideDatePicker}
         />
       </View>
       <View style={styles.section}>
         <Text style={styles.label}>開課時間</Text>
-        <TextInput
-          style={styles.input}
-          value={moment(enrollmentDetails.start_time, 'HH:mm:ss').format('HH:mm')}
-          onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, start_time: text })}
+        <TouchableOpacity onPress={showTimePicker} style={styles.input}>
+          <Text>{enrollmentDetails.start_time ? moment(enrollmentDetails.start_time, 'HH:mm:ss').format('HH:mm') : '選擇時間'}</Text>
+        </TouchableOpacity>
+        <DateTimePickerModal
+          isVisible={isTimePickerVisible}
+          mode="time"
+          onConfirm={handleTimeConfirm}
+          onCancel={hideTimePicker}
         />
       </View>
       <View style={styles.section}>
@@ -176,47 +218,46 @@ const EnrollmentReviewScreen = () => {
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, degree: text })}
         />
       </View>
-      
       <View style={styles.section}>
-        <Text style={styles.label}>課程類型（不可編輯）</Text>
+        <Text style={styles.label}>課程類型</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input2}
           value={enrollmentDetails.coursetype?.name}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, coursetype: { ...enrollmentDetails.coursetype, name: text } })}
           editable={false}
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>場地（不可編輯）</Text>
+        <Text style={styles.label}>上課場地</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input2}
           value={enrollmentDetails.venue?.name}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, venue: { ...enrollmentDetails.venue, name: text } })}
           editable={false}
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>報名狀態（不可編輯）</Text>
+        <Text style={styles.label}>報名狀態</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input2}
           value={enrollmentDetails.enrollment_status}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, enrollment_status: text })}
           editable={false}
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>付款方式（不可編輯）</Text>
+        <Text style={styles.label}>付款方式</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input2}
           value={enrollmentDetails.payment_method}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, payment_method: text })}
           editable={false}
         />
       </View>
       <View style={styles.section}>
-        <Text style={styles.label}>付款日期（不可編輯）</Text>
+        <Text style={styles.label}>付款日期</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input2}
           value={enrollmentDetails.payment_date}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, payment_date: text })}
           editable={false}
@@ -268,21 +309,24 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: COLORS.bg,
   },
-  header: {
-    fontSize: SIZES.large,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: COLORS.primary,
-  },
   section: {
     marginBottom: 20,
   },
   label: {
     fontSize: SIZES.medium,
     color: COLORS.gray,
+    marginBottom: 5,
   },
   input: {
     borderWidth: 1,
+    borderColor: COLORS.gray2,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  input2: {
+    borderWidth: 1,
+    color: COLORS.gray2,
     borderColor: COLORS.gray2,
     padding: 10,
     borderRadius: 5,

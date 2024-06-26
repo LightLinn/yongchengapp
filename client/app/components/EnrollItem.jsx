@@ -5,12 +5,13 @@ import { Ionicons } from '@expo/vector-icons'; // 使用 Expo 提供的圖標庫
 import { COLORS, SIZES } from '../../styles/theme';
 import { useRouter } from 'expo-router';
 
-const EnrollCard = ({ enroll, course }) => {
+const EnrollCard = ({ enroll, courses }) => {
   const router = useRouter();
 
   const coach = enroll.coach?.user?.nickname || '安排中';
   const courseType = enroll.coursetype?.name || '';
   const venue = enroll.venue?.name || '';
+  console.log(courses)
 
   return (
     <TouchableOpacity onPress={() => router.push(`/screens/course/CourseDetailScreen?enrollment_list_id=${enroll.id}`)}>
@@ -23,20 +24,7 @@ const EnrollCard = ({ enroll, course }) => {
       <Text style={styles.text}><Text style={styles.label}>課程類型 </Text>{courseType}</Text>
         <Text style={styles.text}><Text style={styles.label}>授課教練 </Text>{coach}</Text>
       <Text style={styles.text}><Text style={styles.label}>上課地點 </Text>{venue}</Text>
-      <Text style={styles.text}><Text style={styles.label}>課程進度 </Text>0/{enroll.coursetype?.number_of_sessions || 'N/A'}</Text>
-        {/* {enroll.enrollment_status === '進行中' && (
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button2} onPress={() => {}}>
-              <Text style={styles.buttonText}>調課</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button2} onPress={() => {}}>
-              <Text style={styles.buttonText}>請假</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button3} onPress={() => router.push('/AttendanceScreen')}>
-              <Text style={styles.buttonText}>簽到</Text>
-            </TouchableOpacity>
-          </View>
-        )} */}
+      <Text style={styles.text}><Text style={styles.label}>課程進度 </Text>{courses[0]?.course_completed || 0}/{courses[0]?.course_total || 'N/A'}</Text>
       </Card>
     </TouchableOpacity>
   );

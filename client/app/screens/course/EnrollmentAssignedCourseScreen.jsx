@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
-import { fetchEnrollmentDetails, fetchAvailableCoaches, createAssignedCourse, updateEnrollment } from '../../../api/enrollmentApi';
+import { Calendar } from 'react-native-calendars';
+import { fetchEnrollmentDetails, fetchAvailableCoaches, createAssignedCourse, updateEnrollmentStatusByNumber, fetchEnrollmentNumberDetails } from '../../../api/enrollmentApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 
 const EnrollmentAssignedCourseScreen = () => {
-  const { enrollmentId } = useLocalSearchParams();
+  const { enrollmentId, enrollmentNumberId } = useLocalSearchParams();
   const router = useRouter();
   const [enrollmentDetails, setEnrollmentDetails] = useState(null);
   const [assignedCourses, setAssignedCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [coaches, setCoaches] = useState([]);
+  const [enrollmentNumberDetails, setEnrollmentNumberDetails] = useState({ same_course_type: false, course_type_limit_reached: false });
+  const [selectedDates, setSelectedDates] = useState({});
 
   useEffect(() => {
     const loadEnrollmentDetails = async () => {
@@ -21,6 +24,18 @@ const EnrollmentAssignedCourseScreen = () => {
         setEnrollmentDetails(details);
         const availableCoaches = await fetchAvailableCoaches(enrollmentId);
         setCoaches(availableCoaches);
+        const numberDetails = await fetchEnrollmentNumberDetails(enrollmentNumberId); // fetch details for enrollment number
+        setEnrollmentNumberDetails(numberDetails);
+
+        // 初始化默认的十堂课日期
+        const initialDates = {};
+        let currentDate = moment().startOf('day');
+        for (let i = 0; i < 10; i++) {
+          initialDates[currentDate.format('YYYY-MM-DD')] = { selected: true, selectedColor: COLORS.primary };
+          currentDate = currentDate.add(7, 'days');
+        }
+        setSelectedDates(initialDates);
+
         setLoading(false);
       } catch (error) {
         console.error('Failed to load enrollment details or available coaches', error);
@@ -29,7 +44,7 @@ const EnrollmentAssignedCourseScreen = () => {
     };
 
     loadEnrollmentDetails();
-  }, [enrollmentId]);
+  }, [enrollmentId, enrollmentNumberId]);
 
   const handleAddAssignedCourse = () => {
     setAssignedCourses([...assignedCourses, { coach: '', considerHours: 24, rank: assignedCourses.length + 1 }]);
@@ -60,8 +75,39 @@ const EnrollmentAssignedCourseScreen = () => {
     setAssignedCourses(newAssignedCourses);
   };
 
+  const handleDateSelect = (day) => {
+    const dateKey = day.dateString;
+    const newSelectedDates = { ...selectedDates };
+    if (newSelectedDates[dateKey]) {
+      delete newSelectedDates[dateKey];
+    } else {
+      if (Object.keys(newSelectedDates).length < 10) {
+        newSelectedDates[dateKey] = { selected: true, selectedColor: COLORS.primary };
+      } else {
+        Alert.alert('錯誤', '只能選擇10個上課日期');
+        return;
+      }
+    }
+    setSelectedDates(newSelectedDates);
+  };
+
   const handleSubmit = async () => {
+    if (Object.keys(selectedDates).length !== 10) {
+      Alert.alert('錯誤', '請選擇10個上課日期');
+      return;
+    }
+
     try {
+      if (!enrollmentNumberDetails.same_course_type) {
+        Alert.alert('錯誤', '課程類型不同');
+        return;
+      }
+
+      if (!enrollmentNumberDetails.course_type_limit_reached) {
+        Alert.alert('錯誤', '課程組數不同');
+        return;
+      }
+
       const assignedCoursesToSubmit = assignedCourses.map((course, index) => ({
         ...course,
         rank: index + 1,
@@ -76,7 +122,7 @@ const EnrollmentAssignedCourseScreen = () => {
         await createAssignedCourse(course);
         prevDeadline = course.deadline;
       }
-      await updateEnrollment(enrollmentId, { ...enrollmentDetails, enrollment_status: '派課中' });
+      await updateEnrollmentStatusByNumber(enrollmentDetails.enrollment_number?.name, '派課中'); // update status by enrollment number
       Alert.alert('送出成功', '指派課程已成功送出');
       router.replace('/screens/course/EnrollmentListScreen'); // 使用 replace 方法以禁止返回
     } catch (error) {
@@ -91,6 +137,20 @@ const EnrollmentAssignedCourseScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.enrollmentNumberContainer}>
+        <Text style={styles.enrollmentNumberLabel}>報名單號</Text>
+        <TextInput style={styles.enrollmentNumberInput} value={enrollmentNumberDetails.name} editable={false} />
+      </View>
+      <Calendar
+        onDayPress={handleDateSelect}
+        markedDates={selectedDates}
+        theme={{
+          selectedDayBackgroundColor: COLORS.primary,
+          todayTextColor: COLORS.primary,
+          arrowColor: COLORS.primary,
+        }}
+        style={{marginBottom: 30}} 
+      />
       {assignedCourses.map((course, index) => (
         <View key={index} style={styles.assignedCourseContainer}>
           <Text style={styles.label}>順位 {course.rank}</Text>
@@ -139,6 +199,24 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: COLORS.bg,
+  },
+  enrollmentNumberContainer: {
+    marginBottom: 20,
+  },
+  enrollmentNumberLabel: {
+    fontSize: SIZES.medium,
+    color: COLORS.primary,
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  enrollmentNumberInput: {
+    borderWidth: 1,
+    borderColor: COLORS.gray2,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.lightWhite,
+    color: COLORS.gray3,
+    fontSize: SIZES.medium,
   },
   assignedCourseContainer: {
     marginBottom: 20,

@@ -1,6 +1,7 @@
 from django.db import models
 from reviews.models import Auditable
 
+
 # Create your models here.
 
 class EnrollmentNumbers(Auditable):
@@ -85,6 +86,7 @@ class AssignedCourse(Auditable):
 
 class CourseType(Auditable):
     name = models.CharField(max_length=255, verbose_name='課程類型名稱', null=True)
+    limit = models.IntegerField(verbose_name='人數限制', blank=True, null=True)
     description = models.TextField(verbose_name='課程類型描述')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='價格', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')

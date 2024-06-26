@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, TextInput, TouchableOpacity, Text, RefreshControl } from 'react-native';
 import EnrollItem from '../../components/EnrollItem';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { fetchEnrollments, fetchEnrollmentsCoach, fetchCoaches, fetchCourseTypes, fetchVenues } from '../../../api/courseApi';
+import { fetchEnrollments, fetchEnrollmentsCoach, fetchCoaches, fetchCourseTypes, fetchVenues, fetchCoursesByEnrollmentListId } from '../../../api/courseApi';
 import { useAuth } from '../../../context/AuthContext'; 
 import { COLORS, SIZES } from '../../../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,6 +12,7 @@ const OverviewScreen = () => {
   const [coaches, setCoaches] = useState([]);
   const [courseTypes, setCourseTypes] = useState([]);
   const [venues, setVenues] = useState([]);
+  const [courses, setCourses] = useState({});
   const [searchText, setSearchText] = useState('');
   const [selectedSort, setSelectedSort] = useState('newest');
   const [refreshing, setRefreshing] = useState(false);
@@ -31,10 +32,19 @@ const OverviewScreen = () => {
       const fetchedCoaches = await fetchCoaches();
       const fetchedCourseTypes = await fetchCourseTypes();
       const fetchedVenues = await fetchVenues();
+      
+      const coursesData = {};
+      for (const enrollment of fetchedEnrollments) {
+        const enrollmentCourses = await fetchCoursesByEnrollmentListId(enrollment.id);
+        coursesData[enrollment.id] = enrollmentCourses;
+      }
+
       setEnrollments(fetchedEnrollments);
       setCoaches(fetchedCoaches);
       setCourseTypes(fetchedCourseTypes);
       setVenues(fetchedVenues);
+      setCourses(coursesData);
+      
     } catch (error) {
       console.error('Failed to load data', error);
     } finally {
@@ -116,7 +126,14 @@ const OverviewScreen = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {filteredEnrollments.map((enroll) => (
-          <EnrollItem key={enroll.id} enroll={enroll} coaches={coaches} courseTypes={courseTypes} venues={venues} />
+          <EnrollItem 
+            key={enroll.id} 
+            enroll={enroll} 
+            coaches={coaches} 
+            courseTypes={courseTypes} 
+            venues={venues} 
+            courses={courses[enroll.id] || []}
+          />
         ))}
       </ScrollView>
     </View>
