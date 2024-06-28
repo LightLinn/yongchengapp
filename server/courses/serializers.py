@@ -113,4 +113,6 @@ class AssignedCourseSerializer(serializers.ModelSerializer):
         return EnrollmentListSerializer(enrollment_list, many=True).data
     
     def get_coach_name(self, obj):
-        return obj.coach.user.nickname
+        if obj.coach and obj.coach.user:
+            return obj.coach.user.nickname
+        return '未指定教練'

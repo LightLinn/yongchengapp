@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 import { Calendar } from 'react-native-calendars';
-import { fetchEnrollmentDetails, fetchAvailableCoaches, createAssignedCourse, updateEnrollmentStatusByNumber, fetchEnrollmentNumberDetails } from '../../../api/enrollmentApi';
+import { fetchEnrollmentDetails, fetchAvailableCoaches, createAssignedCourse, updateEnrollmentDirectAssignedCourse, updateEnrollmentStatusByNumber, fetchEnrollmentNumberDetails } from '../../../api/enrollmentApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
@@ -16,6 +16,7 @@ const EnrollmentAssignedCourseScreen = () => {
   const [coaches, setCoaches] = useState([]);
   const [enrollmentNumberDetails, setEnrollmentNumberDetails] = useState({ same_course_type: false, course_type_limit_reached: false });
   const [selectedDates, setSelectedDates] = useState({});
+  const [number_of_sessions, setNumber_of_sessions] = useState(0);
 
   useEffect(() => {
     const loadEnrollmentDetails = async () => {
@@ -24,13 +25,13 @@ const EnrollmentAssignedCourseScreen = () => {
         setEnrollmentDetails(details);
         const availableCoaches = await fetchAvailableCoaches(enrollmentId);
         setCoaches(availableCoaches);
-        const numberDetails = await fetchEnrollmentNumberDetails(enrollmentNumberId); // fetch details for enrollment number
+        const numberDetails = await fetchEnrollmentNumberDetails(enrollmentNumberId); 
         setEnrollmentNumberDetails(numberDetails);
+        setNumber_of_sessions(details.coursetype.number_of_sessions);
 
-        // 初始化默认的十堂课日期
         const initialDates = {};
         let currentDate = moment().startOf('day');
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < details.coursetype.number_of_sessions; i++) {
           initialDates[currentDate.format('YYYY-MM-DD')] = { selected: true, selectedColor: COLORS.primary };
           currentDate = currentDate.add(7, 'days');
         }
@@ -59,10 +60,29 @@ const EnrollmentAssignedCourseScreen = () => {
   };
 
   const handleDirectAssignedCourse = async (index) => {
+    if (Object.keys(selectedDates).length !== number_of_sessions) {
+      Alert.alert('錯誤', '請選擇上課日期');
+      return;
+    }
+    if (!enrollmentNumberDetails.same_course_type) {
+      Alert.alert('錯誤', '課程類型不同');
+      return;
+    }
+
+    if (!enrollmentNumberDetails.course_type_limit_reached) {
+      Alert.alert('錯誤', '課程組數不同');
+      return;
+    }
+
     try {
-      await updateEnrollment(enrollmentId, { ...enrollmentDetails, enrollment_status: '派課中', coach: assignedCourses[index].coach });
+      await updateEnrollmentDirectAssignedCourse(enrollmentId, { 
+        ...enrollmentDetails, 
+        enrollment_status: '進行中', 
+        coach: assignedCourses[index].coach,
+        selectedDates: Object.keys(selectedDates) 
+      });
       Alert.alert('直接指派成功', '已直接指派該教練');
-      router.replace('/screens/course/EnrollmentListScreen'); // 使用 replace 方法以禁止返回
+      router.replace('/screens/course/EnrollmentListScreen'); 
     } catch (error) {
       console.error('Failed to directly assign course', error);
       Alert.alert('直接指派失敗', '無法直接指派課程');
@@ -73,6 +93,7 @@ const EnrollmentAssignedCourseScreen = () => {
     const newAssignedCourses = [...assignedCourses];
     newAssignedCourses[index][field] = value;
     setAssignedCourses(newAssignedCourses);
+    console.log(newAssignedCourses);
   };
 
   const handleDateSelect = (day) => {
@@ -81,10 +102,10 @@ const EnrollmentAssignedCourseScreen = () => {
     if (newSelectedDates[dateKey]) {
       delete newSelectedDates[dateKey];
     } else {
-      if (Object.keys(newSelectedDates).length < 10) {
+      if (Object.keys(newSelectedDates).length < number_of_sessions) {
         newSelectedDates[dateKey] = { selected: true, selectedColor: COLORS.primary };
       } else {
-        Alert.alert('錯誤', '只能選擇10個上課日期');
+        Alert.alert('錯誤', '超過選擇上限');
         return;
       }
     }
@@ -92,22 +113,22 @@ const EnrollmentAssignedCourseScreen = () => {
   };
 
   const handleSubmit = async () => {
-    if (Object.keys(selectedDates).length !== 10) {
-      Alert.alert('錯誤', '請選擇10個上課日期');
+    if (Object.keys(selectedDates).length !== number_of_sessions) {
+      Alert.alert('錯誤', '請選擇上課日期');
+      return;
+    }
+
+    if (!enrollmentNumberDetails.same_course_type) {
+      Alert.alert('錯誤', '課程類型不同');
+      return;
+    }
+
+    if (!enrollmentNumberDetails.course_type_limit_reached) {
+      Alert.alert('錯誤', '課程組數不同');
       return;
     }
 
     try {
-      if (!enrollmentNumberDetails.same_course_type) {
-        Alert.alert('錯誤', '課程類型不同');
-        return;
-      }
-
-      if (!enrollmentNumberDetails.course_type_limit_reached) {
-        Alert.alert('錯誤', '課程組數不同');
-        return;
-      }
-
       const assignedCoursesToSubmit = assignedCourses.map((course, index) => ({
         ...course,
         rank: index + 1,
@@ -122,7 +143,7 @@ const EnrollmentAssignedCourseScreen = () => {
         await createAssignedCourse(course);
         prevDeadline = course.deadline;
       }
-      await updateEnrollmentStatusByNumber(enrollmentDetails.enrollment_number?.name, '派課中'); // update status by enrollment number
+      await updateEnrollmentStatusByNumber(enrollmentDetails.enrollment_number?.name, '派課中', Object.keys(selectedDates)); // update status by enrollment number and send selected dates
       Alert.alert('送出成功', '指派課程已成功送出');
       router.replace('/screens/course/EnrollmentListScreen'); // 使用 replace 方法以禁止返回
     } catch (error) {
@@ -140,6 +161,8 @@ const EnrollmentAssignedCourseScreen = () => {
       <View style={styles.enrollmentNumberContainer}>
         <Text style={styles.enrollmentNumberLabel}>報名單號</Text>
         <TextInput style={styles.enrollmentNumberInput} value={enrollmentNumberDetails.name} editable={false} />
+        <Text style={styles.enrollmentNumberLabel}>選擇上課日期</Text>
+        <Text style={styles.numberSessions}>已選{Object.keys(selectedDates).length}堂課 / 總共{number_of_sessions}堂課</Text>
       </View>
       <Calendar
         onDayPress={handleDateSelect}
@@ -151,6 +174,7 @@ const EnrollmentAssignedCourseScreen = () => {
         }}
         style={{marginBottom: 30}} 
       />
+      <Text style={styles.enrollmentNumberLabel}>指派教練</Text>
       {assignedCourses.map((course, index) => (
         <View key={index} style={styles.assignedCourseContainer}>
           <Text style={styles.label}>順位 {course.rank}</Text>
@@ -162,7 +186,7 @@ const EnrollmentAssignedCourseScreen = () => {
             textStyle={styles.dropdownText}
             dropdownStyle={styles.dropdownOptions}
             dropdownTextStyle={styles.dropdownOptionText}
-            onSelect={(value) => handleAssignedCourseChange(index, 'coach', coaches[value].user.username)}
+            onSelect={(value) => handleAssignedCourseChange(index, 'coach', coaches[value].id)}
           />
           <Text style={styles.label}>考慮時長（小時）</Text>
           <ModalDropdown
@@ -185,7 +209,7 @@ const EnrollmentAssignedCourseScreen = () => {
         </View>
       ))}
       <TouchableOpacity onPress={handleAddAssignedCourse} style={styles.addButton}>
-        <Text style={styles.addButtonText}>新增指派課程</Text>
+        <Text style={styles.addButtonText}>新增指派</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
         <Text style={styles.buttonText}>送出</Text>
@@ -217,6 +241,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightWhite,
     color: COLORS.gray3,
     fontSize: SIZES.medium,
+    marginBottom: 20,
+  },
+  numberSessions: {
+    fontSize: SIZES.medium,
+    color: COLORS.gray,
+    marginBottom: 0,
+    paddingLeft: 10,
   },
   assignedCourseContainer: {
     marginBottom: 20,
@@ -256,7 +287,7 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
   },
   addButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     padding: 15,
     borderRadius: 50,
     alignItems: 'center',
@@ -287,7 +318,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButton: {
-    backgroundColor: COLORS.tertiary,
+    backgroundColor: COLORS.primary,
     padding: 15,
     borderRadius: 50,
     alignItems: 'center',

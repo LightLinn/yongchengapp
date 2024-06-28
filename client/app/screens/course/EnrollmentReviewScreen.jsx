@@ -60,11 +60,11 @@ const EnrollmentReviewScreen = () => {
         coach: undefined,
         enrollment_number: undefined,
       });
-      Alert.alert('保存成功', '報名資料已成功保存');
+      Alert.alert('儲存成功', '報名資料已成功儲存');
       router.push(`/screens/course/EnrollmentAssignedCourseScreen?enrollmentId=${enrollmentId}&enrollmentNumberId=${enrollmentDetails.enrollment_number.id}`);
     } catch (error) {
       console.error('Failed to save enrollment', error);
-      Alert.alert('保存失敗', '報名資料保存失敗');
+      Alert.alert('儲存失敗', '資料不完整，請填寫完整後再儲存');
     }
   };
 
@@ -78,11 +78,11 @@ const EnrollmentReviewScreen = () => {
         coach: undefined,
         enrollment_number: undefined,
       });
-      Alert.alert('保存成功', '報名資料已成功保存');
+      Alert.alert('儲存成功', '報名資料已成功儲存');
       router.back();
     } catch (error) {
       console.error('Failed to save enrollment', error);
-      Alert.alert('保存失敗', '報名資料保存失敗');
+      Alert.alert('儲存失敗', '報名資料儲存失敗');
     }
   };
 
@@ -273,7 +273,7 @@ const EnrollmentReviewScreen = () => {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleSaveBack} style={styles.saveButton}>
-          <Text style={styles.buttonText}>保存</Text>
+          <Text style={styles.buttonText}>儲存</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleSaveAssign} style={styles.nextButton}>
           <Text style={styles.buttonText}>指派教練</Text>

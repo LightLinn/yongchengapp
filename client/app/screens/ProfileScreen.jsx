@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Image, Text } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-elements';
-import EditableProfileItem from '../components/EditableProfileItem';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { fetchUserProfile, updateUserProfile } from '../../api/profileApi';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, SIZES, FONT } from '../../styles/theme';
+import moment from 'moment';
 
 const ProfileScreen = () => {
   const [profile, setProfile] = useState({
@@ -16,9 +17,9 @@ const ProfileScreen = () => {
     phone: '',
     nickname: '',
     address: '',
-    sex: '',
     birthday: '',
   });
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,7 +37,6 @@ const ProfileScreen = () => {
             phone: profileData.phone,
             nickname: profileData.nickname,
             address: profileData.address,
-            // sex: profileData.sex,
             birthday: profileData.birthday,
           });
         } else {
@@ -54,13 +54,33 @@ const ProfileScreen = () => {
     setProfile({ ...profile, [key]: value });
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleSubmit = async () => {
+    if (!validateEmail(profile.email)) {
+      Alert.alert('無效的Email', '請輸入有效的電子郵件地址。');
+      return;
+    }
+
+    if (!validatePhone(profile.phone)) {
+      Alert.alert('無效的手機號碼', '請輸入有效的手機號碼，必須為10位數字。');
+      return;
+    }
+
     try {
       await updateUserProfile(profile);
-      alert('Profile updated successfully!');
+      Alert.alert('成功', '個人檔案已更新。');
     } catch (error) {
       console.error('Failed to update profile', error);
-      alert('Failed to update profile');
+      Alert.alert('失敗', '個人檔案更新失敗，請稍後再試一次。');
     }
   };
 
@@ -84,35 +104,48 @@ const ProfileScreen = () => {
         <Text style={styles.groups}>{profile.groups.join(', ')}</Text>
       </View>
       <View style={styles.detailsSection}>
-        <EditableProfileItem
-          label="Nickname"
+        <Text style={styles.label}>名稱</Text>
+        <TextInput
+          style={styles.input}
           value={profile.nickname}
-          onChange={(value) => handleChange('nickname', value)}
+          onChangeText={(value) => handleChange('nickname', value)}
         />
-        <EditableProfileItem
-          label="Email"
+        <Text style={styles.label}>電子信箱</Text>
+        <TextInput
+          style={styles.input}
           value={profile.email}
-          onChange={(value) => handleChange('email', value)}
+          onChangeText={(value) => handleChange('email', value)}
         />
-        <EditableProfileItem
-          label="Phone"
+        <Text style={styles.label}>行動電話</Text>
+        <TextInput
+          style={styles.input}
           value={profile.phone}
-          onChange={(value) => handleChange('phone', value)}
+          onChangeText={(value) => handleChange('phone', value)}
+          keyboardType="numeric"
         />
-        <EditableProfileItem
-          label="Address"
+        <Text style={styles.label}>住址</Text>
+        <TextInput
+          style={styles.input}
           value={profile.address}
-          onChange={(value) => handleChange('address', value)}
+          onChangeText={(value) => handleChange('address', value)}
         />
-        {/* <EditableProfileItem
-          label="Sex"
-          value={profile.sex}
-          onChange={(value) => handleChange('sex', value)}
-        /> */}
-        <EditableProfileItem
-          label="Birthday"
-          value={profile.birthday}
-          onChange={(value) => handleChange('birthday', value)}
+        <Text style={styles.label}>生日</Text>
+        <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+          <TextInput
+            style={styles.input}
+            value={profile.birthday ? moment(profile.birthday).format('YYYY-MM-DD') : ''}
+            editable={false}
+            pointerEvents="none"
+          />
+        </TouchableOpacity>
+        <DateTimePickerModal
+          isVisible={showDatePicker}
+          mode="date"
+          onConfirm={(date) => {
+            setShowDatePicker(false);
+            handleChange('birthday', date.toISOString().split('T')[0]);
+          }}
+          onCancel={() => setShowDatePicker(false)}
         />
         <Button title="更新" onPress={handleSubmit} buttonStyle={styles.submitButton} />
         <Button title="變更密碼" onPress={handleChangePassword} buttonStyle={styles.changePasswordButton} />
@@ -147,6 +180,22 @@ const styles = StyleSheet.create({
   },
   detailsSection: {
     marginTop: 20,
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    marginTop: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: COLORS.gray2,
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 5,
+    marginBottom: 10,
+    fontSize: 16,
   },
   submitButton: {
     marginTop: 20,

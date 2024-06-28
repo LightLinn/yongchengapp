@@ -19,7 +19,8 @@ const EnrollmentDetailsScreen = () => {
           setEnrollmentDetails(details);
 
           if (details.enrollment_number && details.enrollment_number.id) {
-            const courseDetails = await fetchCourses(details.enrollment_number.id, details.enrollment_number.name);
+            console.log(enrollmentId, details.enrollment_number.id);
+            const courseDetails = await fetchCourses(enrollmentId, details.enrollment_number.name);
             setCourses(courseDetails);
           }
         } catch (error) {
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: COLORS.bg,
+    
   },
   loadingContainer: {
     flex: 1,
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+    marginBottom: 80,
   },
   buttonText: {
     color: COLORS.white,

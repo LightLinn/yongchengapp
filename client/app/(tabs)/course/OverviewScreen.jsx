@@ -39,6 +39,9 @@ const OverviewScreen = () => {
         coursesData[enrollment.id] = enrollmentCourses;
       }
 
+      // 初始数据按日期排序（最新在前）
+      fetchedEnrollments.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+
       setEnrollments(fetchedEnrollments);
       setCoaches(fetchedCoaches);
       setCourseTypes(fetchedCourseTypes);
@@ -158,7 +161,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: COLORS.gray2,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 20,
     paddingHorizontal: 10,
     marginRight: 10,
   },

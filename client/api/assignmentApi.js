@@ -16,13 +16,12 @@ export const fetchAssignmentsCoach = async () => {
 };
 
 export const updateAssignmentStatus = async (assignmentId, status) => {
-  console.log('updateAssignmentStatus', assignmentId, status);
-  const response = await fetch(`${API_BASE_URL}/assigned_courses/${assignmentId}/`, {
+  const response = await fetch(`${API_BASE_URL}/assigned_courses/${assignmentId}/update_status/`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ assigned_status: status }),
+    body: JSON.stringify({ status: status }),
   });
   if (!response.ok) {
     throw new Error('Failed to update assignment status');

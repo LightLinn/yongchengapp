@@ -124,7 +124,7 @@ class Course(Auditable):
         verbose_name_plural = '課程'
 
     def __str__(self):
-        return self.enrollment_number.name
+        return f'{self.enrollment_list.student}'
     
     
 # Path: server/courses/serializers.py

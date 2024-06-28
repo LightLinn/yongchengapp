@@ -66,8 +66,8 @@ export const fetchCourses = async (enrollmentListId, enrollmentNumber) => {
 };
 
 export const updateEnrollment = async (enrollmentId, updatedData) => {
+  
   const token = await AsyncStorage.getItem('token');
-  console.log('updatedData:', updatedData);
   const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/`, {
     method: 'PATCH',
     headers: {
@@ -82,20 +82,21 @@ export const updateEnrollment = async (enrollmentId, updatedData) => {
   return await response.json();
 };
 
-export const createAssignedCourse = async (assignedCourseData) => {
-  console.log('assignedCourseData:', assignedCourseData);
+export const createAssignedCourse = async (courseData) => {
   const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/assigned_courses/create_assigned_course/`, {
+  const response = await fetch(`${API_BASE_URL}/assigned_courses/create_assigned/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(assignedCourseData),
+    body: JSON.stringify(courseData),
   });
+
   if (!response.ok) {
     throw new Error('Failed to create assigned course');
   }
+
   return await response.json();
 };
 
@@ -185,7 +186,7 @@ export const fetchEnrollmentNumberDetails = async (enrollmentNumberId) => {
   return response.json();
 };
 
-export const updateEnrollmentStatusByNumber = async (enrollmentNumber, enrollmentStatus) => {
+export const updateEnrollmentStatusByNumber = async (enrollmentNumber, enrollmentStatus, selectedDates) => {
   const token = await AsyncStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/enrollment_lists/update_status_by_number/`, {
     method: 'PATCH',
@@ -193,10 +194,28 @@ export const updateEnrollmentStatusByNumber = async (enrollmentNumber, enrollmen
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify({ enrollment_number: enrollmentNumber, enrollment_status: enrollmentStatus }),
+    body: JSON.stringify({ enrollment_number: enrollmentNumber, enrollment_status: enrollmentStatus, selectedDates: selectedDates }),
   });
   if (!response.ok) {
     throw new Error('Failed to update enrollment status by number');
   }
   return response.json();
+};
+
+export const updateEnrollmentDirectAssignedCourse = async (enrollmentId, data, selectedDates) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/direct_assign/`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data, selectedDates),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update enrollment');
+  }
+  
+  return await response.json();
 };

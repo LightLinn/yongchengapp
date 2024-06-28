@@ -5,8 +5,10 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { fetchCourseTypes, fetchVenues, fetchLatestEnrollment, createEnrollment } from '../../../api/courseApi';
 import { COLORS, SIZES } from '../../../styles/theme';
+import { useNavigation } from '@react-navigation/native';
 
 const EnrollmentScreen = () => {
+  const navigation = useNavigation();
   const initialEnrollmentData = {
     student: '',
     enrollment_status: '待付款',
@@ -87,6 +89,23 @@ const EnrollmentScreen = () => {
   };
 
   const handleSubmit = async () => {
+    const requiredFields = [
+      { name: 'student', label: '學生姓名' },
+      { name: 'age', label: '年齡' },
+      { name: 'coursetype_id', label: '課程類型' },
+      { name: 'start_date', label: '開始上課日期' },
+      { name: 'start_time', label: '上課時間' },
+      { name: 'venue_id', label: '上課場地' },
+      { name: 'degree', label: '程度描述' },
+    ];
+
+    for (const field of requiredFields) {
+      if (!enrollmentData[field.name]) {
+        Alert.alert('錯誤', `${field.label}為必填項目`);
+        return;
+      }
+    }
+
     const formattedStartDate = enrollmentData.start_date ? new Date(enrollmentData.start_date).toISOString().split('T')[0] : null;
     const formattedPaymentDate = enrollmentData.payment_date ? new Date(enrollmentData.payment_date).toISOString().split('T')[0] : null;
 
@@ -97,19 +116,20 @@ const EnrollmentScreen = () => {
       age: parseInt(enrollmentData.age, 10)
     };
 
-    console.log(dataToSubmit);
     try {
       await createEnrollment(dataToSubmit);
-      Alert.alert("報名成功！",'報名成功！');
+      Alert.alert("報名成功！", '報名成功！');
       setEnrollmentData(initialEnrollmentData);
       setStep(0);
+      navigation.navigate('Overview');
     } catch (error) {
-      Alert.alert("報名失敗",'報名失敗，請重試');
+      Alert.alert("報名失敗", '報名失敗，請重試');
       console.error(error);
     }
   };
 
   const handleBack = () => {
+    setEnrollmentData(initialEnrollmentData);
     setStep(0);
   };
 
@@ -135,14 +155,14 @@ const EnrollmentScreen = () => {
       {step === 1 && (
         <ScrollView contentContainerStyle={styles.formContainer}>
           <Card containerStyle={styles.card}>
-            <Text style={styles.label}>*學生姓名</Text>
+            <Text style={styles.label}>*<Text style={styles.required}>學生姓名</Text></Text>
             <TextInput
               style={styles.input}
               value={enrollmentData.student}
               onChangeText={(value) => handleInputChange('student', value)}
             />
             <View style={styles.section}>
-              <Text style={styles.label}>*年齡</Text>
+              <Text style={styles.label}>*<Text style={styles.required}>年齡</Text></Text>
               <TextInput
                 style={styles.input}
                 value={enrollmentData.age}
@@ -150,7 +170,7 @@ const EnrollmentScreen = () => {
                 keyboardType="numeric"
               />
             </View>
-            <Text style={styles.label}>*課程類型</Text>
+            <Text style={styles.label}>*<Text style={styles.required}>課程類型</Text></Text>
             <ModalDropdown
               options={courseTypes.map(courseType => courseType.name)}
               defaultValue={courseTypes.find(courseType => courseType.id === enrollmentData.coursetype_id)?.name || '請選擇'}
@@ -161,7 +181,7 @@ const EnrollmentScreen = () => {
               onSelect={(index, value) => handleInputChange('coursetype_id', courseTypes[index].id)}
             />
 
-            <Text style={styles.label}>*開始上課日期</Text>
+            <Text style={styles.label}>*<Text style={styles.required}>開始上課日期</Text></Text>
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
               <TextInput
                 style={styles.input}
@@ -181,7 +201,7 @@ const EnrollmentScreen = () => {
               onCancel={() => setShowDatePicker(false)}
             />
 
-            <Text style={styles.label}>*上課時間</Text>
+            <Text style={styles.label}>*<Text style={styles.required}>上課時間</Text></Text>
             <ModalDropdown
               options={timeOptions}
               defaultValue={enrollmentData.start_time || '請選擇'}
@@ -192,7 +212,7 @@ const EnrollmentScreen = () => {
               onSelect={(index, value) => handleInputChange('start_time', value)}
             />
 
-            <Text style={styles.label}>*上課場地</Text>
+            <Text style={styles.label}>*<Text style={styles.required}>上課場地</Text></Text>
             <ModalDropdown
               options={venues.map(venue => venue.name)}
               defaultValue={venues.find(venue => venue.id === enrollmentData.venue_id)?.name || '請選擇'}
@@ -203,7 +223,14 @@ const EnrollmentScreen = () => {
               onSelect={(index, value) => handleInputChange('venue_id', venues[index].id)}
             />
 
-            <Text style={styles.label}>付款方式</Text>
+            <Text style={styles.label}>*<Text style={styles.required}>程度描述</Text></Text>
+            <TextInput
+              style={styles.input}
+              value={enrollmentData.degree}
+              onChangeText={(value) => handleInputChange('degree', value)}
+            />
+
+            <Text style={styles.label}><Text style={styles.required}>付款方式</Text></Text>
             <ModalDropdown
               options={['現金']}
               defaultValue={enrollmentData.payment_method}
@@ -214,14 +241,7 @@ const EnrollmentScreen = () => {
               onSelect={(index, value) => handleInputChange('payment_method', value)}
             />
 
-            <Text style={styles.label}>*程度描述</Text>
-            <TextInput
-              style={styles.input}
-              value={enrollmentData.degree}
-              onChangeText={(value) => handleInputChange('degree', value)}
-            />
-
-            <Text style={styles.label}>備註</Text>
+            <Text style={styles.label}><Text style={styles.required}>備註</Text></Text>
             <TextInput
               style={styles.input}
               value={enrollmentData.remark}
@@ -241,31 +261,31 @@ const EnrollmentScreen = () => {
       {step === 2 && latestEnrollment && (
         <ScrollView contentContainerStyle={styles.formContainer}>
           <Card containerStyle={styles.card}>
-            <Text style={styles.label}>*學生姓名</Text>
+            <Text style={styles.label}><Text style={styles.required}>學生姓名</Text></Text>
             <Text style={styles.text}>{latestEnrollment.student}</Text>
 
-            <Text style={styles.label}>*年齡</Text>
+            <Text style={styles.label}><Text style={styles.required}>年齡</Text></Text>
             <Text style={styles.text}>{latestEnrollment.age}</Text>
 
-            <Text style={styles.label}>*課程類型</Text>
+            <Text style={styles.label}><Text style={styles.required}>課程類型</Text></Text>
             <Text style={styles.text}>{latestEnrollment.coursetype.name}</Text>
 
-            <Text style={styles.label}>*開始上課日期</Text>
+            <Text style={styles.label}><Text style={styles.required}>開始上課日期</Text></Text>
             <Text style={styles.text}>{latestEnrollment.start_date}</Text>
 
-            <Text style={styles.label}>*上課時間</Text>
+            <Text style={styles.label}><Text style={styles.required}>上課時間</Text></Text>
             <Text style={styles.text}>{latestEnrollment.start_time}</Text>
 
-            <Text style={styles.label}>*上課場地</Text>
+            <Text style={styles.label}><Text style={styles.required}>上課場地</Text></Text>
             <Text style={styles.text}>{latestEnrollment.venue.name}</Text>
 
-            <Text style={styles.label}>付款方式</Text>
-            <Text style={styles.text}>{latestEnrollment.payment_method}</Text>
-
-            <Text style={styles.label}>*程度描述</Text>
+            <Text style={styles.label}><Text style={styles.required}>程度描述</Text></Text>
             <Text style={styles.text}>{latestEnrollment.degree}</Text>
 
-            <Text style={styles.label}>備註</Text>
+            <Text style={styles.label}><Text style={styles.required}>付款方式</Text></Text>
+            <Text style={styles.text}>{latestEnrollment.payment_method}</Text>
+
+            <Text style={styles.label}><Text style={styles.required}>備註</Text></Text>
             <Text style={styles.text}>{latestEnrollment.remark}</Text>
 
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -290,7 +310,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'left',
+    alignItems: 'center',
     flexDirection: 'row',
     marginTop: 20,
   },
@@ -321,8 +341,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: SIZES.medium,
     fontWeight: 'bold',
-    color: COLORS.primary,
+    color: COLORS.alert,
     marginBottom: 10,
+  },
+  required: {
+    color: COLORS.primary,
   },
   input: {
     borderWidth: 1,
@@ -333,15 +356,29 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     fontSize: SIZES.medium,
   },
-  picker: {
-    height: 150,
-    width: '100%',
-    marginBottom: 50,
+  dropdown: {
+    borderWidth: 1,
+    borderColor: COLORS.gray2,
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 5,
+    marginBottom: 30,
   },
-  text: {
+  dropdownText: {
     fontSize: SIZES.medium,
-    color: COLORS.gray3,
-    marginBottom: 10,
+    color: COLORS.gray,
+  },
+  dropdownOptions: {
+    width: '70%',
+    borderRadius: 5,
+    marginTop: 15,
+  },
+  dropdownOptionText: {
+    fontSize: SIZES.medium,
+    color: COLORS.gray,
+  },
+  section: {
+    marginBottom: 30,
   },
   submitButton: {
     backgroundColor: COLORS.primary,
@@ -367,25 +404,11 @@ const styles = StyleSheet.create({
     fontSize: SIZES.medium,
     color: COLORS.white,
   },
-  dropdown: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: COLORS.gray2,
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 30,
-  },
-  dropdownText: {
+  text: {
     fontSize: SIZES.medium,
     color: COLORS.gray3,
-  },
-  dropdownOptions: {
-    width: '70%',
-    borderRadius: 10,
-  },
-  dropdownOptionText: {
-    fontSize: SIZES.medium,
-    color: COLORS.gray3,
+    paddingLeft: 5,
+    marginBottom: 15,
   },
 });
 

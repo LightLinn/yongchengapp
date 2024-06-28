@@ -76,7 +76,7 @@ const CourseDetailScreen = () => {
           />
         ))
       ) : (
-        <Text style={styles.noDataText}>未找到課程資料</Text>
+        <Text style={styles.noDataText}>報名資料審核中</Text>
       )}
     </ScrollView>
   );

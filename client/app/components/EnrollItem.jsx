@@ -11,7 +11,7 @@ const EnrollCard = ({ enroll, courses }) => {
   const coach = enroll.coach?.user?.nickname || '安排中';
   const courseType = enroll.coursetype?.name || '';
   const venue = enroll.venue?.name || '';
-  console.log(courses)
+  const course = courses[0];
 
   return (
     <TouchableOpacity onPress={() => router.push(`/screens/course/CourseDetailScreen?enrollment_list_id=${enroll.id}`)}>
@@ -24,7 +24,7 @@ const EnrollCard = ({ enroll, courses }) => {
       <Text style={styles.text}><Text style={styles.label}>課程類型 </Text>{courseType}</Text>
         <Text style={styles.text}><Text style={styles.label}>授課教練 </Text>{coach}</Text>
       <Text style={styles.text}><Text style={styles.label}>上課地點 </Text>{venue}</Text>
-      <Text style={styles.text}><Text style={styles.label}>課程進度 </Text>{courses[0]?.course_completed || 0}/{courses[0]?.course_total || 'N/A'}</Text>
+      <Text style={styles.text}><Text style={styles.label}>課程進度 </Text>{course?.course_completed || 0}/{course?.course_total || 0}</Text>
       </Card>
     </TouchableOpacity>
   );

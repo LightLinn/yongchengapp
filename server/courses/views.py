@@ -59,20 +59,20 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
         
         return queryset
 
-    @action(detail=True, methods=['patch'])
+    @action(detail=True, methods=['patch'], url_path='update_status')
     def update_status(self, request, pk=None):
         assignment = self.get_object()
-        status = request.data.get('status')
-        if status not in ['已接受', '已拒絕']:
-            return Response({'detail': 'Invalid status'}, status=400)
-        
-        assignment.assigned_status = status
+        assignment_status = request.data.get('status')
+        if assignment_status not in ['已接受', '已拒絕']:
+            return Response({'detail': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+
+        assignment.assigned_status = assignment_status
         assignment.save()
 
-        if status == '已拒絕':
+        if assignment_status == '已拒絕':
             self.update_following_assignments(assignment)
 
-        elif status == '已接受':
+        elif assignment_status == '已接受':
             self.handle_accept_assignment(assignment)
 
         return Response(self.get_serializer(assignment).data)
@@ -92,45 +92,49 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
             current_time = assignment.deadline
 
     def handle_accept_assignment(self, accepted_assignment):
+        print(accepted_assignment)
         enrollment_number = accepted_assignment.enrollment_number
         enrollment_lists = EnrollmentList.objects.filter(enrollment_number=enrollment_number)
 
         enrollment_lists.update(enrollment_status='進行中')
         enrollment_lists.update(coach=accepted_assignment.coach)
 
-        for enrollment in enrollment_lists:
-            course_type = enrollment.coursetype
-            if course_type:
-                start_date = enrollment.start_date
-                course_time = enrollment.start_time
-                number_of_sessions = course_type.number_of_sessions
+        course = Course.objects.filter(enrollment_list__enrollment_number=enrollment_number)
+        course.update(course_status='進行中')
+        
 
-                for i in range(number_of_sessions):
-                    course_date = start_date + timedelta(days=i*7)
-                    Course.objects.create(
-                        course_date=course_date,
-                        course_time=course_time,
-                        course_status='未開課',
-                        enrollment_list=enrollment, 
-                        enrollment_number=enrollment_number
-                    )
+        # for enrollment in enrollment_lists:
+        #     course_type = enrollment.coursetype
+        #     if course_type:
+        #         start_date = enrollment.start_date
+        #         course_time = enrollment.start_time
+        #         number_of_sessions = course_type.number_of_sessions
 
-    @action(detail=False, methods=['post'], url_path='create_assigned_course')
-    def create_assigned_course(self, request):
+        #         for i in range(number_of_sessions):
+        #             course_date = start_date + timedelta(days=i*7)
+        #             Course.objects.create(
+        #                 course_date=course_date,
+        #                 course_time=course_time,
+        #                 course_status='未開課',
+        #                 enrollment_list=enrollment, 
+        #                 enrollment_number=enrollment_number
+                    # )
+
+    @action(detail=False, methods=['post'], url_path='create_assigned')
+    def create_assigned(self, request):
         try:
             assigned_courses_data = request.data if isinstance(request.data, list) else [request.data]
-
             for course_data in assigned_courses_data:
                 rank = course_data.get('rank')
                 decide_hours = course_data.get('considerHours')
-                coach_username = course_data.get('coach')
+                coach_id = course_data.get('coach', None)
                 enrollment_number_id = course_data.get('enrollment_number')
                 assigned_status = course_data.get('assigned_status')
                 assigned_time = course_data.get('assigned_time')
                 deadline = course_data.get('deadline')
 
                 try:
-                    coach = Coach.objects.get(user__username=coach_username)
+                    coach = Coach.objects.get(id=coach_id)
                 except Coach.DoesNotExist:
                     return Response({'detail': 'Coach not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -150,6 +154,10 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Assigned courses created successfully'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=False, methods=['post'], url_path='get_assigned')
+    def get_assigned(self, request):
+        return Response({'detail': 'Get assigned courses'})
         
 class EnrollmentNumbersViewSet(viewsets.ModelViewSet):
     queryset = EnrollmentNumbers.objects.all()
@@ -224,15 +232,60 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['patch'], url_path='update_status_by_number')
     def update_status_by_number(self, request):
-        enrollment_number = request.data.get('enrollment_number', None)
+        enrollment_number_name = request.data.get('enrollment_number')
+        selected_dates = request.data.get('selectedDates', [])
+        
+        if not enrollment_number_name or not selected_dates:
+            return Response({'detail': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        enrollments = EnrollmentList.objects.filter(enrollment_number__name=enrollment_number_name)
+        enrollments.update(enrollment_status='派課中')
+
+        for enrollment in enrollments:
+            for date in selected_dates:
+                Course.objects.create(
+                    enrollment_list=enrollment,
+                    enrollment_number=enrollment.enrollment_number,
+                    course_date=date,
+                    course_time=enrollment.start_time,
+                    course_status='未開課'
+                )
+        
+        return Response({'detail': 'Status updated successfully'}, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['patch'], url_path='direct_assign')
+    def direct_assign(self, request, pk=None):
+        enrollment = self.get_object()
         enrollment_status = request.data.get('enrollment_status', None)
-        
-        if not enrollment_number or not enrollment_status:
-            return Response({"detail": "enrollment_number and enrollment_status are required."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        enrollments = EnrollmentList.objects.filter(enrollment_number__name=enrollment_number)
-        if enrollments.exists():
-            enrollments.update(enrollment_status=enrollment_status)
-            return Response({"detail": "Enrollment statuses updated successfully."}, status=status.HTTP_200_OK)
-        
-        return Response({"detail": "No enrollments found with the given enrollment number."}, status=status.HTTP_404_NOT_FOUND)
+        selected_dates = request.data.get('selectedDates', [])
+        coach_id = request.data.get('coach', None)
+
+        if not enrollment_status or not coach_id or not selected_dates:
+            return Response({'detail': 'enrollment_status, selected_dates, and coach are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the coach instance
+        try:
+            coach = Coach.objects.get(id=coach_id)
+        except Coach.DoesNotExist:
+            return Response({'detail': 'Coach not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch all enrollments with the same enrollment_number
+        enrollments = EnrollmentList.objects.filter(enrollment_number=enrollment.enrollment_number)
+
+        # Update enrollment status and coach for all fetched enrollments
+        for enrollment in enrollments:
+            enrollment.enrollment_status = enrollment_status
+            enrollment.coach = coach
+            enrollment.save()
+
+            # Create Course instances for each selected date
+            for date in selected_dates:
+                Course.objects.create(
+                    enrollment_list=enrollment,
+                    enrollment_number=enrollment.enrollment_number,
+                    course_date=date,
+                    course_time=enrollment.start_time,
+                    course_status='進行中'
+                )
+
+        return Response({'detail': 'Enrollments and courses updated successfully'}, status=status.HTTP_200_OK)
