@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, TextInput, Text, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, ScrollView, StyleSheet, TextInput, Text, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import QrCodeScanner from '../../components/QrCodeScanner';
 import { fetchAttendanceRecords, createAttendance } from '../../../api/attendApi';
 import { fetchEnrollments, fetchEnrollmentsCoach, fetchCourseDetails } from '../../../api/courseApi';
@@ -78,7 +78,7 @@ const AttendanceScreen = () => {
 
   const handleSignIn = async (courseId) => {
     if (scanResult === '') {
-      alert('請先掃描驗證碼QR code');
+      Alert.alert('訊息', '請先掃描驗證碼QR code');
       return;
     }
 
@@ -90,11 +90,11 @@ const AttendanceScreen = () => {
         check_code: scanResult,
         check_note: '',
       });
-      alert('簽到成功');
-      loadData(); // 簽到成功後刷新數據
+      Alert.alert('訊息', '簽到成功');
+      loadData(); 
     } catch (error) {
       console.error('Failed to create attendance:', error);
-      alert('簽到失敗');
+      Alert.alert('訊息', '簽到失敗');
     }
   };
 

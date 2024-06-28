@@ -5,6 +5,7 @@ import { Calendar } from 'react-native-calendars';
 import { fetchEnrollmentDetails, fetchAvailableCoaches, createAssignedCourse, updateEnrollmentDirectAssignedCourse, updateEnrollmentStatusByNumber, fetchEnrollmentNumberDetails } from '../../../api/enrollmentApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import moment from 'moment';
 
 const EnrollmentAssignedCourseScreen = () => {
@@ -153,7 +154,7 @@ const EnrollmentAssignedCourseScreen = () => {
   };
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <LoadingSpinner />;
   }
 
   return (

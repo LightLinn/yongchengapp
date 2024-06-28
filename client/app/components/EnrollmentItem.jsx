@@ -13,7 +13,7 @@ const EnrollmentItem = ({ enrollment, onPayment, onReview, onCancel, onView, onA
       </View>
       <Text style={styles.details}>學生姓名 {enrollment.student}</Text>
       <Text style={styles.details}>開課日期 {enrollment.start_date ? enrollment.start_date : ''}</Text>
-      <Text style={styles.details}>教練姓名 {enrollment.coach && enrollment.coach.user ? enrollment.coach.user.nickname : ''}</Text>
+      <Text style={styles.details}>教練姓名 {enrollment.coach && enrollment.coach.user ? enrollment.coach.user.nickname : '安排中'}</Text>
       <Text style={styles.details}>上課場地 {enrollment.venue ? enrollment.venue.name : ''}</Text>
       <View style={styles.buttonContainer}>
         {enrollment.enrollment_status === '待付款' && (

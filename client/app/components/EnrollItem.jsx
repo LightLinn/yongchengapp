@@ -5,13 +5,13 @@ import { Ionicons } from '@expo/vector-icons'; // 使用 Expo 提供的圖標庫
 import { COLORS, SIZES } from '../../styles/theme';
 import { useRouter } from 'expo-router';
 
-const EnrollCard = ({ enroll, courses }) => {
+const EnrollCard = ({ enroll }) => {
   const router = useRouter();
 
   const coach = enroll.coach?.user?.nickname || '安排中';
   const courseType = enroll.coursetype?.name || '';
   const venue = enroll.venue?.name || '';
-  console.log(enroll);
+  
 
   return (
     <TouchableOpacity onPress={() => router.push(`/screens/course/CourseDetailScreen?enrollment_list_id=${enroll.id}`)}>

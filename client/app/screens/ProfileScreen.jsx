@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, Image, Text, TextInput, Alert, TouchableO
 import { Button } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { fetchUserProfile, updateUserProfile } from '../../api/profileApi';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, SIZES, FONT } from '../../styles/theme';
 import moment from 'moment';
@@ -21,6 +21,7 @@ const ProfileScreen = () => {
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const router = useRouter();
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -90,6 +91,9 @@ const ProfileScreen = () => {
     await AsyncStorage.removeItem('username');
     await AsyncStorage.removeItem('groups');
     router.replace('/LoginScreen');
+    navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+    });
   };
 
   const handleChangePassword = () => {

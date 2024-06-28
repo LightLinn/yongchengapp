@@ -16,7 +16,12 @@ const EnrollmentReviewScreen = () => {
   const [newNumberModalVisible, setNewNumberModalVisible] = useState(false);
   const [newNumber, setNewNumber] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+
+  const timeOptions = Array.from({ length: 33 }, (_, index) => {
+    const hours = Math.floor(index / 2) + 6;
+    const minutes = index % 2 === 0 ? '00' : '30';
+    return `${String(hours).padStart(2, '0')}:${minutes}`;
+  });
 
   useEffect(() => {
     const loadEnrollmentDetails = async () => {
@@ -54,7 +59,7 @@ const EnrollmentReviewScreen = () => {
     try {
       await updateEnrollment(enrollmentId, {
         ...enrollmentDetails,
-        coursetype: undefined, // Remove these from the payload
+        coursetype: undefined,
         user: undefined,
         venue: undefined,
         coach: undefined,
@@ -121,20 +126,11 @@ const EnrollmentReviewScreen = () => {
     hideDatePicker();
   };
 
-  const showTimePicker = () => {
-    setTimePickerVisibility(true);
-  };
-
-  const hideTimePicker = () => {
-    setTimePickerVisibility(false);
-  };
-
-  const handleTimeConfirm = (time) => {
+  const handleTimeSelect = (index, value) => {
     setEnrollmentDetails((prevState) => ({
       ...prevState,
-      start_time: moment(time).format('HH:mm:ss'),
+      start_time: value,
     }));
-    hideTimePicker();
   };
 
   if (loading) {
@@ -163,9 +159,9 @@ const EnrollmentReviewScreen = () => {
               }));
             }}
           />
-          <TouchableOpacity onPress={() => setNewNumberModalVisible(true)} style={styles.addButton}>
+          {/* <TouchableOpacity onPress={() => setNewNumberModalVisible(true)} style={styles.addButton}>
             <Text style={styles.addButtonText}>新增</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
       <View style={styles.section}>
@@ -200,14 +196,14 @@ const EnrollmentReviewScreen = () => {
       </View>
       <View style={styles.section}>
         <Text style={styles.label}>開課時間</Text>
-        <TouchableOpacity onPress={showTimePicker} style={styles.input}>
-          <Text>{enrollmentDetails.start_time ? moment(enrollmentDetails.start_time, 'HH:mm:ss').format('HH:mm') : '選擇時間'}</Text>
-        </TouchableOpacity>
-        <DateTimePickerModal
-          isVisible={isTimePickerVisible}
-          mode="time"
-          onConfirm={handleTimeConfirm}
-          onCancel={hideTimePicker}
+        <ModalDropdown
+          options={timeOptions}
+          defaultValue={enrollmentDetails.start_time || '請選擇'}
+          style={styles.dropdown}
+          textStyle={styles.dropdownText}
+          dropdownStyle={styles.dropdownOptions}
+          dropdownTextStyle={styles.dropdownOptionText}
+          onSelect={handleTimeSelect}
         />
       </View>
       <View style={styles.section}>
@@ -353,15 +349,15 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     borderWidth: 1,
-    borderColor: COLORS.lightGray,
+    borderColor: COLORS.gray2,
     padding: 10,
     borderRadius: 5,
     marginTop: 5,
     flex: 1,
   },
   dropdownText: {
-    fontSize: SIZES.medium,
-    color: COLORS.gray,
+    fontSize: SIZES.small,
+    color: COLORS.black,
   },
   dropdownOptions: {
     width: '80%',

@@ -160,7 +160,7 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
         return Response({'detail': 'Get assigned courses'})
         
 class EnrollmentNumbersViewSet(viewsets.ModelViewSet):
-    queryset = EnrollmentNumbers.objects.all()
+    queryset = EnrollmentNumbers.objects.all().order_by('-id')
     serializer_class = EnrollmentNumbersSerializer
     
 

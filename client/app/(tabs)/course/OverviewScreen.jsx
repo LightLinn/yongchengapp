@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OverviewScreen = () => {
   const [enrollments, setEnrollments] = useState([]);
-  const [courses, setCourses] = useState({});
+  // const [courses, setCourses] = useState({});
   const [searchText, setSearchText] = useState('');
   const [selectedSort, setSelectedSort] = useState('newest');
   const [refreshing, setRefreshing] = useState(false);
@@ -26,21 +26,21 @@ const OverviewScreen = () => {
     try {
       const isCoach = await checkIsCoach();
       const fetchedEnrollments = isCoach ? await fetchEnrollmentsCoach() : await fetchEnrollments();
-      const coursesData = {};
-      setLoading(false); 
-      for (const enrollment of fetchedEnrollments) {
-        const enrollmentCourses = await fetchCoursesByEnrollmentListId(enrollment.id);
-        coursesData[enrollment.id] = enrollmentCourses;
-      }
-
-      fetchedEnrollments.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
-
-      setEnrollments(fetchedEnrollments);
-      setCourses(coursesData);
-      
-    } catch (error) {
-      console.error('Failed to load data', error);
-    } finally {
+      // const coursesData = {};
+      // for (const enrollment of fetchedEnrollments) {
+        //   const enrollmentCourses = await fetchCoursesByEnrollmentListId(enrollment.id);
+        //   coursesData[enrollment.id] = enrollmentCourses;
+        // }
+        
+        fetchedEnrollments.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+        
+        setEnrollments(fetchedEnrollments);
+        // setCourses(coursesData);
+        
+      } catch (error) {
+        console.error('Failed to load data', error);
+      } finally {
+        setLoading(false); 
     }
   };
   
@@ -121,7 +121,6 @@ const OverviewScreen = () => {
           <EnrollItem 
             key={enroll.id} 
             enroll={enroll} 
-            courses={courses[enroll.id] || []}
           />
         ))}
       </ScrollView>
