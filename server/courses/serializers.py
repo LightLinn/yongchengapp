@@ -66,6 +66,9 @@ class EnrollmentListSerializer(serializers.ModelSerializer):
     venue = VenueSerializer(read_only=True)
     coach = CoachSerializer(read_only=True)
     enrollment_number = EnrollmentNumbersSerializer(read_only=True)
+    course_progress = serializers.SerializerMethodField()
+    course_completed = serializers.SerializerMethodField()
+    course_total = serializers.SerializerMethodField()
     
     coursetype_id = serializers.PrimaryKeyRelatedField(queryset=CourseType.objects.all(), source='coursetype', write_only=True, allow_null=True)
     user_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), source='user', write_only=True, allow_null=True)
@@ -76,6 +79,18 @@ class EnrollmentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnrollmentList
         fields = '__all__'
+
+    #取得課程進度
+    def get_course_progress(self, obj):
+        return Course.objects.filter(enrollment_number=obj.enrollment_number, course_status='進行中').count()
+    
+    #取得課程完成數
+    def get_course_completed(self, obj):
+        return Course.objects.filter(enrollment_number=obj.enrollment_number, course_status='已完成').count()
+    
+    #取得課程總數
+    def get_course_total(self, obj):
+        return obj.coursetype.number_of_sessions
 
 class CourseSerializer(serializers.ModelSerializer):
     enrollment_list = EnrollmentListSerializer(read_only=True)

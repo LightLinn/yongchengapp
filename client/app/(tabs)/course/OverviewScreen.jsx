@@ -9,9 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OverviewScreen = () => {
   const [enrollments, setEnrollments] = useState([]);
-  const [coaches, setCoaches] = useState([]);
-  const [courseTypes, setCourseTypes] = useState([]);
-  const [venues, setVenues] = useState([]);
   const [courses, setCourses] = useState({});
   const [searchText, setSearchText] = useState('');
   const [selectedSort, setSelectedSort] = useState('newest');
@@ -25,33 +22,25 @@ const OverviewScreen = () => {
   };
 
   const loadData = async () => {
-    setLoading(true); // 開始加載數據
+    setLoading(true); 
     try {
       const isCoach = await checkIsCoach();
       const fetchedEnrollments = isCoach ? await fetchEnrollmentsCoach() : await fetchEnrollments();
-      const fetchedCoaches = await fetchCoaches();
-      const fetchedCourseTypes = await fetchCourseTypes();
-      const fetchedVenues = await fetchVenues();
-      
       const coursesData = {};
+      setLoading(false); 
       for (const enrollment of fetchedEnrollments) {
         const enrollmentCourses = await fetchCoursesByEnrollmentListId(enrollment.id);
         coursesData[enrollment.id] = enrollmentCourses;
       }
 
-      // 初始数据按日期排序（最新在前）
       fetchedEnrollments.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
 
       setEnrollments(fetchedEnrollments);
-      setCoaches(fetchedCoaches);
-      setCourseTypes(fetchedCourseTypes);
-      setVenues(fetchedVenues);
       setCourses(coursesData);
       
     } catch (error) {
       console.error('Failed to load data', error);
     } finally {
-      setLoading(false); // 結束加載數據
     }
   };
   
@@ -132,9 +121,6 @@ const OverviewScreen = () => {
           <EnrollItem 
             key={enroll.id} 
             enroll={enroll} 
-            coaches={coaches} 
-            courseTypes={courseTypes} 
-            venues={venues} 
             courses={courses[enroll.id] || []}
           />
         ))}
