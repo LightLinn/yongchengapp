@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from .models import Coach, Lifeguard, Performance, Salary, SalaryRange, Employee
 from authentication.serializers import UserSerializer
-from courses.models import EnrollmentList
+from courses.models import EnrollmentList, Course
 
 class EmployeeSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -26,7 +26,13 @@ class CoachSerializer(serializers.ModelSerializer):
         return EnrollmentList.objects.filter(coach=obj, enrollment_status='進行中').count()
 
     def get_ongoing_courses_count(self, obj):
-        return EnrollmentList.objects.filter(coach=obj, courses__course_status='進行中').distinct().count()
+        # 篩選EnrollmentList為該名教練的enrollment_number
+        enrollment_numbers = EnrollmentList.objects.filter(coach=obj).values_list('enrollment_number', flat=True)
+        # 篩選Course為該名教練的課程
+        courses = Course.objects.filter(enrollment_number__in=enrollment_numbers)
+        # 篩選課程狀態為進行中
+        return courses.filter(course_status='進行中').count()
+        
 
 class LifeguardSerializer(serializers.ModelSerializer):
     user = UserSerializer()

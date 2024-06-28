@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity
 import { COLORS, SIZES } from '../../../styles/theme';
 import { fetchEnrollmentDetails, fetchCourses } from '../../../api/enrollmentApi';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Divider } from 'react-native-elements';
 
 const EnrollmentDetailsScreen = () => {
   const { enrollmentId } = useLocalSearchParams();
@@ -19,7 +20,6 @@ const EnrollmentDetailsScreen = () => {
           setEnrollmentDetails(details);
 
           if (details.enrollment_number && details.enrollment_number.id) {
-            console.log(enrollmentId, details.enrollment_number.id);
             const courseDetails = await fetchCourses(enrollmentId, details.enrollment_number.name);
             setCourses(courseDetails);
           }
@@ -98,12 +98,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   details: {
-    fontSize: SIZES.medium,
+    fontSize: SIZES.large,
+    color: COLORS.gray3,
     marginBottom: 5,
+    paddingBottom: 5,
   },
   courseItem: {
     marginBottom: 10,
-    padding: 10,
+    padding:20,
     backgroundColor: COLORS.lightWhite,
     borderRadius: 5,
     shadowColor: '#000',
@@ -113,7 +115,10 @@ const styles = StyleSheet.create({
   },
   courseDetails: {
     fontSize: SIZES.medium,
+    backgroundColor: COLORS.lightWhite,
+    color: COLORS.gray3,
     marginBottom: 5,
+    paddingBottom: 5,
   },
   buttonClose: {
     backgroundColor: COLORS.gray,

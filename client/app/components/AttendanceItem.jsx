@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   signInButton: {
-    backgroundColor: COLORS.success,
+    backgroundColor: COLORS.primary,
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
