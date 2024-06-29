@@ -65,6 +65,12 @@ const EnrollmentAssignedCourseScreen = () => {
       Alert.alert('錯誤', '請選擇上課日期');
       return;
     }
+
+    if (!assignedCourses[index].coach) {
+      Alert.alert('錯誤', '教練不可以為空');
+      return;
+    }
+
     if (!enrollmentNumberDetails.same_course_type) {
       Alert.alert('錯誤', '課程類型不同');
       return;
@@ -129,6 +135,11 @@ const EnrollmentAssignedCourseScreen = () => {
       return;
     }
 
+    if (assignedCourses.length === 0) {
+      Alert.alert('錯誤', '必須至少有一筆指派資料');
+      return;
+    }
+
     try {
       const assignedCoursesToSubmit = assignedCourses.map((course, index) => ({
         ...course,
@@ -163,7 +174,7 @@ const EnrollmentAssignedCourseScreen = () => {
         <Text style={styles.enrollmentNumberLabel}>報名單號</Text>
         <TextInput style={styles.enrollmentNumberInput} value={enrollmentNumberDetails.name} editable={false} />
         <Text style={styles.enrollmentNumberLabel}>選擇上課日期</Text>
-        <Text style={styles.numberSessions}>已選{Object.keys(selectedDates).length}堂課 / 總共{number_of_sessions}堂課</Text>
+        <Text style={styles.numberSessions}>已選擇{Object.keys(selectedDates).length} / {number_of_sessions}堂課</Text>
       </View>
       <Calendar
         onDayPress={handleDateSelect}
