@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.utils import timezone
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework import viewsets
+from django.utils import timezone
 from .models import LifeguardSchedule, CoahcSchedule, Location, UnavailableSlot
 from .serializers import LifeguardScheduleSerializer, CoachScheduleSerializer, LocationSerializer, UnavailableSlotSerializer
 from authentication.permissions import *
@@ -37,7 +37,13 @@ class UnavailableSlotViewSet(viewsets.ModelViewSet):
 class LifeguardScheduleViewSet(viewsets.ModelViewSet):
     queryset = LifeguardSchedule.objects.all()
     serializer_class = LifeguardScheduleSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        lifeguard_id = self.request.query_params.get('lifeguard_id')
+        today = timezone.now().date()
+        if lifeguard_id:
+            return self.queryset.filter(lifeguard_id=lifeguard_id, date=today)
+        return self.queryset.none()
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()

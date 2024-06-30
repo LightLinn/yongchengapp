@@ -81,8 +81,17 @@ const VenueScreen = () => {
     setSortAscending(!sortAscending);
   };
 
+  const formatTime = (time) => {
+    if (!time) return '';
+    const [hours, minutes] = time.split(':');
+    const date = new Date();
+    date.setHours(hours, minutes);
+    return date.toTimeString().slice(0, 5); // 返回 HH:MM 格式
+  };
+  
+
   const hasPermission = (action) => {
-    const permission = permissions.find(p => p.screen_name === 'venue_screen');
+    const permission = permissions.find(p => p.screen_name === '場地管理');
     return permission && permission[action];
   };
 
@@ -120,7 +129,9 @@ const VenueScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.venueItem}>
             <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.date}>{dayjs(item.created_at).format('YYYY/MM/DD HH:MM')}</Text>
+            <Text style={styles.desc}>{item.description}</Text>
+            <Text style={styles.date}>平日 {formatTime(item.weekday_open_time)} - {formatTime(item.weekday_close_time)}</Text>
+            <Text style={styles.date}>假日 {formatTime(item.holiday_open_time)} - {formatTime(item.holiday_close_time)}</Text>
             <View style={styles.actions}>
               {hasPermission('can_edit') && (
                 <TouchableOpacity onPress={() => router.push(`/screens/venue/VenueFormScreen?id=${item.id}`)}>
@@ -193,6 +204,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: SIZES.medium,
     marginBottom: 5,
+  },
+  desc: {
+    fontSize: SIZES.small,
+    marginBottom: 5,
+    color: COLORS.gray,
   },
   date: {
     fontSize: SIZES.small,

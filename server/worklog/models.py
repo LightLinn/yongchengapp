@@ -44,6 +44,9 @@ class DailyCheckRecord(Auditable):
     score = models.IntegerField(choices=[(0, '優'), (1, '尚可'), (2, '需改善')], default=0)
     duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員')
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
+    date = models.DateField(verbose_name='檢點日期', blank=True, null=True)
+    venue = models.ForeignKey('venues.Venue', on_delete=models.CASCADE, verbose_name='場地', blank=True, null=True)
+
 
     class Meta:
         db_table = 'daily_check_record'

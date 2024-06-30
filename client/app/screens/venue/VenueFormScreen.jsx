@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { createVenue, fetchVenueDetails, updateVenue } from '../../../api/venueApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import Geocoder from 'react-native-geocoding';
+import moment from 'moment';
+import ModalDateTimePicker from 'react-native-modal-datetime-picker';
+
+// 初始化 Geocoder
+Geocoder.init('AIzaSyCPuzFAUbHHbNUeezAdvQAFLYPOMFqzQkY'); // 在這裡使用你的 API 金鑰
 
 const VenueFormScreen = () => {
   const router = useRouter();
@@ -12,7 +18,7 @@ const VenueFormScreen = () => {
   const [venue, setVenue] = useState({
     name: '',
     description: '',
-    capacity: '',
+    capacity: 0,
     weekday_open_time: '',
     weekday_close_time: '',
     holiday_open_time: '',
@@ -23,6 +29,8 @@ const VenueFormScreen = () => {
     managers_id: [],
   });
   const [loading, setLoading] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+  const [currentField, setCurrentField] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -54,7 +62,53 @@ const VenueFormScreen = () => {
     }
   };
 
+  const validateForm = () => {
+    const { name, description, address, weekday_open_time, weekday_close_time, holiday_open_time, holiday_close_time } = venue;
+
+    if (!name || !description || !address || !weekday_open_time || !weekday_close_time || !holiday_open_time || !holiday_close_time) {
+      Alert.alert('錯誤', '請填寫所有必填欄位');
+      return false;
+    }
+
+    const timeFormat = /^\d{2}:\d{2}$/;
+    if (!timeFormat.test(weekday_open_time) || !timeFormat.test(weekday_close_time) || !timeFormat.test(holiday_open_time) || !timeFormat.test(holiday_close_time)) {
+      Alert.alert('錯誤', '時間格式應為 HH:MM');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleAddressChange = async (address) => {
+    const updatedVenue = { ...venue, address };
+    setVenue(updatedVenue);
+    try {
+      const json = await Geocoder.from(address);
+      const location = json.results[0].geometry.location;
+      setVenue((prevVenue) => ({
+        ...prevVenue,
+        latitude: location.lat.toString(),
+        longitude: location.lng.toString(),
+      }));
+    } catch (error) {
+      console.warn('地址轉換失敗', error);
+    }
+  };
+
+  const showTimePicker = (field) => {
+    setCurrentField(field);
+    setTimePickerVisible(true);
+  };
+
+  const handleConfirm = (selectedTime) => {
+    const formattedTime = moment(selectedTime).format('HH:mm');
+    setVenue({ ...venue, [currentField]: formattedTime });
+    setTimePickerVisible(false);
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     setLoading(true);
     try {
       if (id) {
@@ -62,11 +116,11 @@ const VenueFormScreen = () => {
       } else {
         await createVenue(venue);
       }
-      alert('場地保存成功');
+      Alert.alert('成功', '場地保存成功');
       router.back();
     } catch (error) {
       console.error('Failed to save venue', error);
-      alert('保存失敗');
+      Alert.alert('錯誤', '保存失敗');
     } finally {
       setLoading(false);
     }
@@ -99,12 +153,12 @@ const VenueFormScreen = () => {
         onChangeText={(value) => setVenue({ ...venue, capacity: value })}
         inputStyle={styles.input}
         labelStyle={styles.label}
-        // keyboardType="numeric"
+        keyboardType="numeric"
       />
       <Input
         label="平日開放時間"
         value={venue.weekday_open_time}
-        onChangeText={(value) => setVenue({ ...venue, weekday_open_time: value })}
+        onFocus={() => showTimePicker('weekday_open_time')}
         inputStyle={styles.input}
         labelStyle={styles.label}
         placeholder="HH:MM"
@@ -112,7 +166,7 @@ const VenueFormScreen = () => {
       <Input
         label="平日關閉時間"
         value={venue.weekday_close_time}
-        onChangeText={(value) => setVenue({ ...venue, weekday_close_time: value })}
+        onFocus={() => showTimePicker('weekday_close_time')}
         inputStyle={styles.input}
         labelStyle={styles.label}
         placeholder="HH:MM"
@@ -120,7 +174,7 @@ const VenueFormScreen = () => {
       <Input
         label="假日開放時間"
         value={venue.holiday_open_time}
-        onChangeText={(value) => setVenue({ ...venue, holiday_open_time: value })}
+        onFocus={() => showTimePicker('holiday_open_time')}
         inputStyle={styles.input}
         labelStyle={styles.label}
         placeholder="HH:MM"
@@ -128,10 +182,17 @@ const VenueFormScreen = () => {
       <Input
         label="假日關閉時間"
         value={venue.holiday_close_time}
-        onChangeText={(value) => setVenue({ ...venue, holiday_close_time: value })}
+        onFocus={() => showTimePicker('holiday_close_time')}
         inputStyle={styles.input}
         labelStyle={styles.label}
         placeholder="HH:MM"
+      />
+      <Input
+        label="地址"
+        value={venue.address}
+        onChangeText={handleAddressChange}
+        inputStyle={styles.input}
+        labelStyle={styles.label}
       />
       <Input
         label="經度"
@@ -140,6 +201,7 @@ const VenueFormScreen = () => {
         inputStyle={styles.input}
         labelStyle={styles.label}
         keyboardType="numeric"
+        editable={false}
       />
       <Input
         label="緯度"
@@ -148,19 +210,20 @@ const VenueFormScreen = () => {
         inputStyle={styles.input}
         labelStyle={styles.label}
         keyboardType="numeric"
-      />
-      <Input
-        label="地址"
-        value={venue.address}
-        onChangeText={(value) => setVenue({ ...venue, address: value })}
-        inputStyle={styles.input}
-        labelStyle={styles.label}
+        editable={false}
       />
       <Button
         title="儲存場地"
         onPress={handleSubmit}
         buttonStyle={styles.saveButton}
         titleStyle={styles.saveButtonText}
+      />
+      <ModalDateTimePicker
+        isVisible={isTimePickerVisible}
+        mode="time"
+        onConfirm={handleConfirm}
+        onCancel={() => setTimePickerVisible(false)}
+        is24Hour={true}
       />
     </ScrollView>
   );

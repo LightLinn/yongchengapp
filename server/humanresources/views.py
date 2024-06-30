@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from .models import Coach, Lifeguard, Performance, Salary, Employee
 from .serializers import CoachSerializer, LifeguardSerializer, PerformanceSerializer, SalarySerializer, EmployeeSerializer
 from courses.models import EnrollmentList
-from schedule.models import CoahcSchedule
+from schedule.models import CoahcSchedule, Location
 from datetime import datetime, timedelta
 
 class CoachViewSet(viewsets.ModelViewSet):
@@ -39,11 +39,21 @@ class CoachViewSet(viewsets.ModelViewSet):
             enrollment = EnrollmentList.objects.get(id=enrollment_id)
             date = enrollment.start_date
             time = enrollment.start_time
-            venue = enrollment.venue
+            venue_name = enrollment.venue
         except EnrollmentList.DoesNotExist:
             return Response({'detail': 'Enrollment not found'}, status=status.HTTP_404_NOT_FOUND)
         except AttributeError:
             return Response({'detail': 'Enrollment data is incomplete'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 若enrollment.venue中包含「社區」，則將其替換為「竹北社區游泳池」
+        if '社區' in venue_name:
+            venue_name = '竹北社區游泳池'
+
+        try:
+            venue = Location.objects.get(name=venue_name)  # 查找對應的 Location 實例
+        except Location.DoesNotExist:
+            return Response({'detail': 'Venue not found'}, status=status.HTTP_404_NOT_FOUND)
+
         
         day_of_week_mapping = {
             'Monday': '週一',
@@ -52,7 +62,7 @@ class CoachViewSet(viewsets.ModelViewSet):
             'Thursday': '週四',
             'Friday': '週五',
             'Saturday': '週六',
-            'Sunday': '週日'
+            'Sunday': '週日',
         }
         day_of_week = day_of_week_mapping[date.strftime('%A')]
         time_slot = time.strftime('%H:%M')
@@ -77,7 +87,7 @@ class CoachViewSet(viewsets.ModelViewSet):
                     end_time = start_time + timedelta(minutes=29)
                     course_venue = course.enrollment_list.venue  # Get the venue from enrollment_list
                     
-                    if course_venue == venue:
+                    if course_venue == venue.name:
                         if course_time <= end_time and course_time + timedelta(minutes=29) >= start_time:
                             is_available = False
                             break
@@ -94,7 +104,8 @@ class CoachViewSet(viewsets.ModelViewSet):
                 coach=coach,
                 day_of_week=day_of_week,
                 time_slot=time_slot,
-                is_available=True
+                is_available=True,
+                location=venue,
             ).exists()
             
             if is_available and coach_schedule:

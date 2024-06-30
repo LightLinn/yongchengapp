@@ -11,9 +11,24 @@ class UnavailableSlotSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LifeguardScheduleSerializer(serializers.ModelSerializer):
+    venue_name = serializers.SerializerMethodField('get_venue_name')
+    lifeguard_name = serializers.SerializerMethodField('get_lifeguard_name')
+    lifeguard_nickname = serializers.SerializerMethodField('get_lifeguaer_nickname')
+
     class Meta:
         model = LifeguardSchedule
         fields = '__all__'
+
+    # 取得venue的名稱
+    def get_venue_name(self, obj):
+        return obj.venue.name
+    
+    #取得救生員的名稱
+    def get_lifeguard_name(self, obj):
+        return obj.lifeguard.user.username
+    
+    def get_lifeguaer_nickname(self, obj):
+        return obj.lifeguard.user.nickname
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:

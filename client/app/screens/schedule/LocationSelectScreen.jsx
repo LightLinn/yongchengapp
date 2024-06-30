@@ -3,10 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Alert } 
 import { useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { fetchLocations, createLocation, deleteLocation } from '../../../api/locationApi';
+import { usePermissions } from '../../../context/PermissionsContext';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const LocationSelectScreen = () => {
   const [locations, setLocations] = useState([]);
   const [newLocationName, setNewLocationName] = useState('');
+  const [loading, setLoading] = useState(true);
+  const { permissions, loading: permissionsLoading } = usePermissions();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,11 +23,13 @@ const LocationSelectScreen = () => {
       setLocations(data);
     } catch (error) {
       console.error('Failed to load locations', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSelect = (location) => {
-    router.push(`/screens/schedule/CoachScheduleScreen?locationId=${location.id}&locationName=${location.name}`)
+    router.push(`/screens/schedule/CoachScheduleScreen?locationId=${location.id}&locationName=${location.name}`);
   };
 
   const handleAddLocation = async () => {
@@ -42,14 +48,35 @@ const LocationSelectScreen = () => {
   };
 
   const handleDeleteLocation = async (id) => {
+    Alert.alert('確定要刪除場地嗎？', '', [
+      { text: '取消', style: 'cancel' },
+      { text: '確定', onPress: () => deleteLocationHandler(id) },
+    ]);
+  };
+
+  const deleteLocationHandler = async (id) => {
     try {
-      await deleteLocation(id);
-      setLocations(locations.filter(location => location.id !== id));
+      const response = await deleteLocation(id);
+      if (response.ok) {
+        setLocations(locations.filter(location => location.id !== id));
+      } else {
+        console.error('Failed to delete location', response);
+        Alert.alert('刪除場地失敗');
+      }
     } catch (error) {
       console.error('Failed to delete location', error);
       Alert.alert('刪除場地失敗');
     }
   };
+
+  const hasPermission = (action) => {
+    const permission = permissions.find(p => p.screen_name === '場地管理');
+    return permission && permission[action];
+  };
+
+  if (loading || permissionsLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <View style={styles.container}>
@@ -61,23 +88,27 @@ const LocationSelectScreen = () => {
             <TouchableOpacity style={styles.locationItem} onPress={() => handleSelect(item)}>
               <Text style={styles.locationText}>{item.name}</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteLocation(item.id)}>
-              <Text style={styles.deleteButtonText}>刪除</Text>
-            </TouchableOpacity> */}
+            {/* {hasPermission('can_delete') && (
+              <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteLocation(item.id)}>
+                <Text style={styles.deleteButtonText}>刪除</Text>
+              </TouchableOpacity>
+            )} */}
           </View>
         )}
       />
-      <View style={styles.addContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="新增場地名稱"
-          value={newLocationName}
-          onChangeText={setNewLocationName}
-        />
-        <TouchableOpacity style={styles.addButton} onPress={handleAddLocation}>
-          <Text style={styles.addButtonText}>新增</Text>
-        </TouchableOpacity>
-      </View>
+      {hasPermission('can_create') && (
+        <View style={styles.addContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="新增場地名稱"
+            value={newLocationName}
+            onChangeText={setNewLocationName}
+          />
+          <TouchableOpacity style={styles.addButton} onPress={handleAddLocation}>
+            <Text style={styles.addButtonText}>新增</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -111,7 +142,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 2,
-    
   },
   locationText: {
     fontSize: SIZES.medium,
@@ -119,9 +149,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   deleteButton: {
-    backgroundColor: COLORS.red,
+    backgroundColor: COLORS.alert,
     padding: 10,
-    borderRadius: 5,
+    marginLeft: 10,
+    borderRadius: 10,
   },
   deleteButtonText: {
     color: COLORS.white,
@@ -141,9 +172,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   addButton: {
-    backgroundColor: COLORS.gray3,
+    backgroundColor: COLORS.primary,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
+    marginLeft: 10,
   },
   addButtonText: {
     color: COLORS.white,

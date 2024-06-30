@@ -25,7 +25,7 @@ const GroupListScreen = () => {
     };
 
     const hasPermission = (action) => {
-        const permission = permissions.find(p => p.screen_name === 'admin');
+        const permission = permissions.find(p => p.screen_name === '角色人員');
         return permission && permission[action];
     };
 

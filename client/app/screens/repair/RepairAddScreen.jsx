@@ -59,7 +59,7 @@ const RepairAddScreen = () => {
   };
 
   const hasPermission = (action) => {
-    const permission = permissions.find(p => p.screen_name === 'repair_screen');
+    const permission = permissions.find(p => p.screen_name === '維修管理');
     return permission && permission[action];
   };
 

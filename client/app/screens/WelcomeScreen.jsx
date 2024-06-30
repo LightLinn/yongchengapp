@@ -1,52 +1,45 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Image, Animated, ActivityIndicator } from 'react-native';
-
 import { useRouter, useSegments } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const WelcomeScreen = () => {
   const router = useRouter();
-  const { isLogging } = useAuth();
-  const segments = useSegments();
+  const { isLogging, refreshAccessToken } = useAuth();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const seconds = 1000
+  const seconds = 1000;
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      if (!isLogging) {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
         try {
-          const newToken = await refreshAccessToken();
-          if (newToken) {
-            // 模拟3秒延迟后跳转
-            setTimeout(() => {
-              router.replace('/(tabs)/home');
-            }, seconds);
-          }
+          setTimeout(() => {
+            router.replace('/(tabs)/home');
+          }, seconds);
+          
         } catch (error) {
+          console.log('Token refresh failed', error);
           setTimeout(() => {
             router.replace('/LoginScreen');
           }, seconds);
         }
       } else {
-        // 动画淡入效果
         Animated.timing(fadeAnim, {
-          toValue: 1, // 最终值为1（完全不透明）
-          duration: 1000, // 动画持续时间
+          toValue: 1,
+          duration: 1000,
           useNativeDriver: true,
         }).start();
-
-        // 模拟3秒延迟后跳转
         const timeoutId = setTimeout(() => {
-          router.replace('/(tabs)/home');
+          router.replace('/LoginScreen');
         }, seconds);
-
-        // 清除定时器
         return () => clearTimeout(timeoutId);
       }
     };
 
     checkLoginStatus();
-  }, [isLogging, segments, fadeAnim, router]);
+  }, [isLogging]);
 
   return (
     <View style={styles.container}>
@@ -90,6 +83,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
-
 
 export default WelcomeScreen;

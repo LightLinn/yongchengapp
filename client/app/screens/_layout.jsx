@@ -112,6 +112,14 @@ export default function Layout() {
         }}
       />
       <Stack.Screen 
+        name="attend"
+        options={{ 
+          headerTitle: '出勤管理',
+          headerShadowVisible: false,
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
         name="schedule" 
         options={({ navigation }) => ({
           headerTitle: '排班管理',

@@ -54,7 +54,7 @@ const RepairDetailScreen = () => {
     );
   }
 
-  const canEdit = hasPermission('repair_screen', 'can_edit');
+  const canEdit = hasPermission('維修管理', 'can_edit');
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

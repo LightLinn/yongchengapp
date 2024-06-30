@@ -82,7 +82,7 @@ const NewsListScreen = () => {
   };
 
   const hasPermission = (action) => {
-    const permission = permissions.find(p => p.screen_name === 'news_screen');
+    const permission = permissions.find(p => p.screen_name === '消息管理');
     return permission && permission[action];
   };
 
