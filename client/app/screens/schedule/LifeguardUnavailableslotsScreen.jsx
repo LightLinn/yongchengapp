@@ -2,16 +2,58 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import { useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../../../styles/theme';
+import { fetchLifeguardId, fetchLifeguardUnavailableSchedules, submitUnavailableSlots } from '../../../api/scheduleApi';
+import { useAuth } from '../../../context/AuthContext';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const LifeguardUnavailableslotsScreen = () => {
   const [selectedDates, setSelectedDates] = useState({});
   const [nextMonth, setNextMonth] = useState(moment().add(1, 'month').format('YYYY-MM'));
+  const [loading, setLoading] = useState(true);
+  const [lifeguardId, setLifeguardId] = useState(null);
+  const { userId } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const initializeNextMonth = moment().add(1, 'month').format('YYYY-MM');
     setNextMonth(initializeNextMonth);
+    loadLifeguardId();
   }, []);
+
+  useEffect(() => {
+    if (lifeguardId) {
+      loadSchedules();
+    }
+  }, [lifeguardId]);
+
+  const loadLifeguardId = async () => {
+    try {
+      const data = await fetchLifeguardId(userId);
+      setLifeguardId(data.id);
+    } catch (error) {
+      console.error('Failed to load lifeguard ID', error);
+      Alert.alert('無法加載救生員ID');
+    }
+  };
+
+  const loadSchedules = async () => {
+    try {
+      const data = await fetchLifeguardUnavailableSchedules(lifeguardId, nextMonth);
+      console.log(data);
+      const markedDates = {};
+      data.forEach(schedule => {
+        markedDates[schedule.date] = { marked: true };
+      });
+      setSelectedDates(markedDates);
+    } catch (error) {
+      console.error('Failed to load schedules', error);
+      Alert.alert('無法加載班表');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDayPress = (day) => {
     const dateKey = day.dateString;
@@ -27,34 +69,38 @@ const LifeguardUnavailableslotsScreen = () => {
       if (Object.keys(newSelectedDates).length < 4) {
         newSelectedDates[dateKey] = { selected: true, selectedColor: COLORS.primary };
       } else {
-        Alert.alert('錯誤', '你只能選擇四個日期');
+        Alert.alert('錯誤', '你只能選擇四天日期');
         return;
       }
     }
     setSelectedDates(newSelectedDates);
   };
 
-  const handleSave = () => {
+  const handleSubmit = async () => {
     if (Object.keys(selectedDates).length !== 4) {
-      Alert.alert('錯誤', '請選擇四個日期');
+      Alert.alert('錯誤', '請選擇四天日期');
       return;
     }
-    // Save logic here
-    Alert.alert('保存成功', '你的排休日期已保存');
+
+    const dates = Object.keys(selectedDates);
+
+    try {
+      await submitUnavailableSlots(lifeguardId, dates);
+      Alert.alert('送出成功', '你的排休日期已送出');
+      router.back();
+    } catch (error) {
+      console.error('Failed to submit unavailable slots', error);
+      Alert.alert('送出失敗', '無法提交排休日期');
+    }
   };
 
-  const handleSubmit = () => {
-    if (Object.keys(selectedDates).length !== 4) {
-      Alert.alert('錯誤', '請選擇四個日期');
-      return;
-    }
-    // Submit logic here
-    Alert.alert('送出成功', '你的排休日期已送出');
-  };
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>選擇次月排休日期</Text>
+      
       <Calendar
         current={nextMonth}
         onDayPress={handleDayPress}
@@ -70,12 +116,9 @@ const LifeguardUnavailableslotsScreen = () => {
         hideExtraDays={true}
       />
       <Text style={styles.selectedText}>
-        已選擇 {Object.keys(selectedDates).length} / 4 個日期
+        已選擇 {Object.keys(selectedDates).length} / 4 天日期
       </Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-          <Text style={styles.buttonText}>保存</Text>
-        </TouchableOpacity>
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
           <Text style={styles.buttonText}>送出</Text>
         </TouchableOpacity>
@@ -87,11 +130,11 @@ const LifeguardUnavailableslotsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 0,
     backgroundColor: COLORS.bg,
   },
   title: {
-    fontSize: SIZES.large,
+    fontSize: SIZES.medium,
     color: COLORS.primary,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -109,15 +152,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 20,
   },
-  saveButton: {
-    backgroundColor: COLORS.secondary,
-    padding: 15,
-    borderRadius: 50,
-    alignItems: 'center',
-  },
   submitButton: {
     backgroundColor: COLORS.primary,
-    padding: 15,
+    paddingHorizontal: 80,
+    paddingVertical: 15,
     borderRadius: 50,
     alignItems: 'center',
   },

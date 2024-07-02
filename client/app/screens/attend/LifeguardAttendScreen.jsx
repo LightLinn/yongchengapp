@@ -144,8 +144,7 @@ const LifeguardAttendScreen = () => {
       />
       {location && (
         <View style={styles.locationContainer}>
-          <Text>當前經度: {location.latitude}</Text>
-          <Text>當前緯度: {location.longitude}</Text>
+          <Text>當前坐標 {location.latitude}, {location.longitude}</Text>
         </View>
       )}
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmitAttendance}>
@@ -188,7 +187,10 @@ const styles = StyleSheet.create({
     color: COLORS.black,
   },
   locationContainer: {
-    marginVertical: 20,
+    marginVertical: 0,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
   },
   submitButton: {
     backgroundColor: COLORS.primary,

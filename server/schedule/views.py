@@ -2,11 +2,10 @@ from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from django.utils import timezone
 from .models import LifeguardSchedule, CoahcSchedule, Location, UnavailableSlot
 from .serializers import LifeguardScheduleSerializer, CoachScheduleSerializer, LocationSerializer, UnavailableSlotSerializer
 from authentication.permissions import *
-import datetime
+from datetime import datetime, timedelta
 
 class UnavailableSlotViewSet(viewsets.ModelViewSet):
     queryset = UnavailableSlot.objects.all()
@@ -14,25 +13,58 @@ class UnavailableSlotViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         lifeguard_id = self.request.query_params.get('lifeguard_id')
+        month = self.request.query_params.get('month')
         queryset = self.queryset
+        
         if lifeguard_id:
             queryset = queryset.filter(lifeguard_id=lifeguard_id)
+
+        if month:
+            try:
+                year, month = map(int, month.split('-'))
+                first_day = datetime(year, month, 1)
+                last_day = (first_day + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+                queryset = queryset.filter(date__range=(first_day, last_day))
+            except ValueError:
+                pass
+
         return queryset
 
     def create(self, request, *args, **kwargs):
         today = timezone.now().date()
-        next_month = today.replace(day=1) + datetime.timedelta(days=32)
+        next_month = today.replace(day=1) + timedelta(days=32)
         next_month = next_month.replace(day=1)
         if today.day > 25:
             return Response({'detail': '次月班表規劃中'}, status=400)
-        
-        data = request.data
-        data['date'] = next_month
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(serializer.data, status=201)
 
+        dates = request.data.get('dates')
+        lifeguard_id = request.data.get('lifeguard_id')
+        if not dates or len(dates) != 4:
+            return Response({'detail': '請選擇四天日期'}, status=400)
+
+        # 刪除當前救生員在次月的排休日期
+        UnavailableSlot.objects.filter(
+            lifeguard_id=lifeguard_id,
+            date__year=next_month.year,
+            date__month=next_month.month
+        ).delete()
+
+        for date in dates:
+            date_obj = datetime.strptime(date, '%Y-%m-%d').date()
+            if date_obj.month != next_month.month or date_obj.year != next_month.year:
+                return Response({'detail': '日期必須在次月範圍內'}, status=400)
+
+            UnavailableSlot.objects.update_or_create(
+                lifeguard_id=lifeguard_id,
+                date=date_obj,
+                defaults={
+                    'start_time': '07:00',
+                    'end_time': '22:00',
+                    'allow': True  # 或者設置為 False，根據需求設置默認值
+                }
+            )
+
+        return Response({'detail': '排休日期已保存'}, status=201)
 
 class LifeguardScheduleViewSet(viewsets.ModelViewSet):
     queryset = LifeguardSchedule.objects.all()
@@ -40,10 +72,15 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         lifeguard_id = self.request.query_params.get('lifeguard_id')
+        if not lifeguard_id:
+            return self.queryset.none()
+        try:
+            lifeguard_id = int(lifeguard_id)
+        except ValueError:
+            return self.queryset.none()
+
         today = timezone.now().date()
-        if lifeguard_id:
-            return self.queryset.filter(lifeguard_id=lifeguard_id, date=today)
-        return self.queryset.none()
+        return self.queryset.filter(lifeguard_id=lifeguard_id, date=today)
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()

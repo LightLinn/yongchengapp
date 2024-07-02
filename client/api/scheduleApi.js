@@ -65,7 +65,22 @@ export const fetchLifeguardId = async (userId) => {
   return await response.json();
 };
 
-export const createLifeguardSchedule = async (scheduleData) => {
+export const fetchLifeguardUnavailableSchedules = async (lifeguardId, nextMonth) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/unavailable_slots/?lifeguard_id=${lifeguardId}&month=${nextMonth}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch lifeguard schedules');
+  }
+  return await response.json();
+};
+
+export const submitUnavailableSlots = async (lifeguardId, dates) => {
   const token = await AsyncStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/unavailable_slots/`, {
     method: 'POST',
@@ -73,10 +88,11 @@ export const createLifeguardSchedule = async (scheduleData) => {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(scheduleData),
+    body: JSON.stringify({ lifeguard_id: lifeguardId, dates }),
   });
   if (!response.ok) {
-    throw new Error('Failed to create lifeguard schedule');
+    const errorData = await response.json();
+    throw new Error(errorData.detail || 'Failed to submit unavailable slots');
   }
   return await response.json();
 };

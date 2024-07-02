@@ -28,13 +28,6 @@ class UnavailableSlot(Auditable):
     def __str__(self):
         return self.lifeguard.user.username
     
-    # def save(self, *args, **kwargs):
-    #     start_datetime = timezone.make_aware(datetime.combine(self.date, self.start_time))
-    #     next_month = (timezone.now() + relativedelta(months=1)).replace(day=1)
-
-    #     if not next_month <= start_datetime < (next_month + relativedelta(months=1)):
-    #         raise ValidationError("只能創建下一個月的資料")
-    #     super().save(*args, **kwargs)
     
 class LifeguardSchedule(Auditable):
     lifeguard = models.ForeignKey('humanresources.Lifeguard', on_delete=models.CASCADE, related_name='lifeguard_schedules', verbose_name='救生员')
