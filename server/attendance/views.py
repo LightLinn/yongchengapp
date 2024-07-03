@@ -82,9 +82,7 @@ class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
             venue = schedule.venue
             
             if not LifeguardAttendanceViewSet.is_within_50_meters(venue, latitude, longitude):
-                
-                # return Response({'detail': '你不在場地範圍內'}, status=status.HTTP_400_BAD_REQUEST)
-                return JsonResponse({'error': 'You are not within 50 meters of the venue.'}, status=400)
+                return Response({'detail': '你不在場地範圍內'}, status=status.HTTP_400_BAD_REQUEST)
             
         except LifeguardSchedule.DoesNotExist:
             return Response({'detail': '無效的班表ID'}, status=status.HTTP_400_BAD_REQUEST)
@@ -115,7 +113,7 @@ class StaffAttendanceViewSet(viewsets.ModelViewSet):
         if is_within_50_meters(venue, lat, lon):
             return super().create(request, *args, **kwargs)
         else:
-            return JsonResponse({'error': 'You are not within 50 meters of the venue.'}, status=400)
+            return Response({'error': 'You are not within 50 meters of the venue.'}, status=401)
 
 
 def haversine(lat1, lon1, lat2, lon2):

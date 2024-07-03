@@ -28,7 +28,7 @@ class UnavailableSlotViewSet(viewsets.ModelViewSet):
             except ValueError:
                 pass
 
-        return queryset
+        return queryset.order_by('date')  # 將排序移動到這裡
 
     def create(self, request, *args, **kwargs):
         today = timezone.now().date()
@@ -72,8 +72,9 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         lifeguard_id = self.request.query_params.get('lifeguard_id')
-        if not lifeguard_id:
-            return self.queryset.none()
+        if lifeguard_id is None:
+            return self.queryset
+        
         try:
             lifeguard_id = int(lifeguard_id)
         except ValueError:

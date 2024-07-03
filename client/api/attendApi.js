@@ -64,12 +64,14 @@ export const submitLifeguardAttendance = async (attendanceData) => {
     },
     body: JSON.stringify(attendanceData),
   });
+
   if (!response.ok) {
     const errorData = await response.json();
-    
-    console.error(errorData.error);
-    throw new Error('Failed to submit attendance');
+    const error = new Error('Failed to submit attendance');
+    error.response = { json: () => Promise.resolve(errorData) };
+    throw error;
   }
+
   return response.json();
 };
 

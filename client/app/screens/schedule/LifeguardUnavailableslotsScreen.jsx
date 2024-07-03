@@ -4,15 +4,17 @@ import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../../../styles/theme';
-import { fetchLifeguardId, fetchLifeguardUnavailableSchedules, submitUnavailableSlots } from '../../../api/scheduleApi';
+import { fetchLifeguardId, submitUnavailableSlots, fetchUnavailableSlotsByMonth } from '../../../api/scheduleApi';
 import { useAuth } from '../../../context/AuthContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { Card } from 'react-native-elements';
 
 const LifeguardUnavailableslotsScreen = () => {
   const [selectedDates, setSelectedDates] = useState({});
   const [nextMonth, setNextMonth] = useState(moment().add(1, 'month').format('YYYY-MM'));
   const [loading, setLoading] = useState(true);
   const [lifeguardId, setLifeguardId] = useState(null);
+  const [pastSchedules, setPastSchedules] = useState([]);
   const { userId } = useAuth();
   const router = useRouter();
 
@@ -28,6 +30,12 @@ const LifeguardUnavailableslotsScreen = () => {
     }
   }, [lifeguardId]);
 
+  useEffect(() => {
+    if (lifeguardId) {
+      loadPastSchedules();
+    }
+  }, [lifeguardId]);
+
   const loadLifeguardId = async () => {
     try {
       const data = await fetchLifeguardId(userId);
@@ -40,8 +48,7 @@ const LifeguardUnavailableslotsScreen = () => {
 
   const loadSchedules = async () => {
     try {
-      const data = await fetchLifeguardUnavailableSchedules(lifeguardId, nextMonth);
-      console.log(data);
+      const data = await fetchUnavailableSlotsByMonth(lifeguardId, nextMonth);
       const markedDates = {};
       data.forEach(schedule => {
         markedDates[schedule.date] = { marked: true };
@@ -52,6 +59,16 @@ const LifeguardUnavailableslotsScreen = () => {
       Alert.alert('無法加載班表');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPastSchedules = async () => {
+    try {
+      const data = await fetchUnavailableSlotsByMonth(lifeguardId);
+      setPastSchedules(data);
+    } catch (error) {
+      console.error('Failed to load past schedules', error);
+      Alert.alert('無法加載過去的排休紀錄');
     }
   };
 
@@ -85,12 +102,13 @@ const LifeguardUnavailableslotsScreen = () => {
     const dates = Object.keys(selectedDates);
 
     try {
-      await submitUnavailableSlots(lifeguardId, dates);
-      Alert.alert('送出成功', '你的排休日期已送出');
+      const response = await submitUnavailableSlots(lifeguardId, dates);
+      Alert.alert('送出成功', response.detail);
       router.back();
     } catch (error) {
       console.error('Failed to submit unavailable slots', error);
-      Alert.alert('送出失敗', '無法提交排休日期');
+      const errorResponse = await error.response.json();
+      Alert.alert('送出失敗', errorResponse.detail || '無法提交排休日期');
     }
   };
 
@@ -98,9 +116,33 @@ const LifeguardUnavailableslotsScreen = () => {
     return <LoadingSpinner />;
   }
 
+  const renderItem = (item) => (
+    <Card containerStyle={styles.card}>
+      <Text style={styles.cardText}>日期 {item.date}</Text>
+      <Text style={styles.cardText}>時間 {item.start_time} - {item.end_time}</Text>
+    </Card>
+  );
+
+  const renderSchedules = () => {
+    const sortedSchedules = pastSchedules.sort((a, b) => new Date(b.date) - new Date(a.date));
+    let lastMonth = '';
+
+    return sortedSchedules.map(schedule => {
+      const month = moment(schedule.date).format('YYYY年MM月');
+      const renderLabel = month !== lastMonth;
+      lastMonth = month;
+
+      return (
+        <View key={schedule.id}>
+          {renderLabel && <Text style={styles.sectionHeader}>{month}</Text>}
+          {renderItem(schedule)}
+        </View>
+      );
+    });
+  };
+
   return (
     <ScrollView style={styles.container}>
-      
       <Calendar
         current={nextMonth}
         onDayPress={handleDayPress}
@@ -114,6 +156,7 @@ const LifeguardUnavailableslotsScreen = () => {
         maxDate={moment().add(1, 'month').endOf('month').format('YYYY-MM-DD')}
         disableMonthChange={true}
         hideExtraDays={true}
+        hideArrows={true}
       />
       <Text style={styles.selectedText}>
         已選擇 {Object.keys(selectedDates).length} / 4 天日期
@@ -123,6 +166,8 @@ const LifeguardUnavailableslotsScreen = () => {
           <Text style={styles.buttonText}>送出</Text>
         </TouchableOpacity>
       </View>
+      {renderSchedules()}
+      <View style={{ height: 50 }} /> 
     </ScrollView>
   );
 };
@@ -130,7 +175,6 @@ const LifeguardUnavailableslotsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 0,
     backgroundColor: COLORS.bg,
   },
   title: {
@@ -162,6 +206,32 @@ const styles = StyleSheet.create({
   buttonText: {
     color: COLORS.white,
     fontWeight: 'bold',
+    fontSize: SIZES.medium,
+  },
+  historyTitle: {
+    fontSize: SIZES.medium,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+    marginTop: 30,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  sectionHeader: {
+    fontSize: SIZES.medium,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+    marginTop: 20,
+    paddingLeft: 10,
+  },
+  card: {
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 20,
+  },
+  cardText: {
+    fontSize: SIZES.medium,
+    color: COLORS.gray,
+    lineHeight: SIZES.xxLarge,
   },
 });
 

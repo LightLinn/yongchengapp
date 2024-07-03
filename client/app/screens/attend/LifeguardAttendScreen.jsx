@@ -36,10 +36,13 @@ const LifeguardAttendScreen = () => {
     } catch (error) {
       console.error('Failed to load lifeguard ID', error);
       Alert.alert('無法加載救生員ID');
+      setLoading(false);
     }
   };
 
   const loadSchedules = async () => {
+    if (!lifeguardId) return; // 如果 lifeguardId 为空，直接返回
+
     setLoading(true);
     try {
       const data = await fetchLifeguardSchedules(lifeguardId);
@@ -55,8 +58,12 @@ const LifeguardAttendScreen = () => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    loadSchedules();
-  }, []);
+    if (lifeguardId) {
+      loadSchedules();
+    } else {
+      setRefreshing(false); // 如果 lifeguardId 为空，直接取消刷新状态
+    }
+  }, [lifeguardId]);
 
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -96,12 +103,13 @@ const LifeguardAttendScreen = () => {
     };
 
     try {
-      await submitLifeguardAttendance(attendanceData);
-      Alert.alert('簽到成功');
+      const response = await submitLifeguardAttendance(attendanceData);
+      Alert.alert('簽到成功', response.detail || '簽到成功');
       router.back();
     } catch (error) {
       console.error('Failed to submit attendance', error);
-      Alert.alert('錯誤', '無法提交簽到，可能所在地點不在簽到範圍內');
+      const errorResponse = await error.response.json();
+      Alert.alert('簽到失敗', errorResponse.detail || '無法提交簽到');
     }
   };
 
