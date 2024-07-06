@@ -1,7 +1,10 @@
 import { API_BASE_URL } from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
+const getToken = async () => {
+  const token = await AsyncStorage.getItem('token');
+  return token;
+};
 
 export const fetchScheduleDetail = async (coachId, locationId) => {
   const token = await AsyncStorage.getItem('token');
@@ -95,4 +98,19 @@ export const fetchUnavailableSlotsByMonth = async (lifeguardId, month) => {
     throw new Error('Failed to fetch unavailable slots');
   }
   return await response.json();
+};
+
+export const fetchLifeguardSchedules = async (lifeguardId) => {
+  const token = await getToken();
+  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/by_lifeguardid?lifeguard_id=${lifeguardId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch schedules');
+  }
+  return response.json();
 };

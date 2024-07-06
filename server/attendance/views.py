@@ -8,15 +8,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Attendance, StaffAttendance, LifeguardAttendance
+from humanresources.models import Lifeguard
 from schedule.models import LifeguardSchedule
 from .serializers import AttendanceListSerializer, LifeguardAttendanceSerializer, StaffAttendanceSerializer
 from authentication.viewset_permissions import VIEWSET_PERMISSIONS
-from django.http import JsonResponse
 import math
-import random
-from datetime import date
+from datetime import datetime, date, timedelta
 
-# 創建AttendanceViewSet
+
 class AttendanceListViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceListSerializer
@@ -36,20 +35,41 @@ class AttendanceListViewSet(viewsets.ModelViewSet):
     def get_checkcode(self, request):
         user_id = request.query_params.get('user')
         if not user_id:
-            return JsonResponse({'error': 'User ID is required'}, status=400)
+            return Response({'detail': 'User ID is required'}, status=400)
+
+        try:
+            lifeguard = Lifeguard.objects.get(user=user_id)
+        except Lifeguard.DoesNotExist:
+            return Response({'detail': 'Lifeguard not found'}, status=404)
+
+        lifeguard_id = lifeguard.id
+
+        today = date.today()
+        current_time = datetime.now().time()
+        start_range = (datetime.combine(today, current_time) - timedelta(hours=2)).time()
+        end_range = (datetime.combine(today, current_time) + timedelta(hours=1)).time()
         
-        return self.create_check_code(user_id)
+        schedules = LifeguardSchedule.objects.filter(lifeguard=lifeguard_id, date=today)
+        
+        if not schedules.exists():
+            return Response({'detail': '今日無班表'}, status=404)
 
-    def create_check_code(self, user_id):
-        # 生成一個四位數的隨機碼
-        random_code = random.randint(1000, 9999)
-        # 獲取當天日期
-        today = date.today().isoformat()
+        valid_schedule = None
+        for schedule in schedules:
+            if schedule.start_time <= end_range and schedule.end_time >= start_range:
+                valid_schedule = schedule
+                break
 
-        # 生成驗證碼
-        verification_code = f"{user_id},{today},{random_code}"
+        if not valid_schedule:
+            return Response({'detail': '當前時間未找到有效的時間表'}, status=404)
 
-        return JsonResponse({"checkcode": verification_code})
+        return self.create_check_code(lifeguard_id, valid_schedule)
+
+    def create_check_code(self, lifeguard_id, schedule):
+        # 生成包含救生員ID、班表日期、場地ID和班表ID的驗證碼
+        verification_code = f"{lifeguard_id},{schedule.date},{schedule.venue_id},{schedule.id}"
+        return Response({"detail": verification_code})
+
     
 class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
     queryset = LifeguardAttendance.objects.all()

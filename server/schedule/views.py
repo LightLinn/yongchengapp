@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import LifeguardSchedule, CoahcSchedule, Location, UnavailableSlot
 from .serializers import LifeguardScheduleSerializer, CoachScheduleSerializer, LocationSerializer, UnavailableSlotSerializer
 from authentication.permissions import *
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 class UnavailableSlotViewSet(viewsets.ModelViewSet):
     queryset = UnavailableSlot.objects.all()
@@ -28,7 +29,7 @@ class UnavailableSlotViewSet(viewsets.ModelViewSet):
             except ValueError:
                 pass
 
-        return queryset.order_by('date')  # 將排序移動到這裡
+        return queryset.order_by('date')  
 
     def create(self, request, *args, **kwargs):
         today = timezone.now().date()
@@ -72,6 +73,7 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         lifeguard_id = self.request.query_params.get('lifeguard_id')
+        
         if lifeguard_id is None:
             return self.queryset
         
@@ -82,6 +84,22 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
 
         today = timezone.now().date()
         return self.queryset.filter(lifeguard_id=lifeguard_id, date=today)
+    
+    @action(detail=False, methods=['get'], url_path='by_lifeguardid')
+    def get_schedules_by_lifeguardid(self, request):
+        lifeguard_id = self.request.query_params.get('lifeguard_id')
+        
+        if lifeguard_id is None:
+            return Response({'detail': 'lifeguard_id is required'}, status=400)
+        
+        try:
+            lifeguard_id = int(lifeguard_id)
+        except ValueError:
+            return Response({'detail': 'Invalid lifeguard_id format'}, status=400)
+
+        schedules = self.queryset.filter(lifeguard_id=lifeguard_id)
+        serializer = self.get_serializer(schedules, many=True)
+        return Response(serializer.data)
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()

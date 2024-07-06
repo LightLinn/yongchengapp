@@ -46,6 +46,20 @@ export default function Layout() {
           ),
         })} 
       />
+      <Stack.Screen 
+        name="LifeguardSchedulesScreen"
+        options={({ navigation }) => ({
+          headerTitle: '救生員班表',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
     </Stack>
   )
 }

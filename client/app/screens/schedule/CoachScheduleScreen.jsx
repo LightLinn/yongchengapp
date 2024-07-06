@@ -147,9 +147,10 @@ const styles = StyleSheet.create({
   fixedColumn: {
     flexDirection: 'column',
     alignItems: 'center',
+    width: 80,
   },
   fixedCell: {
-    width: 120,
+    width: 80,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',

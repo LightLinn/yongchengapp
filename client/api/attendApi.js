@@ -43,6 +43,7 @@ export const fetchCheckcode = async (userId) => {
     },
   });
   if (!response.ok) {
+    errorResponse = await response.json();
     throw new Error('Failed to fetch checkcode');
   }
   return await response.json();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, RefreshControl, ScrollView, Alert } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchCheckcode } from '../../../api/attendApi';
@@ -15,9 +15,14 @@ const AttendQrcodeScreen = () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
       const response = await fetchCheckcode(userId);
-      setCheckcode(response.checkcode);
+      if (response.detail) {
+        setCheckcode(response.detail);
+      } else {
+        throw new Error('Failed to load checkcode');
+      }
     } catch (error) {
       console.error('Failed to load checkcode', error);
+      Alert.alert('錯誤', errorResponse.detail || '無法加載驗證碼');
     } finally {
       setLoading(false);
     }
@@ -56,7 +61,7 @@ const AttendQrcodeScreen = () => {
           size={200}
         />
       ) : (
-        <Text style={styles.errorText}>QR Code 讀取失敗</Text>
+        <Text style={styles.errorText}>{errorResponse.detail}</Text>
       )}
     </ScrollView>
   );

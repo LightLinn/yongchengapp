@@ -119,7 +119,7 @@ const LifeguardUnavailableslotsScreen = () => {
   const renderItem = (item) => (
     <Card containerStyle={styles.card}>
       <Text style={styles.cardText}>日期 {item.date}</Text>
-      <Text style={styles.cardText}>時間 {item.start_time} - {item.end_time}</Text>
+      <Text style={styles.cardText}>時間 {moment(item.start_time, 'HH:mm:ss').format('HH:mm')} - {moment(item.end_time, 'HH:mm:ss').format('HH:mm')}</Text>
     </Card>
   );
 
