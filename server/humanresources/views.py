@@ -46,8 +46,8 @@ class CoachViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Enrollment data is incomplete'}, status=status.HTTP_400_BAD_REQUEST)
         
         # 若enrollment.venue中包含「社區」，則將其替換為「竹北社區游泳池」
-        if '社區' in venue_name:
-            venue_name = '竹北社區游泳池'
+        # if '社區' in venue_name:
+        #     venue_name = '竹北社區游泳池'
 
         try:
             venue = Location.objects.get(name=venue_name)  # 查找對應的 Location 實例

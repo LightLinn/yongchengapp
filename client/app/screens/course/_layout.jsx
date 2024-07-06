@@ -102,20 +102,6 @@ export default function Layout() {
           ),
         })} 
       />
-      <Stack.Screen 
-        name="AttendQrcodeScreen"
-        options={({ navigation }) => ({
-          headerTitle: '簽到驗證',
-          headerShadowVisible: false,
-          headerLeft: () => (
-            <Button
-              icon={<Icon name="arrow-back" color="#333" />}
-              buttonStyle={{ backgroundColor: 'transparent' }}
-              onPress={() => navigation.goBack()}
-            />
-          ),
-        })} 
-      />
     </Stack>
     
   )
