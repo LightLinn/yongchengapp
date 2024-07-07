@@ -37,20 +37,23 @@ class CoachViewSet(viewsets.ModelViewSet):
         
         try:
             enrollment = EnrollmentList.objects.get(id=enrollment_id)
+            
             date = enrollment.start_date
             time = enrollment.start_time
-            venue_name = enrollment.venue
+            venue_name = enrollment.venue.name
         except EnrollmentList.DoesNotExist:
             return Response({'detail': 'Enrollment not found'}, status=status.HTTP_404_NOT_FOUND)
         except AttributeError:
             return Response({'detail': 'Enrollment data is incomplete'}, status=status.HTTP_400_BAD_REQUEST)
         
         # 若enrollment.venue中包含「社區」，則將其替換為「竹北社區游泳池」
-        # if '社區' in venue_name:
-        #     venue_name = '竹北社區游泳池'
+        
+        if '社區' in venue_name:
+            venue_name = '竹北社區游泳池'
 
         try:
             venue = Location.objects.get(name=venue_name)  # 查找對應的 Location 實例
+            
         except Location.DoesNotExist:
             return Response({'detail': 'Venue not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -74,25 +77,28 @@ class CoachViewSet(viewsets.ModelViewSet):
                 coach=coach,
                 enrollment_status='進行中'
             )
-
             is_available = True
+            print(ongoing_enrollments)
 
             for ongoing_enrollment in ongoing_enrollments:
                 for course in ongoing_enrollment.courses.all():
                     if not course.course_time:
                         continue  # Skip courses with no time set
                     
-                    course_time = datetime.combine(course.course_date, course.course_time)
+                    course_start_time = datetime.combine(course.course_date, course.course_time)
+                    course_end_time = course_start_time + timedelta(minutes=60)
                     start_time = datetime.combine(date, time)
-                    end_time = start_time + timedelta(minutes=29)
-                    course_venue = course.enrollment_list.venue  # Get the venue from enrollment_list
+                    end_time = start_time + timedelta(minutes=60)
+                    course_venue = course.enrollment_list.venue.name  # Get the venue name from enrollment_list
                     
                     if course_venue == venue.name:
-                        if course_time <= end_time and course_time + timedelta(minutes=29) >= start_time:
+                        # 同一場地的比較
+                        if not (course_end_time <= start_time or course_start_time >= end_time):
                             is_available = False
                             break
                     else:
-                        if course_time <= end_time + timedelta(minutes=30) and course_time + timedelta(minutes=59) + timedelta(minutes=30) >= start_time:
+                        # 不同場地的比較，考慮30分鐘的交通時間
+                        if not (course_end_time + timedelta(minutes=30) <= start_time or course_start_time - timedelta(minutes=30) >= end_time):
                             is_available = False
                             break
                 
@@ -110,7 +116,7 @@ class CoachViewSet(viewsets.ModelViewSet):
             
             if is_available and coach_schedule:
                 available_coaches.append(coach)
-        
+
         serializer = self.get_serializer(available_coaches, many=True)
         return Response(serializer.data)
 

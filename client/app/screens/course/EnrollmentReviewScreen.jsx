@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 import { fetchEnrollmentDetails, updateEnrollment, fetchEnrollmentNumbers, createEnrollmentNumber } from '../../../api/enrollmentApi';
+import { fetchCourseTypes, fetchVenues } from '../../../api/courseApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import ModalDropdown from 'react-native-modal-dropdown';
 import moment from 'moment';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const EnrollmentReviewScreen = () => {
   const { enrollmentId } = useLocalSearchParams();
@@ -16,6 +18,8 @@ const EnrollmentReviewScreen = () => {
   const [newNumberModalVisible, setNewNumberModalVisible] = useState(false);
   const [newNumber, setNewNumber] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [courseTypes, setCourseTypes] = useState([]);
+  const [venues, setVenues] = useState([]);
 
   const timeOptions = Array.from({ length: 33 }, (_, index) => {
     const hours = Math.floor(index / 2) + 6;
@@ -27,6 +31,9 @@ const EnrollmentReviewScreen = () => {
     const loadEnrollmentDetails = async () => {
       try {
         const details = await fetchEnrollmentDetails(enrollmentId);
+        const fetchedCourseTypes = await fetchCourseTypes();
+        const fetchedVenues = await fetchVenues();
+        
         setEnrollmentDetails({
           ...details,
           coursetype_id: details.coursetype?.id,
@@ -35,6 +42,8 @@ const EnrollmentReviewScreen = () => {
           coach_id: details.coach?.id,
           enrollment_number_id: details.enrollment_number?.id
         });
+        setCourseTypes(fetchedCourseTypes);
+        setVenues(fetchedVenues);
         setLoading(false);
       } catch (error) {
         console.error('Failed to load enrollment details', error);
@@ -134,7 +143,7 @@ const EnrollmentReviewScreen = () => {
   };
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -142,35 +151,31 @@ const EnrollmentReviewScreen = () => {
       <View style={styles.section}>
         <Text style={styles.label}>報名表單號</Text>
         <View style={styles.row}>
-          <ModalDropdown
-            options={enrollmentNumbers.map((num) => num.name)}
-            defaultValue={enrollmentDetails.enrollment_number?.name || '選擇單號'}
-            initialScrollIndex={0}
-            style={styles.dropdown}
-            textStyle={styles.dropdownText}
-            dropdownStyle={styles.dropdownOptions}
-            dropdownTextStyle={styles.dropdownOptionText}
-            onSelect={(index, value) => {
-              const selectedNumber = enrollmentNumbers[index];
-              setEnrollmentDetails((prevState) => ({
-                ...prevState,
-                enrollment_number_id: selectedNumber.id,
-                enrollment_number: selectedNumber,
-              }));
-            }}
-          />
-          {/* <TouchableOpacity onPress={() => setNewNumberModalVisible(true)} style={styles.addButton}>
-            <Text style={styles.addButtonText}>新增</Text>
-          </TouchableOpacity> */}
+        <ModalDropdown
+          options={enrollmentNumbers.map((num) => `${num.name} - ${num.same_enrollment_lists.join(', ')}`)}
+          defaultValue={enrollmentDetails.enrollment_number?.name || '選擇單號'}
+          initialScrollIndex={0}
+          style={styles.dropdown}
+          textStyle={styles.dropdownText}
+          dropdownStyle={styles.dropdownOptions}
+          dropdownTextStyle={styles.dropdownOptionText}
+          onSelect={(index, value) => {
+            const selectedNumber = enrollmentNumbers[index];
+            setEnrollmentDetails((prevState) => ({
+              ...prevState,
+              enrollment_number_id: selectedNumber.id,
+              enrollment_number: selectedNumber,
+            }));
+          }}
+        />
         </View>
       </View>
       <View style={styles.section}>
         <Text style={styles.label}>學生姓名</Text>
         <TextInput
-          style={styles.input2}
+          style={styles.input}
           value={enrollmentDetails.student}
           onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, student: text })}
-          editable={false}
         />
       </View>
       <View style={styles.section}>
@@ -216,20 +221,40 @@ const EnrollmentReviewScreen = () => {
       </View>
       <View style={styles.section}>
         <Text style={styles.label}>課程類型</Text>
-        <TextInput
-          style={styles.input2}
-          value={enrollmentDetails.coursetype?.name}
-          onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, coursetype: { ...enrollmentDetails.coursetype, name: text } })}
-          editable={false}
+        <ModalDropdown
+          options={courseTypes.map((type) => type.name)}
+          defaultValue={enrollmentDetails.coursetype?.name || '選擇課程類型'}
+          style={styles.dropdown}
+          textStyle={styles.dropdownText}
+          dropdownStyle={styles.dropdownOptions}
+          dropdownTextStyle={styles.dropdownOptionText}
+          onSelect={(index, value) => {
+            const selectedCourseType = courseTypes[index];
+            setEnrollmentDetails((prevState) => ({
+              ...prevState,
+              coursetype_id: selectedCourseType.id,
+              coursetype: selectedCourseType,
+            }));
+          }}
         />
       </View>
       <View style={styles.section}>
         <Text style={styles.label}>上課場地</Text>
-        <TextInput
-          style={styles.input2}
-          value={enrollmentDetails.venue?.name}
-          onChangeText={(text) => setEnrollmentDetails({ ...enrollmentDetails, venue: { ...enrollmentDetails.venue, name: text } })}
-          editable={false}
+        <ModalDropdown
+          options={venues.map((venue) => venue.name)}
+          defaultValue={enrollmentDetails.venue?.name || '選擇上課場地'}
+          style={styles.dropdown}
+          textStyle={styles.dropdownText}
+          dropdownStyle={styles.dropdownOptions}
+          dropdownTextStyle={styles.dropdownOptionText}
+          onSelect={(index, value) => {
+            const selectedVenue = venues[index];
+            setEnrollmentDetails((prevState) => ({
+              ...prevState,
+              venue_id: selectedVenue.id,
+              venue: selectedVenue,
+            }));
+          }}
         />
       </View>
       <View style={styles.section}>

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity
 import { COLORS, SIZES } from '../../../styles/theme';
 import { fetchEnrollmentDetails, fetchCourses } from '../../../api/enrollmentApi';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Divider } from 'react-native-elements';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const EnrollmentDetailsScreen = () => {
   const { enrollmentId } = useLocalSearchParams();
@@ -37,12 +37,7 @@ const EnrollmentDetailsScreen = () => {
   }, [enrollmentId]);
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <LoadingSpinner />;
   }
 
   return (

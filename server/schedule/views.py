@@ -40,8 +40,8 @@ class UnavailableSlotViewSet(viewsets.ModelViewSet):
 
         dates = request.data.get('dates')
         lifeguard_id = request.data.get('lifeguard_id')
-        if not dates or len(dates) != 4:
-            return Response({'detail': '請選擇四天日期'}, status=400)
+        # if not dates or len(dates) != 4:
+        #     return Response({'detail': '請選擇四天日期'}, status=400)
 
         # 刪除當前救生員在次月的排休日期
         UnavailableSlot.objects.filter(

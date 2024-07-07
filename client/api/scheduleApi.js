@@ -114,3 +114,18 @@ export const fetchLifeguardSchedules = async (lifeguardId) => {
   }
   return response.json();
 };
+
+export const fetchCoursesByCoach = async (coachId) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/courses?coach_id=${coachId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch courses');
+  }
+  return await response.json();
+};

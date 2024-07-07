@@ -51,6 +51,7 @@ class AttendanceListSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     course = CourseSerializer(read_only=True)
 
+    user_id = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), source='user', write_only=True)
     course_id = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all(), source='course', write_only=True)
 
     class Meta:

@@ -24,10 +24,13 @@ class CourseViewSet(viewsets.ModelViewSet):
         queryset = Course.objects.all()
         enrollment_list_id = self.request.query_params.get('enrollment_list_id', None)
         enrollment_number = self.request.query_params.get('enrollment_number', None)
+        coach_id = self.request.query_params.get('coach_id', None)
         if enrollment_list_id is not None:
             queryset = queryset.filter(enrollment_list__id=enrollment_list_id)
         if enrollment_number is not None:
             queryset = queryset.filter(enrollment_list__enrollment_number__name=enrollment_number)
+        if coach_id is not None:
+            queryset = queryset.filter(enrollment_list__coach_id=coach_id)
         return queryset
     
 

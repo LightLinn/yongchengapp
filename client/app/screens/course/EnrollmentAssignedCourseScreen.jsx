@@ -29,7 +29,6 @@ const EnrollmentAssignedCourseScreen = () => {
         const numberDetails = await fetchEnrollmentNumberDetails(enrollmentNumberId); 
         setEnrollmentNumberDetails(numberDetails);
         setNumber_of_sessions(details.coursetype.number_of_sessions);
-        console.log(enrollmentNumberId)
 
         const initialDates = {};
         let currentDate = moment().startOf('day');

@@ -5,20 +5,6 @@ export default function Layout() {
   return (
     <Stack>
       <Stack.Screen 
-        name="CoachScheduleScreen"
-        options={({ navigation }) => ({
-          headerTitle: '教練排班',
-          headerShadowVisible: false,
-          headerLeft: () => (
-            <Button
-              icon={<Icon name="arrow-back" color="#333" />}
-              buttonStyle={{ backgroundColor: 'transparent' }}
-              onPress={() => navigation.goBack()}
-            />
-          ),
-        })} 
-      />
-      <Stack.Screen 
         name="LocationSelectScreen"
         options={({ navigation }) => ({
           headerTitle: '選擇場地',
@@ -33,9 +19,37 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
+        name="CoachAvailableslotsScreen"
+        options={({ navigation }) => ({
+          headerTitle: '選擇排課時段',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="CoachSchedulesScreen"
+        options={({ navigation }) => ({
+          headerTitle: '教練課表',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
         name="LifeguardUnavailableslotsScreen"
         options={({ navigation }) => ({
-          headerTitle: '救生員排休',
+          headerTitle: '選擇排休日期',
           headerShadowVisible: false,
           headerLeft: () => (
             <Button

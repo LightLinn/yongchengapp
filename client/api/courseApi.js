@@ -9,7 +9,7 @@ const getToken = async () => {
 
 
 export const fetchEnrollments = async () => {
-  const userId = await AsyncStorage.getItem('userId'); // 假设用户ID已经存储在AsyncStorage中
+  const userId = await AsyncStorage.getItem('userId'); 
   const response = await fetch(`${API_BASE_URL}/enrollment_lists/?user=${userId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch courses');
@@ -18,7 +18,7 @@ export const fetchEnrollments = async () => {
 };
 
 export const fetchEnrollmentsCoach = async () => {
-  const userId = await AsyncStorage.getItem('userId'); // 假设用户ID已经存储在AsyncStorage中
+  const userId = await AsyncStorage.getItem('userId'); 
   const response = await fetch(`${API_BASE_URL}/enrollment_lists/?coach=${userId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch courses');

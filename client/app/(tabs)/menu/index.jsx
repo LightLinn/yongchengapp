@@ -69,7 +69,8 @@ const MenuScreen = () => {
         // { name: '救生員調班', icon: '', screenName: '救生員調班', screen: '/screens/reschedule/view', action: 'can_view' },
         // { name: '救生員請假', icon: '', screenName: '救生員請假', screen: '/screens/leave_request/view', action: 'can_view' },
         { name: '救生員排休', icon: '', screenName: '救生員排休', screen: '/screens/schedule/LifeguardUnavailableslotsScreen', action: 'can_view' },
-        { name: '教練排班', icon: '', screenName: '教練排班', screen: '/screens/schedule/LocationSelectScreen', action: 'can_view' },
+        { name: '教練排課時段', icon: '', screenName: '教練排課時段', screen: '/screens/schedule/LocationSelectScreen', action: 'can_view' },
+        { name: '教練課表', icon: '', screenName: '教練課表', screen: '/screens/schedule/CoachSchedulesScreen', action: 'can_view' },
       ],
     },
     {

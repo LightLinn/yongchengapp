@@ -15,17 +15,22 @@ class CourseTypeSerializer(serializers.ModelSerializer):
 
 # 創建EnrollmentNumbersSerializer
 class EnrollmentNumbersSerializer(serializers.ModelSerializer):
+    same_enrollment_lists = serializers.SerializerMethodField()
     enrollment_count = serializers.SerializerMethodField()
     same_course_type = serializers.SerializerMethodField()
     course_type_limit_reached = serializers.SerializerMethodField()
 
     class Meta:
         model = EnrollmentNumbers
-        fields = ['id', 'status', 'name', 'enrollment_count', 'same_course_type', 'course_type_limit_reached']
+        fields = ['id', 'status', 'name', 'same_enrollment_lists', 'enrollment_count', 'same_course_type', 'course_type_limit_reached']
 
+    def get_same_enrollment_lists(self, obj):
+        enrollments = EnrollmentList.objects.filter(enrollment_number=obj)
+        return enrollments.values_list('student')
+    
     def get_enrollment_count(self, obj):
         return EnrollmentList.objects.filter(enrollment_number=obj).count()
-    
+        
     def get_same_course_type(self, obj):
         enrollments = EnrollmentList.objects.filter(enrollment_number=obj)
         if enrollments.exists():
@@ -41,6 +46,8 @@ class EnrollmentNumbersSerializer(serializers.ModelSerializer):
                 enrollment_count = enrollments.count()
                 return enrollment_count == first_course_type.limit
         return False
+    
+    
 
 class UserSerializer(serializers.ModelSerializer):
         class Meta:

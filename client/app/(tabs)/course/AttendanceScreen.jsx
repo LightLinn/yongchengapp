@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, TextInput, Text, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import QrCodeScanner from '../../components/QrCodeScanner';
 import { fetchAttendanceRecords, createAttendance } from '../../../api/attendApi';
@@ -12,7 +12,7 @@ import { useRoute } from '@react-navigation/native';
 
 const AttendanceScreen = () => {
   const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState('');
+  const [scanResult, setScanResult] = useState('3,2024-07-07,2,4');
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [showRecords, setShowRecords] = useState(false);
@@ -22,7 +22,6 @@ const AttendanceScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const route = useRoute();
-  const verificationTimeoutRef = useRef(null); // 用于存储定时器引用
 
   const checkIsCoach = async () => {
     const role = await AsyncStorage.getItem('groups');
@@ -30,21 +29,24 @@ const AttendanceScreen = () => {
   };
 
   const loadData = async () => {
-    setLoading(true);
+    setLoading(true); // 開始加載數據
     try {
       const userId = await AsyncStorage.getItem('userId');
       const isCoach = await checkIsCoach();
       const enrollmentsData = isCoach ? await fetchEnrollmentsCoach() : await fetchEnrollments();
       setEnrollments(enrollmentsData);
 
+      // 獲取課程資料
       const coursesData = await Promise.all(enrollmentsData.map(enrollment =>
         fetchCourseDetails(enrollment.id)
       ));
       setCourses(coursesData.flat());
 
+      // 獲取簽到紀錄
       const records = await fetchAttendanceRecords();
       setAttendanceRecords(records);
 
+      // 篩選當天的課程並排除有簽到紀錄的課程
       const today = new Date().toISOString().split('T')[0];
       const todayCoursesData = coursesData.flat().filter(course =>
         course.course_date === today && !records.some(record => record.course.id === course.id)
@@ -60,26 +62,7 @@ const AttendanceScreen = () => {
 
   useEffect(() => {
     loadData();
-    initializeScanResult(); // 初始化二维码
   }, [route.params]);
-
-  useEffect(() => {
-    return () => {
-      if (verificationTimeoutRef.current) {
-        clearTimeout(verificationTimeoutRef.current); // 清除定时器
-      }
-    };
-  }, []);
-
-  const initializeScanResult = () => {
-    setScanResult('');
-    if (verificationTimeoutRef.current) {
-      clearTimeout(verificationTimeoutRef.current); // 清除之前的定时器
-    }
-    verificationTimeoutRef.current = setTimeout(() => {
-      setScanResult(''); // 定时清空二维码
-    }, 180000); // 设定的时间间隔（毫秒），例如1分钟
-  };
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -89,7 +72,6 @@ const AttendanceScreen = () => {
   const handleScan = (data) => {
     setScanResult(data);
     setIsScanning(false);
-    initializeScanResult(); // 重置定时器
   };
 
   const handleSignIn = async (courseId) => {
@@ -99,18 +81,19 @@ const AttendanceScreen = () => {
     }
 
     try {
+      const userId = await AsyncStorage.getItem('userId'); // 獲取當前用戶ID
       await createAttendance({
-        status: '自動批准',
+        user_id: userId,
         attend_status: '簽到',
         course_id: courseId,
         check_code: scanResult,
         check_note: '',
       });
       Alert.alert('訊息', '簽到成功');
-      loadData();
+      loadData(); 
     } catch (error) {
       console.error('Failed to create attendance:', error);
-      Alert.alert('訊息', '簽到失敗');
+      Alert.alert('訊息', error.message || '簽到失敗');
     }
   };
 
@@ -209,10 +192,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   scanButton: {
-    backgroundColor: COLORS.gray3,
+    backgroundColor: COLORS.primary,
     borderRadius: 30,
     padding: 15,
-    marginHorizontal: 80,
     marginVertical: 15,
     alignItems: 'center',
   },

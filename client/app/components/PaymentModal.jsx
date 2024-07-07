@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { updateEnrollmentStatus } from '../../api/enrollmentApi';
 import { COLORS, SIZES } from '../../styles/theme';
 import moment from 'moment';
@@ -8,6 +8,11 @@ const PaymentModal = ({ visible, enrollment, onClose, onUpdate }) => {
   const [amount, setAmount] = useState('');
 
   const handlePayment = async () => {
+    if (!amount) {
+      Alert.alert('錯誤', '請輸入金額');
+      return;
+    }
+
     try {
       const paymentDate = moment().format('YYYY-MM-DD');
       await updateEnrollmentStatus(
@@ -23,6 +28,7 @@ const PaymentModal = ({ visible, enrollment, onClose, onUpdate }) => {
       onClose();
     } catch (error) {
       console.error('Payment failed:', error);
+      Alert.alert('錯誤', '付款失敗');
     }
   };
 

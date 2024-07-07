@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Attendance, StaffAttendance, LifeguardAttendance
 from humanresources.models import Lifeguard
+from courses.models import Course
 from schedule.models import LifeguardSchedule
 from .serializers import AttendanceListSerializer, LifeguardAttendanceSerializer, StaffAttendanceSerializer
 from authentication.viewset_permissions import VIEWSET_PERMISSIONS
@@ -29,8 +30,49 @@ class AttendanceListViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         user = self.request.user
-        serializer.save(user=user)
+        check_code = serializer.validated_data.get('check_code')
+        course_id = serializer.validated_data.get('course').id
+        try:
+            lifeguard_id_str, schedule_date_str, venue_id_str, schedule_id_str = check_code.split(',')
+            lifeguard_id = int(lifeguard_id_str.strip())
+            venue_id = int(venue_id_str.strip())
+            schedule_id = int(schedule_id_str.strip())
+            schedule_date = datetime.strptime(schedule_date_str.strip(), '%Y-%m-%d').date()
+            
+            schedule = LifeguardSchedule.objects.filter(
+                id=schedule_id,
+                lifeguard_id=lifeguard_id,
+                date=schedule_date,
+            ).first()
+            
+            if schedule:
+                course = Course.objects.filter(
+                    id=course_id,
+                    enrollment_list__venue_id=venue_id
+                ).first()
 
+                if course:
+                    course.course_status = '已完成'
+                    course.save()
+                    
+                    serializer.save(user=user)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({'detail': '簽到失敗，驗證結果有誤，課程地點不匹配'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'detail': '簽到失敗，驗證結果有誤，無效的班表'}, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response({'detail': f'簽到失敗，無效的驗證碼格式: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        response = self.perform_create(serializer)
+        if response:
+            return response
+        else:
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
     @action(detail=False, methods=['get'])
     def get_checkcode(self, request):
         user_id = request.query_params.get('user')
@@ -75,6 +117,7 @@ class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
     queryset = LifeguardAttendance.objects.all()
     serializer_class = LifeguardAttendanceSerializer
 
+    @staticmethod
     def haversine(lat1, lon1, lat2, lon2):
         r = 6371  # 地球半徑，單位為公里
         phi1 = math.radians(lat1)
@@ -85,6 +128,7 @@ class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
         res = r * (2 * math.atan2(math.sqrt(a), math.sqrt(1 - a)))
         return res * 1000  # 轉換為公尺
 
+    @staticmethod
     def is_within_50_meters(venue, lat, lon):
         venue_lat = venue.latitude
         venue_lon = venue.longitude
@@ -92,7 +136,7 @@ class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
         return distance <= 50
 
     def create(self, request, *args, **kwargs):
-        user = request.data.get('user')
+        user = request.user
         schedule_id = request.data.get('schedule')
         latitude = float(request.data.get('latitude'))
         longitude = float(request.data.get('longitude'))
@@ -101,8 +145,18 @@ class LifeguardAttendanceViewSet(viewsets.ModelViewSet):
             schedule = LifeguardSchedule.objects.get(id=schedule_id)
             venue = schedule.venue
             
-            if not LifeguardAttendanceViewSet.is_within_50_meters(venue, latitude, longitude):
+            if not self.is_within_50_meters(venue, latitude, longitude):
                 return Response({'detail': '你不在場地範圍內'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            now = datetime.now()
+            start_time = datetime.combine(schedule.date, schedule.start_time)
+            earliest_sign_in_time = start_time - timedelta(minutes=30)
+            latest_sign_in_time = start_time + timedelta(minutes=5)
+            
+            if now <= earliest_sign_in_time:
+                return Response({'detail': '簽到時間過早，請於班前30分鐘內簽到'}, status=status.HTTP_400_BAD_REQUEST)
+            if now >= latest_sign_in_time:
+                return Response({'detail': '已超過簽到時間，無法簽到'}, status=status.HTTP_400_BAD_REQUEST)
             
         except LifeguardSchedule.DoesNotExist:
             return Response({'detail': '無效的班表ID'}, status=status.HTTP_400_BAD_REQUEST)

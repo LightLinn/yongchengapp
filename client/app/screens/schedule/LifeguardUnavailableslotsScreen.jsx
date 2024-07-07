@@ -83,23 +83,18 @@ const LifeguardUnavailableslotsScreen = () => {
     if (newSelectedDates[dateKey]) {
       delete newSelectedDates[dateKey];
     } else {
-      if (Object.keys(newSelectedDates).length < 4) {
-        newSelectedDates[dateKey] = { selected: true, selectedColor: COLORS.primary };
-      } else {
-        Alert.alert('錯誤', '你只能選擇四天日期');
-        return;
-      }
+      newSelectedDates[dateKey] = { selected: true, selectedColor: COLORS.primary };
     }
     setSelectedDates(newSelectedDates);
   };
 
   const handleSubmit = async () => {
-    if (Object.keys(selectedDates).length !== 4) {
-      Alert.alert('錯誤', '請選擇四天日期');
+    const dates = Object.keys(selectedDates);
+
+    if (dates.length === 0) {
+      Alert.alert('錯誤', '請選擇至少一天日期');
       return;
     }
-
-    const dates = Object.keys(selectedDates);
 
     try {
       const response = await submitUnavailableSlots(lifeguardId, dates);
@@ -159,7 +154,7 @@ const LifeguardUnavailableslotsScreen = () => {
         hideArrows={true}
       />
       <Text style={styles.selectedText}>
-        已選擇 {Object.keys(selectedDates).length} / 4 天日期
+        已選擇 {Object.keys(selectedDates).length} 天日期
       </Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
@@ -226,7 +221,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 10,
     padding: 15,
-    marginVertical: 20,
+    marginVertical: 10,
   },
   cardText: {
     fontSize: SIZES.medium,

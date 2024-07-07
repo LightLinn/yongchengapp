@@ -16,19 +16,20 @@ export const fetchAttendanceRecords = async () => {
   return await response.json();
 };
 
-export const createAttendance
- = async (data) => {
-  const token = await getToken();
+export const createAttendance = async (attendanceData) => {
+  console.log(attendanceData);
+  const token = await AsyncStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/attendance_lists/`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(attendanceData),
   });
   if (!response.ok) {
-    throw new Error('Failed to create attendance');
+    errorResponse = await response.json();
+    throw new Error(errorResponse.detail || 'Failed to create attendance');
   }
   return await response.json();
 };

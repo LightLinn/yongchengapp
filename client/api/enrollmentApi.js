@@ -68,7 +68,7 @@ export const fetchCourses = async (enrollmentListId, enrollmentNumber) => {
 export const updateEnrollment = async (enrollmentId, updatedData) => {
   
   const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/`, {
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/update_enrollment/`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

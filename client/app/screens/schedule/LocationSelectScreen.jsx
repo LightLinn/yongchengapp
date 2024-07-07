@@ -29,7 +29,7 @@ const LocationSelectScreen = () => {
   };
 
   const handleSelect = (location) => {
-    router.push(`/screens/schedule/CoachScheduleScreen?locationId=${location.id}&locationName=${location.name}`);
+    router.push(`/screens/schedule/CoachAvailableslotsScreen?locationId=${location.id}&locationName=${location.name}`);
   };
 
   const handleAddLocation = async () => {
