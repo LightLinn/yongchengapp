@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定義變數
-REPO_PATH="/Users/lightlin/Desktop/TCStudio/Sourcecode/yongchengapp"
+REPO_PATH="/Users/lightlin/Desktop/TCStudio/Sourcecode/Projects/yongchengapp"
 BRANCH_NAME="main"
 
 # 獲取當前日期和時間
