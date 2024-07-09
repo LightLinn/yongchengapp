@@ -39,3 +39,17 @@ export const updateUserProfile = async (profile) => {
 
   return await response.json();
 };
+
+export const deleteUserAccount = async (userId, token) => {
+  const response = await fetch(`${API_BASE_URL}/users/${userId}/delete_account/`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!response.ok && response.status !== 204) {
+    throw new Error('Failed to delete user account');
+  }
+  return response;
+};

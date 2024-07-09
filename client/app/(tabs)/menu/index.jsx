@@ -5,10 +5,12 @@ import SectionCard from '../../components/SectionCard';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { usePermissions } from '../../../context/PermissionsContext';
+import { useAuth } from '../../../context/AuthContext';
 
 const MenuScreen = () => {
   const router = useRouter();
-  const { permissions, loading, refresh } = usePermissions();
+  const { loading, refresh } = usePermissions();
+  const { permissions } = useAuth();
 
   const onRefresh = useCallback(async () => {
     await refresh();

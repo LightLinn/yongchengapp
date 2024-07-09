@@ -12,7 +12,7 @@ import { useRoute } from '@react-navigation/native';
 
 const AttendanceScreen = () => {
   const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState('3,2024-07-07,2,4');
+  const [scanResult, setScanResult] = useState('');
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [showRecords, setShowRecords] = useState(false);

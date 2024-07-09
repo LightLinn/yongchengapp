@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Image, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-elements';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { fetchUserProfile, updateUserProfile } from '../../api/profileApi';
+import { fetchUserProfile, updateUserProfile, deleteUserAccount } from '../../api/profileApi';
 import { useRouter, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, SIZES, FONT } from '../../styles/theme';
 import moment from 'moment';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfileScreen = () => {
   const [profile, setProfile] = useState({
@@ -22,6 +23,7 @@ const ProfileScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const router = useRouter();
   const navigation = useNavigation();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -86,18 +88,42 @@ const ProfileScreen = () => {
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('token');
-    await AsyncStorage.removeItem('userId');
-    await AsyncStorage.removeItem('username');
-    await AsyncStorage.removeItem('groups');
+    await logout();
     router.replace('/LoginScreen');
-    navigation.addListener('beforeRemove', (e) => {
-      e.preventDefault();
-    });
   };
 
   const handleChangePassword = () => {
     router.push('/ChangePasswordScreen');
+  };
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      '刪除帳號',
+      '您確定要刪除帳號嗎？這個操作無法撤銷。',
+      [
+        {
+          text: '取消',
+          style: 'cancel',
+        },
+        {
+          text: '確定',
+          onPress: async () => {
+            try {
+              const userId = await AsyncStorage.getItem('userId');
+              const token = await AsyncStorage.getItem('token');
+              await deleteUserAccount(userId, token);
+              await logout();
+              router.replace('/LoginScreen');
+            } catch (error) {
+              console.error('Failed to delete account', error);
+              Alert.alert('失敗', '帳號刪除失敗，請稍後再試一次。');
+            }
+          },
+          style: 'destructive',
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
@@ -154,6 +180,7 @@ const ProfileScreen = () => {
         <Button title="更新" onPress={handleSubmit} buttonStyle={styles.submitButton} />
         <Button title="變更密碼" onPress={handleChangePassword} buttonStyle={styles.changePasswordButton} />
         <Button title="登出" onPress={handleLogout} buttonStyle={styles.logoutButton} />
+        <Button title="刪除帳號" onPress={handleDeleteAccount} buttonStyle={styles.deleteAccountButton} />
       </View>
     </ScrollView>
   );
@@ -214,6 +241,11 @@ const styles = StyleSheet.create({
   logoutButton: {
     marginTop: 20,
     backgroundColor: COLORS.secondary,
+    borderRadius: 20,
+  },
+  deleteAccountButton: {
+    marginTop: 20,
+    backgroundColor: COLORS.danger,
     borderRadius: 20,
   },
 });

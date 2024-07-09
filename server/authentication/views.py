@@ -171,6 +171,8 @@ class ScreenPermissionsViewSet(viewsets.ModelViewSet):
         if group_ids:
             group_ids_list = group_ids.split(',')
             queryset = queryset.filter(group__id__in=group_ids_list)
+        else:
+            queryset = queryset.none() 
         return queryset
 
 class ScreenViewSet(viewsets.ModelViewSet):
@@ -214,6 +216,17 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return response
+    
+    @action(detail=True, methods=['delete'], url_path='delete_account')
+    def delete_account(self, request, pk=None):
+        try:
+            user = self.get_object()
+            user.delete()
+            return Response({'detail': '帳號已成功刪除'}, status=status.HTTP_204_NO_CONTENT)
+        except User.DoesNotExist:
+            return Response({'detail': '找不到用戶'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'detail': f'刪除帳號失敗: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
     
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

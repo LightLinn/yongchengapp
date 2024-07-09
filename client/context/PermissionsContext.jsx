@@ -7,16 +7,16 @@ const PermissionsContext = createContext();
 export const usePermissions = () => useContext(PermissionsContext);
 
 export const PermissionsProvider = ({ children }) => {
-  const { groupIds } = useAuth();
-  const [permissions, setPermissions] = useState([]);
+  const { groupIds, permissions, setPermissions } = useAuth();
+  // const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const loadPermissions = async () => {
     setLoading(true);
+    setPermissions([]);
     try {
       const userPermissions = await fetchUserPermissions(groupIds);
       const mergedPermissions = {};
-
       userPermissions.forEach((perm) => {
         const screenName = perm.screen_name.screen_name;
         if (!mergedPermissions[screenName]) {
@@ -42,6 +42,7 @@ export const PermissionsProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     if (groupIds && groupIds.length > 0) {

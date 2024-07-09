@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [username, setUsername] = useState(null);
   const [groups, setGroups] = useState([]);
   const [groupIds, setGroupIds] = useState([]);
+  const [permissions, setPermissions] = useState([]);
 
   useEffect(() => {
     const loadToken = async () => {
@@ -38,6 +39,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (username, password) => {
+    console.log(permissions)
+    console.log(groupIds)
     try {
       const response = await fetch(`${API_BASE_URL}/token/`, {
         method: 'POST',
@@ -81,6 +84,7 @@ export const AuthProvider = ({ children }) => {
     setUsername(null);
     setGroups([]);
     setGroupIds([]);
+    setPermissions([]);
   };
 
   const refreshAccessToken = async () => {
@@ -121,7 +125,7 @@ export const AuthProvider = ({ children }) => {
     };
 
   return (
-    <AuthContext.Provider value={{ isLogging, token, refreshToken, userId, username, groups, groupIds, login, logout, refreshAccessToken }}>
+    <AuthContext.Provider value={{ isLogging, token, refreshToken, userId, username, groups, groupIds, login, logout, refreshAccessToken, permissions, setPermissions }}>
       {children}
     </AuthContext.Provider>
   );

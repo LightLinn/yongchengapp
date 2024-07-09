@@ -1,4 +1,5 @@
-import { Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Tabs, useRouter } from 'expo-router';
 import { Icon } from 'react-native-elements';
 import { COLORS } from '../../styles/theme';
 
