@@ -2,7 +2,7 @@
 
 # 定義變數
 REPO_PATH="/Users/lightlin/Desktop/TCStudio/Sourcecode/Projects/yongchengapp"
-BRANCH_NAME="main"
+BRANCH_NAME="master"
 
 # 獲取當前日期和時間
 DATE_TIME=$(date +"%Y-%m-%d %H:%M:%S")
