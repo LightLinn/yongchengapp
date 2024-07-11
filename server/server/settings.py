@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-ljqrikxfcf5#cy7d1m(hhh*iv@6k_!!u%&%94()$#py5opd*8_
 DEBUG = True
 
 # ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['www.yongcheng.com.tw', 'yongcheng.com.tw', '172.234.88.89', '127.0.0.1']
+ALLOWED_HOSTS = ['www.yongcheng.com.tw', 'yongcheng.com.tw', '139.162.100.71', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://yongcheng.com.tw',
