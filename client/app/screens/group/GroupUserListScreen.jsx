@@ -94,7 +94,7 @@ const GroupUserListScreen = () => {
         <View style={styles.suggestionsContainer}>
           {suggestions.map((suggestion, index) => (
             <TouchableOpacity key={index} onPress={() => handleSuggestionPress(suggestion.username)}>
-              <Text style={styles.suggestionItem}>{suggestion.username}</Text>
+              <Text style={styles.suggestionItem}>{suggestion.username}, {suggestion.fullname} / {suggestion.nickname}</Text>
             </TouchableOpacity>
           ))}
         </View>

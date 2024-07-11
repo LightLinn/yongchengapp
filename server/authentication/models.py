@@ -15,6 +15,7 @@ class CustomUser(AbstractUser):
     address = models.CharField(max_length=255, null=True, blank=True, verbose_name='地址')
     avatar = models.ImageField(upload_to='avatar/', null=True, blank=True, verbose_name='頭像')
     nickname = models.CharField(max_length=255, null=True, blank=True, verbose_name='暱稱')
+    fullname = models.CharField(max_length=255, null=True, blank=True, verbose_name='全名')
 
     class Meta:
         db_table = 'user'

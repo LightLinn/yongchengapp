@@ -17,6 +17,7 @@ const ProfileScreen = () => {
     email: '',
     phone: '',
     nickname: '',
+    fullname: '',
     address: '',
     birthday: '',
   });
@@ -32,6 +33,7 @@ const ProfileScreen = () => {
         const token = await AsyncStorage.getItem('token');
         if (userId && token) {
           const profileData = await fetchUserProfile(userId, token);
+          console.log(profileData.avatar)
           setProfile({
             avatar: profileData.avatar,
             username: profileData.username,
@@ -39,6 +41,7 @@ const ProfileScreen = () => {
             email: profileData.email,
             phone: profileData.phone,
             nickname: profileData.nickname,
+            fullname: profileData.fullname,
             address: profileData.address,
             birthday: profileData.birthday,
           });
@@ -134,7 +137,13 @@ const ProfileScreen = () => {
         <Text style={styles.groups}>{profile.groups.join(', ')}</Text>
       </View>
       <View style={styles.detailsSection}>
-        <Text style={styles.label}>名稱</Text>
+        <Text style={styles.label}>姓名</Text>
+        <TextInput
+          style={styles.input}
+          value={profile.fullname}
+          onChangeText={(value) => handleChange('fullname', value)}
+        />
+        <Text style={styles.label}>暱稱</Text>
         <TextInput
           style={styles.input}
           value={profile.nickname}

@@ -8,7 +8,7 @@ const getToken = async () => {
 
 export const fetchBannerImages = async () => {
   const token = await getToken();
-  const response = await fetch(`${API_BASE_URL}/banner`, {
+  const response = await fetch(`${API_BASE_URL}/banner/`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },

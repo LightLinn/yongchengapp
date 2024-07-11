@@ -12,7 +12,7 @@ export default function Layout() {
   const router = useRouter();
 
   const navigateToAvatar = () => {
-    router.push('/screens/ProfileScreen'); 
+    router.replace('/screens/ProfileScreen'); 
   };
 
   const navigateToNotify = () => {

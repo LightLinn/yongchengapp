@@ -17,7 +17,7 @@ export const fetchAttendanceRecords = async () => {
 };
 
 export const createAttendance = async (attendanceData) => {
-  console.log(attendanceData);
+  
   const token = await AsyncStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/attendance_lists/`, {
     method: 'POST',

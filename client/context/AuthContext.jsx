@@ -39,8 +39,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (username, password) => {
-    console.log(permissions)
-    console.log(groupIds)
     try {
       const response = await fetch(`${API_BASE_URL}/token/`, {
         method: 'POST',

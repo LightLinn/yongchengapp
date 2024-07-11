@@ -15,7 +15,7 @@ const COLORS = {
   warning2: "#f0ad4e",      
   danger: "#FF4444",
   alert: "#d9534f",       
-  success: "#187b1c",      
+  success: "#0c520f",      
 };
 
 

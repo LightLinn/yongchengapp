@@ -1,7 +1,11 @@
 import { Stack } from 'expo-router';
 import { Button, Icon } from 'react-native-elements';
+import { useRouter } from 'expo-router';
+import { COLORS } from '../../styles/theme';
 
 export default function Layout() {
+  const router = useRouter();
+
   return (
     <Stack>
       <Stack.Screen 
@@ -17,9 +21,9 @@ export default function Layout() {
           headerTitle: '用戶管理',
           headerLeft: () => (
             <Button
-              icon={<Icon name="arrow-back" color="#333" />}
+              icon={<Icon name="home" color={COLORS.primary} />}
               buttonStyle={{ backgroundColor: 'transparent' }}
-              onPress={() => navigation.goBack()}
+              onPress={() => router.replace('/(tabs)/home')}
             />
           ),
         })} 
@@ -31,7 +35,7 @@ export default function Layout() {
           headerShown: false,
           headerLeft: () => (
             <Button
-              icon={<Icon name="arrow-back" color="#333" />}
+              icon={<Icon name="arrow-back" color={COLORS.gray} />}
               buttonStyle={{ backgroundColor: 'transparent' }}
               onPress={() => navigation.goBack()}
             />
@@ -45,7 +49,7 @@ export default function Layout() {
           headerShown: false,
           headerLeft: () => (
             <Button
-              icon={<Icon name="arrow-back" color="#333" />}
+              icon={<Icon name="arrow-back" color={COLORS.gray} />}
               buttonStyle={{ backgroundColor: 'transparent' }}
               onPress={() => navigation.goBack()}
             />
@@ -59,7 +63,7 @@ export default function Layout() {
           headerShown: false,
           headerLeft: () => (
             <Button
-              icon={<Icon name="arrow-back" color="#333" />}
+              icon={<Icon name="arrow-back" color={COLORS.gray} />}
               buttonStyle={{ backgroundColor: 'transparent' }}
               onPress={() => navigation.goBack()}
             />
@@ -74,7 +78,7 @@ export default function Layout() {
           headerShown: false,
           headerLeft: () => (
             <Button
-              icon={<Icon name="arrow-back" color="#333" />}
+              icon={<Icon name="arrow-back" color={COLORS.gray} />}
               buttonStyle={{ backgroundColor: 'transparent' }}
               onPress={() => navigation.goBack()}
             />
@@ -88,7 +92,7 @@ export default function Layout() {
           headerShown: false,
           headerLeft: () => (
             <Button
-              icon={<Icon name="arrow-back" color="#333" />}
+              icon={<Icon name="arrow-back" color={COLORS.gray} />}
               buttonStyle={{ backgroundColor: 'transparent' }}
               onPress={() => navigation.goBack()}
             />
@@ -127,7 +131,7 @@ export default function Layout() {
           headerShown: false,
           headerLeft: () => (
             <Button
-              icon={<Icon name="arrow-back" color="#333" />}
+              icon={<Icon name="arrow-back" color={COLORS.gray} />}
               buttonStyle={{ backgroundColor: 'transparent' }}
               onPress={() => navigation.goBack()}
             />

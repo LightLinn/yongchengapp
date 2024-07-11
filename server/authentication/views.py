@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404
@@ -205,8 +206,13 @@ class UserViewSet(viewsets.ModelViewSet):
     def suggestions(self, request):
         query = request.query_params.get('q', '')
         if query:
-            users = User.objects.filter(username__icontains=query)[:10]
-            suggestions = [{'username': user.username} for user in users]
+            users = User.objects.filter(
+                Q(username__icontains=query) | 
+                Q(nickname__icontains=query) | 
+                Q(fullname__icontains=query)
+            )[:10]
+            suggestions = [{'username': user.username, 'nickname': user.nickname, 'fullname': user.fullname} for user in users]
+            print(suggestions)
             return Response(suggestions)
         return Response([])
     
