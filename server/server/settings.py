@@ -31,6 +31,8 @@ DEBUG = True
 # ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['www.yongcheng.com.tw', 'yongcheng.com.tw', '139.162.100.71', '127.0.0.1']
 
+SECURE_SSL_REDIRECT = False
+
 CSRF_TRUSTED_ORIGINS = [
     'https://yongcheng.com.tw',
     'https://www.yongcheng.com.tw',

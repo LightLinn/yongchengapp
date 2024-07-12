@@ -15,11 +15,15 @@ class UserSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='name'  # 或者使用 'id' 如果前端需要群組ID
     )
+    groupIds = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone', 'sex', 'birthday', 'address', 'avatar', 'groups', 'nickname', 'fullname']
+        fields = ['id', 'username', 'email', 'phone', 'sex', 'birthday', 'address', 'avatar', 'groups', 'nickname', 'fullname', 'groupIds']
 
+    def get_groupIds(self, user):
+        return user.groups.values_list('id', flat=True)
+    
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission

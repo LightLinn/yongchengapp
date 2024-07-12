@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { fetchUserPermissions } from '../api/groupApi';
+import { fetchUserProfile } from '../api/profileApi';
 import { useAuth } from './AuthContext';
 
 const PermissionsContext = createContext();
@@ -7,14 +8,19 @@ const PermissionsContext = createContext();
 export const usePermissions = () => useContext(PermissionsContext);
 
 export const PermissionsProvider = ({ children }) => {
-  const { groupIds, permissions, setPermissions } = useAuth();
-  // const [permissions, setPermissions] = useState([]);
+  const { userId, permissions, setPermissions } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [ groupIds, setGroupIds ] = useState([]);
 
   const loadPermissions = async () => {
     setLoading(true);
     setPermissions([]);
     try {
+      const userProfile = await fetchUserProfile(userId);
+      const groupIds = userProfile.groupIds;
+      setGroupIds(groupIds);
+      console.log('groupIds', groupIds);
+
       const userPermissions = await fetchUserPermissions(groupIds);
       const mergedPermissions = {};
       userPermissions.forEach((perm) => {
@@ -45,10 +51,10 @@ export const PermissionsProvider = ({ children }) => {
 
 
   useEffect(() => {
-    if (groupIds && groupIds.length > 0) {
+    if (userId) {
       loadPermissions();
     }
-  }, [groupIds]);
+  }, [userId]);
 
   return (
     <PermissionsContext.Provider value={{ permissions, loading, refresh: loadPermissions }}>

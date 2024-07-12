@@ -18,7 +18,6 @@ const RepairScreen = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
-  const { groupIds } = useAuth();
   const { permissions, loading, refresh } = usePermissions();
 
   const loadRepairs = async () => {

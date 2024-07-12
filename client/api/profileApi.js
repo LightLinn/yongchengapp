@@ -1,7 +1,9 @@
 import { API_BASE_URL } from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const fetchUserProfile = async (userId, token) => {
+
+export const fetchUserProfile = async (userId) => {
+  const token = await AsyncStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/users/${userId}/`, {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -12,7 +14,6 @@ export const fetchUserProfile = async (userId, token) => {
   }
   return await response.json();
 };
-
 
 export const updateUserProfile = async (profile) => {
   const token = await AsyncStorage.getItem('token');

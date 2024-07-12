@@ -91,7 +91,7 @@ const MenuScreen = () => {
     },
   ];
 
-  if (loading) {
+  if (loading || permissions.length === 0) {
     return (
       <View style={styles.noAccessContainer}>
         <Text style={styles.noAccessText}>您無訪問權限</Text>
@@ -99,7 +99,6 @@ const MenuScreen = () => {
     );
   }
 
-  
 
   return (
     <ScrollView

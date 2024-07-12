@@ -33,7 +33,6 @@ const ProfileScreen = () => {
         const token = await AsyncStorage.getItem('token');
         if (userId && token) {
           const profileData = await fetchUserProfile(userId, token);
-          console.log(profileData.avatar)
           setProfile({
             avatar: profileData.avatar,
             username: profileData.username,
