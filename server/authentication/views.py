@@ -169,11 +169,13 @@ class ScreenPermissionsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         group_ids = self.request.query_params.get('group_ids')
-        if group_ids:
+        pk = self.kwargs.get('pk')
+
+        if pk:  # 如果有指定ID，則過濾該ID
+            queryset = queryset.filter(pk=pk)
+        elif group_ids:  # 否則根據group_ids過濾
             group_ids_list = group_ids.split(',')
             queryset = queryset.filter(group__id__in=group_ids_list)
-        else:
-            queryset = queryset.none() 
         return queryset
 
 class ScreenViewSet(viewsets.ModelViewSet):
