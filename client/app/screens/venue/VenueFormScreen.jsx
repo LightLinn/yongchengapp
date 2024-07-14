@@ -18,11 +18,11 @@ const VenueFormScreen = () => {
   const [venue, setVenue] = useState({
     name: '',
     description: '',
-    capacity: 0,
-    weekday_open_time: '',
-    weekday_close_time: '',
-    holiday_open_time: '',
-    holiday_close_time: '',
+    capacity: 999,
+    weekday_open_time: '07:00',
+    weekday_close_time: '21:30',
+    holiday_open_time: '07:00',
+    holiday_close_time: '21:30',
     longitude: '',
     latitude: '',
     address: '',
@@ -46,10 +46,10 @@ const VenueFormScreen = () => {
         name: venueDetail.name,
         description: venueDetail.description,
         capacity: venueDetail.capacity,
-        weekday_open_time: venueDetail.weekday_open_time,
-        weekday_close_time: venueDetail.weekday_close_time,
-        holiday_open_time: venueDetail.holiday_open_time,
-        holiday_close_time: venueDetail.holiday_close_time,
+        weekday_open_time: moment(venueDetail.weekday_open_time, 'HH:mm:ss').format('HH:mm'),
+        weekday_close_time: moment(venueDetail.weekday_close_time, 'HH:mm:ss').format('HH:mm'),
+        holiday_open_time: moment(venueDetail.holiday_open_time, 'HH:mm:ss').format('HH:mm'),
+        holiday_close_time: moment(venueDetail.holiday_close_time, 'HH:mm:ss').format('HH:mm'),
         longitude: venueDetail.longitude,
         latitude: venueDetail.latitude,
         address: venueDetail.address,
@@ -66,7 +66,7 @@ const VenueFormScreen = () => {
     const { name, description, address, weekday_open_time, weekday_close_time, holiday_open_time, holiday_close_time } = venue;
 
     if (!name || !description || !address || !weekday_open_time || !weekday_close_time || !holiday_open_time || !holiday_close_time) {
-      Alert.alert('錯誤', '請填寫所有必填欄位');
+      Alert.alert('錯誤', '請填寫所有欄位');
       return false;
     }
 

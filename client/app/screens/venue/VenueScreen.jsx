@@ -130,8 +130,8 @@ const VenueScreen = () => {
           <View style={styles.venueItem}>
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.desc}>{item.description}</Text>
-            <Text style={styles.date}>平日 {formatTime(item.weekday_open_time)} - {formatTime(item.weekday_close_time)}</Text>
-            <Text style={styles.date}>假日 {formatTime(item.holiday_open_time)} - {formatTime(item.holiday_close_time)}</Text>
+            {/* <Text style={styles.date}>平日 {formatTime(item.weekday_open_time)} - {formatTime(item.weekday_close_time)}</Text>
+            <Text style={styles.date}>假日 {formatTime(item.holiday_open_time)} - {formatTime(item.holiday_close_time)}</Text> */}
             <View style={styles.actions}>
               {hasPermission('can_edit') && (
                 <TouchableOpacity onPress={() => router.push(`/screens/venue/VenueFormScreen?id=${item.id}`)}>

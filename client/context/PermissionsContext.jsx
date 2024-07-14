@@ -19,7 +19,6 @@ export const PermissionsProvider = ({ children }) => {
       const userProfile = await fetchUserProfile(userId);
       const groupIds = userProfile.groupIds;
       setGroupIds(groupIds);
-      console.log('groupIds', groupIds);
 
       const userPermissions = await fetchUserPermissions(groupIds);
       const mergedPermissions = {};

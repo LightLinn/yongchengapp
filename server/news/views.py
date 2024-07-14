@@ -9,6 +9,6 @@ from .models import News
 from .serializers import NewsSerializer
 
 class NewsViewSet(viewsets.ModelViewSet):
-    queryset = News.objects.filter(is_deleted=False, is_published=True)
+    queryset = News.objects.filter(is_deleted=False, is_published=True).order_by('-created_at')
     serializer_class = NewsSerializer
 
