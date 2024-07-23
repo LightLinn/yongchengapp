@@ -74,6 +74,34 @@ export default function Layout() {
           ),
         })} 
       />
+      <Stack.Screen 
+        name="CreateLifeguardScheduleScreen"
+        options={({ navigation }) => ({
+          headerTitle: '創建救生員班表',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="VenueSelectScreen"
+        options={({ navigation }) => ({
+          headerTitle: '選擇場地',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
     </Stack>
   )
 }

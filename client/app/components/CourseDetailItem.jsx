@@ -11,7 +11,6 @@ const CourseDetailItem = ({ enroll, course }) => {
 
   const courseDate = new Date(course.course_date);
   courseDate.setHours(0, 0, 0, 0); // 將時間設置為午夜
-  
 
   const handlePress = () => {
     navigation.navigate('Attendance', { enroll, course });

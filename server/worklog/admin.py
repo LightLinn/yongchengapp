@@ -5,9 +5,9 @@ from django.contrib import admin
 from .models import Worklog, SpecialCheckRecord, PeriodicCheckRecord, DailyCheckRecord, DailyChecklist, PeriodicChecklist, SpecialChecklist
 
 class WorklogAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'is_final')
-    list_filter = ('id', 'title', 'is_final')
-    search_fields = ('id', 'title', 'is_final')
+    list_display = ('id', 'duty', 'is_final')
+    list_filter = ('id', 'duty', 'is_final')
+    search_fields = ('id', 'duty', 'is_final')
 
 admin.site.register(Worklog, WorklogAdmin)
 admin.site.register(SpecialCheckRecord)

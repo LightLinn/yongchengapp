@@ -64,10 +64,10 @@ const MenuScreen = () => {
       title: '出勤管理',
       screenName: '出勤管理',
       features: [
+        { name: '創建救生員班表', icon: '', screenName: '創建救生員班表', screen: '/screens/schedule/VenueSelectScreen', action: 'can_view' },
         { name: '救生員簽到', icon: '', screenName: '救生員簽到', screen: '/screens/attend/LifeguardAttendScreen', action: 'can_view' },
         // { name: '救生員簽到紀錄', icon: '', screenName: '救生員簽到紀錄', screen: '/screens/attendance/view', action: 'can_view' },
         { name: '救生員班表', icon: '', screenName: '救生員班表', screen: '/screens/schedule/LifeguardSchedulesScreen', action: 'can_view' },
-        { name: '創建救生員班表', icon: '', screenName: '創建救生員班表', screen: '/screens/schedule/view', action: 'can_view' },
         // { name: '救生員調班', icon: '', screenName: '救生員調班', screen: '/screens/reschedule/view', action: 'can_view' },
         // { name: '救生員請假', icon: '', screenName: '救生員請假', screen: '/screens/leave_request/view', action: 'can_view' },
         { name: '救生員排休', icon: '', screenName: '救生員排休', screen: '/screens/schedule/LifeguardUnavailableslotsScreen', action: 'can_view' },

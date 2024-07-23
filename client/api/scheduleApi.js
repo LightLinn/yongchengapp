@@ -129,3 +129,37 @@ export const fetchCoursesByCoach = async (coachId) => {
   }
   return await response.json();
 };
+
+export const fetchLifeguards = async () => {
+  const response = await fetch(`${API_BASE_URL}/lifeguards/`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch lifeguards');
+  }
+  return await response.json();
+};
+
+// Create lifeguard schedule
+export const createLifeguardSchedule = async (scheduleData) => {
+  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(scheduleData),
+  });
+
+  if (!response.ok) {
+    const errorResponse = await response.json();
+    throw new Error(`Failed to create lifeguard schedule: ${JSON.stringify(errorResponse)}`);
+  }
+
+  return await response.json();
+};
+
+export const fetchSchedulesByVenueId = async (venueId) => {
+  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/by_venueid/?venue_id=${venueId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch schedules by venue ID');
+  }
+  return await response.json();
+};

@@ -61,33 +61,41 @@ const RegisterScreen = () => {
   return (
     <View style={styles.container}>
       {/* <Text h3 style={styles.title}>註冊</Text> */}
+      <Text style={styles.label}>使用者名稱</Text>
       <Input
-        placeholder="使用者名稱"
+        placeholder="6位數以上英文數字組合"
         value={username}
         onChangeText={setUsername}
         containerStyle={styles.inputContainer}
+        inputStyle={{ fontSize: SIZES.small }}
       />
+      <Text style={styles.label}>電子信箱</Text>
       <Input
-        placeholder="電子信箱"
+        placeholder=""
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
         containerStyle={styles.inputContainer}
+        inputStyle={{ fontSize: SIZES.small }}
       />
+      <Text style={styles.label}>密碼</Text>
       <Input
-        placeholder="密碼"
+        placeholder="8位數以上英文數字組合"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         containerStyle={styles.inputContainer}
+        inputStyle={{ fontSize: SIZES.small }}
       />
+      <Text style={styles.label}>確認密碼</Text>
       <Input
-        placeholder="確認密碼"
+        placeholder="8位數以上英文數字組合"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
         containerStyle={styles.inputContainer}
+        inputStyle={{ fontSize: SIZES.small }}
       />
       <Button
         title="註冊"
@@ -110,6 +118,11 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     marginBottom: 20,
+  },
+  label: {
+    fontSize: SIZES.large,
+    marginBottom: 5,
+    color: COLORS.gray,
   },
   inputContainer: {
     marginBottom: 20,

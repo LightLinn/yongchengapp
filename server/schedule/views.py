@@ -100,6 +100,38 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
         schedules = self.queryset.filter(lifeguard_id=lifeguard_id)
         serializer = self.get_serializer(schedules, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='by_venueid')
+    def get_schedules_by_venueid(self, request):
+        venue_id = self.request.query_params.get('venue_id')
+        
+        if venue_id is None:
+            return Response({'detail': 'venue_id is required'}, status=400)
+        
+        try:
+            venue_id = int(venue_id)
+        except ValueError:
+            return Response({'detail': 'Invalid venue_id format'}, status=400)
+
+        schedules = self.queryset.filter(venue_id=venue_id)
+        serializer = self.get_serializer(schedules, many=True)
+        return Response(serializer.data)
+    
+    def create(self, request, *args, **kwargs):
+        schedules = request.data.get('schedules', [])
+        if not schedules:
+            return Response({'detail': 'No schedules provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        created_schedules = []
+        for schedule_data in schedules:
+            serializer = self.get_serializer(data=schedule_data)
+            if serializer.is_valid():
+                self.perform_create(serializer)
+                created_schedules.append(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(created_schedules, status=status.HTTP_201_CREATED)
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()

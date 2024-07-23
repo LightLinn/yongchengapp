@@ -2,6 +2,7 @@
 
 from rest_framework import serializers
 from .models import LifeguardSchedule, CoahcSchedule, Location, UnavailableSlot
+from venues.models import Venue
 from humanresources.models import Coach
 from authentication.serializers import UserSerializer
 
@@ -21,7 +22,7 @@ class LifeguardScheduleSerializer(serializers.ModelSerializer):
 
     # 取得venue的名稱
     def get_venue_name(self, obj):
-        return obj.venue.name
+        return obj.venue.name if obj.venue else None
     
     #取得救生員的名稱
     def get_lifeguard_name(self, obj):

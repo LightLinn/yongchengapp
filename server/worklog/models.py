@@ -4,19 +4,15 @@ from reviews.models import Auditable
 # Create your models here.
 
 class Worklog(Auditable):
-    title = models.CharField(max_length=100)
-    content = models.TextField()
+    description = models.TextField(verbose_name='描述', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員', blank=True, null=True)
     usage_count = models.PositiveIntegerField(verbose_name='使用人數', default=0)
-    daily_checks = models.ManyToManyField('DailyCheckRecord', blank=True)
-    periodic_checks = models.ManyToManyField('PeriodicCheckRecord', blank=True)
-    special_checks = models.ManyToManyField('SpecialCheckRecord', blank=True)
     is_final = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title
+        return f'{self.duty}'
     
     class Meta:
         db_table = 'worklog'
@@ -42,10 +38,9 @@ class DailyCheckRecord(Auditable):
     created_at = models.DateTimeField(auto_now_add=True)
     check_item = models.ForeignKey(DailyChecklist, on_delete=models.CASCADE, verbose_name='每日檢點', blank=True, null=True)
     score = models.IntegerField(choices=[(0, '優'), (1, '尚可'), (2, '需改善')], default=0)
-    duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員')
+    worklog = models.ForeignKey(Worklog, on_delete=models.CASCADE, verbose_name='工作日誌', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
     date = models.DateField(verbose_name='檢點日期', blank=True, null=True)
-    venue = models.ForeignKey('venues.Venue', on_delete=models.CASCADE, verbose_name='場地', blank=True, null=True)
 
 
     class Meta:
@@ -75,7 +70,7 @@ class PeriodicCheckRecord(models.Model):
     check_item = models.ForeignKey(PeriodicChecklist, on_delete=models.CASCADE, verbose_name='定時檢點', blank=True, null=True)
     value = models.FloatField(verbose_name='數值')
     pool = models.CharField(max_length=100, verbose_name='池號', blank=True, null=True)
-    duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員')
+    worklog = models.ForeignKey(Worklog, on_delete=models.CASCADE, verbose_name='工作日誌', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
 
     class Meta:
@@ -106,7 +101,7 @@ class SpecialCheckRecord(models.Model):
     quantity = models.FloatField(verbose_name='數量')
     start_time = models.DateTimeField(verbose_name='開始時間', blank=True, null=True)
     end_time = models.DateTimeField(verbose_name='結束時間', blank=True, null=True)
-    duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員')
+    worklog = models.ForeignKey(Worklog, on_delete=models.CASCADE, verbose_name='工作日誌', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
 
     class Meta:
