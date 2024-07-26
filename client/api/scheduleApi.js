@@ -163,3 +163,12 @@ export const fetchSchedulesByVenueId = async (venueId) => {
   }
   return await response.json();
 };
+
+export const deleteLifeguardSchedule = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/${id}/`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete lifeguard schedule');
+  }
+};

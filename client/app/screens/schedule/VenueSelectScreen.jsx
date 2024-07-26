@@ -27,7 +27,7 @@ const VenueSelectScreen = () => {
   };
 
   const handleSelectVenue = (venue) => {
-    router.push(`/screens/schedule/CreateLifeguardScheduleScreen?venueId=${venue.id}&venueName=${venue.name}`);
+    router.push(`/screens/schedule/LifeguardSchedulesListScreen?venueId=${venue.id}&venueName=${venue.name}`);
   };
 
   if (loading) {

@@ -8,7 +8,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import ModalDropdown from 'react-native-modal-dropdown';
 import { COLORS, SIZES } from '../../../styles/theme';
 
-const CreateLifeguardScheduleScreen = () => {
+const LifeguardScheduleCreateScreen = () => {
   const [selectedDates, setSelectedDates] = useState({});
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
@@ -297,4 +297,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateLifeguardScheduleScreen;
+export default LifeguardScheduleCreateScreen;

@@ -63,6 +63,20 @@ export default function Layout() {
       <Stack.Screen 
         name="LifeguardSchedulesScreen"
         options={({ navigation }) => ({
+          headerTitle: '救生員個人班表',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="LifeguardSchedulesListScreen"
+        options={({ navigation }) => ({
           headerTitle: '救生員班表',
           headerShadowVisible: false,
           headerLeft: () => (
@@ -75,7 +89,7 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
-        name="CreateLifeguardScheduleScreen"
+        name="LifeguardScheduleCreateScreen"
         options={({ navigation }) => ({
           headerTitle: '創建救生員班表',
           headerShadowVisible: false,
