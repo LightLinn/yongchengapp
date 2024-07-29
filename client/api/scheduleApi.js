@@ -55,7 +55,7 @@ export const fetchCoachId = async (userId) => {
 
 export const fetchLifeguardId = async (userId) => {
   const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/lifeguards/by_user?userId=${userId}`, {
+  const response = await fetch(`${API_BASE_URL}/lifeguards/by_user/?userId=${userId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -102,7 +102,7 @@ export const fetchUnavailableSlotsByMonth = async (lifeguardId, month) => {
 
 export const fetchLifeguardSchedules = async (lifeguardId) => {
   const token = await getToken();
-  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/by_lifeguardid?lifeguard_id=${lifeguardId}`, {
+  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/by_lifeguardid/?lifeguard_id=${lifeguardId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -117,7 +117,7 @@ export const fetchLifeguardSchedules = async (lifeguardId) => {
 
 export const fetchCoursesByCoach = async (coachId) => {
   const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/courses?coach_id=${coachId}`, {
+  const response = await fetch(`${API_BASE_URL}/courses/?coach_id=${coachId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -138,7 +138,6 @@ export const fetchLifeguards = async () => {
   return await response.json();
 };
 
-// Create lifeguard schedule
 export const createLifeguardSchedule = async (scheduleData) => {
   const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/`, {
     method: 'POST',

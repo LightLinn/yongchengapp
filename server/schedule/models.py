@@ -9,8 +9,6 @@ from reviews.models import Auditable
 
 # Create your models here.
 
-# 創建授課教練排班表、救生員排班表、救生員排假表
-
 # 救生員每月班表------------------------------------------------
 class UnavailableSlot(Auditable):
     lifeguard = models.ForeignKey('humanresources.Lifeguard', on_delete=models.CASCADE)
@@ -30,13 +28,21 @@ class UnavailableSlot(Auditable):
     
     
 class LifeguardSchedule(Auditable):
-    lifeguard = models.ForeignKey('humanresources.Lifeguard', on_delete=models.CASCADE, related_name='lifeguard_schedules', verbose_name='救生员')
-    venue = models.ForeignKey('venues.Venue', on_delete=models.CASCADE, related_name='lifeguard_schedules', verbose_name='地点', null=True, blank=True)
+    SCHEDULE_STATUS_CHOICES = [       
+        ('待執勤', '待執勤'),
+        ('執勤中', '執勤中'),
+        ('已執勤', '已執勤'),
+        ('未執勤', '未執勤'),
+    ]
+
+    lifeguard = models.ForeignKey('humanresources.Lifeguard', on_delete=models.CASCADE, related_name='lifeguard_schedules', verbose_name='救生員')
+    venue = models.ForeignKey('venues.Venue', on_delete=models.CASCADE, related_name='lifeguard_schedules', verbose_name='地點', null=True, blank=True)
     date = models.DateField(default=None, verbose_name='日期')
     start_time = models.TimeField(default=None, verbose_name='开始时间')
     end_time = models.TimeField(default=None, verbose_name='结束时间')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立时间')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    schedule_status = models.CharField(max_length=20, choices=SCHEDULE_STATUS_CHOICES, verbose_name='班表狀態', blank=True, null=True, default='待執勤')
     
     class Meta:
         db_table = 'lifeguard_schedule'

@@ -10,7 +10,7 @@ from authentication.permissions import *
 
 # 創建VenueViewSet
 class VenueViewSet(viewsets.ModelViewSet):
-    queryset = Venue.objects.all()
+    queryset = Venue.objects.all().order_by("-created_at")
     serializer_class = VenueSerializer
 
 class VenueRepairRequestViewSet(viewsets.ModelViewSet):

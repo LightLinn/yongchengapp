@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Button, Alert, StyleSheet, TextInput } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
-import { fetchDailyChecklists, createDailyCheckRecord, bulkUpdateDailyCheckRecords, fetchDailyCheckRecordsBySchedule } from '../../../api/worklogApi';
+import { fetchSpecialChecklists, createSpecialCheckRecord, bulkUpdateSpecialCheckRecords, fetchSpecialCheckRecordsBySchedule } from '../../../api/worklogApi';
 import { fetchLifeguardId, fetchLifeguardSchedules } from '../../../api/scheduleApi';
 import { useAuth } from '../../../context/AuthContext';
 import { Card } from 'react-native-elements';
-import { RadioButton } from 'react-native-paper';
+import ModalDateTimePicker from 'react-native-modal-datetime-picker';
 import { COLORS, FONT, SIZES } from '../../../styles/theme';
 import { router } from 'expo-router';
+import moment from 'moment';
 
-const DailyChecklistScreen = () => {
+const SpecialChecklistScreen = () => {
   const [checklistItems, setChecklistItems] = useState([]);
   const [records, setRecords] = useState([]);
   const [lifeguardId, setLifeguardId] = useState(null);
@@ -17,11 +18,14 @@ const DailyChecklistScreen = () => {
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const { userId } = useAuth();
+  const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+  const [currentField, setCurrentField] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(null);
 
   useEffect(() => {
     const loadChecklists = async () => {
       try {
-        const data = await fetchDailyChecklists();
+        const data = await fetchSpecialChecklists();
         setChecklistItems(data);
       } catch (error) {
         console.error('Failed to fetch checklists', error);
@@ -45,22 +49,24 @@ const DailyChecklistScreen = () => {
 
   const loadRecordsBySchedule = async (scheduleId) => {
     try {
-      const data = await fetchDailyCheckRecordsBySchedule(scheduleId);
+      const data = await fetchSpecialCheckRecordsBySchedule(scheduleId);
       if (data.length > 0) {
         setRecords(data.map(record => ({
           id: record.id,
           check_item_id: record.check_item.id,
-          score: record.score,
+          quantity: record.quantity,
+          start_time: moment(record.start_time, 'HH:mm:ss').format('HH:mm'),
+          end_time: moment(record.end_time, 'HH:mm:ss').format('HH:mm'),
           remark: record.remark
         })));
         setIsUpdate(true); // 记录存在，进行更新操作
       } else {
-        setRecords(checklistItems.map(item => ({ check_item_id: item.id, score: '優良', remark: '' })));
+        setRecords(checklistItems.map(item => ({ check_item_id: item.id, quantity: '', start_time: '', end_time: '', remark: '' })));
         setIsUpdate(false); // 记录不存在，进行创建操作
       }
     } catch (error) {
       console.error('Failed to fetch records', error);
-      setRecords(checklistItems.map(item => ({ check_item_id: item.id, score: '優良', remark: '' })));
+      setRecords(checklistItems.map(item => ({ check_item_id: item.id, quantity: '', start_time: '', end_time: '', remark: '' })));
       setIsUpdate(false); // 加载失败，默认进行创建操作
     }
   };
@@ -71,13 +77,25 @@ const DailyChecklistScreen = () => {
     loadRecordsBySchedule(selectedScheduleId);
   };
 
-  const handleScoreChange = (index, value) => {
+  const handleChange = (index, field, value) => {
     const updatedRecords = [...records];
     updatedRecords[index] = {
       ...updatedRecords[index],
-      score: value,
+      [field]: value,
     };
     setRecords(updatedRecords);
+  };
+
+  const showTimePicker = (index, field) => {
+    setCurrentIndex(index);
+    setCurrentField(field);
+    setTimePickerVisible(true);
+  };
+
+  const handleConfirm = (date) => {
+    const time = date.toTimeString().split(' ')[0].substring(0, 5); // 格式化时间为HH:mm
+    handleChange(currentIndex, currentField, time);
+    setTimePickerVisible(false);
   };
 
   const handleSubmit = async () => {
@@ -86,23 +104,38 @@ const DailyChecklistScreen = () => {
       return;
     }
 
-    const formattedRecords = records.map((record, index) => ({
-      ...record,
-      duty: selectedSchedule,
-    }));
+    const formattedRecords = checklistItems.map((item, index) => {
+      const record = records[index];
+      if (record.quantity !== '') {
+        if (record.start_time === '' || record.end_time === '') {
+          Alert.alert('提醒', '請填寫開始時間和結束時間');
+          throw new Error('請填寫開始時間和結束時間');
+        }
+      }
+      
+      return {
+        id: record.id,
+        check_item_id: item.id,
+        quantity: record.quantity || null,
+        start_time: record.start_time || '00:00',
+        end_time: record.end_time || '00:00',
+        duty: selectedSchedule,
+        remark: record.remark || '',
+      };
+    });
 
     try {
       if (isUpdate) {
-        await bulkUpdateDailyCheckRecords({ records: formattedRecords });
-        Alert.alert('更新成功', '每日檢點表已更新');
+        await bulkUpdateSpecialCheckRecords({ records: formattedRecords });
+        Alert.alert('更新成功', '特殊檢點表已更新');
       } else {
-        await createDailyCheckRecord({ records: formattedRecords });
-        Alert.alert('提交成功', '每日檢點表已提交');
+        await createSpecialCheckRecord({ records: formattedRecords });
+        Alert.alert('送出成功', '特殊檢點表已送出');
       }
       router.back();
     } catch (error) {
       console.error('Failed to submit records', error);
-      Alert.alert('提交失敗', '每日檢點表提交失敗');
+      Alert.alert('送出失敗', '特殊檢點表送出失敗');
     }
   };
 
@@ -123,25 +156,31 @@ const DailyChecklistScreen = () => {
       {checklistItems.map((item, index) => (
         <Card key={index}>
           <Card.Title style={styles.cardTitle}>{item.item}</Card.Title>
-          <View style={styles.radioContainer}>
-            <Text></Text>
-            <RadioButton.Group
-              onValueChange={(value) => handleScoreChange(index, value)}
-              value={records[index]?.score || '優良'}
-            >
-              <View style={styles.radioButton}>
-                <RadioButton value="優良" color={COLORS.primary} />
-                <Text>優良</Text>
-              </View>
-              <View style={styles.radioButton}>
-                <RadioButton value="尚可" color={COLORS.primary} />
-                <Text>尚可</Text>
-              </View>
-              <View style={styles.radioButton}>
-                <RadioButton value="需改善" color={COLORS.primary} />
-                <Text>需改善</Text>
-              </View>
-            </RadioButton.Group>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="數量"
+              value={records[index]?.quantity}
+              onChangeText={(value) => handleChange(index, 'quantity', value)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="開始時間"
+              value={records[index]?.start_time}
+              onFocus={() => showTimePicker(index, 'start_time')}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="結束時間"
+              value={records[index]?.end_time}
+              onFocus={() => showTimePicker(index, 'end_time')}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="備註"
+              value={records[index]?.remark}
+              onChangeText={(value) => handleChange(index, 'remark', value)}
+            />
           </View>
         </Card>
       ))}
@@ -149,6 +188,13 @@ const DailyChecklistScreen = () => {
         title={isUpdate ? '更新' : '送出'}
         onPress={handleSubmit}
         color={COLORS.primary}
+      />
+      <ModalDateTimePicker
+        isVisible={isTimePickerVisible}
+        mode="time"
+        onConfirm={handleConfirm}
+        onCancel={() => setTimePickerVisible(false)}
+        is24Hour={true}
       />
     </ScrollView>
   );
@@ -162,20 +208,23 @@ const styles = StyleSheet.create({
   },
   scheduleDropdownContainer: {
     flexDirection: 'row',
-    justifyContent: 'left',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginVertical: 20,
     marginHorizontal: 20,
   },
-  radioContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  inputContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     marginVertical: 10,
   },
-  radioButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 5,
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginVertical: 5,
+    width: '100%',
   },
   dropdown: {
     borderWidth: 1,
@@ -211,4 +260,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DailyChecklistScreen;
+export default SpecialChecklistScreen;

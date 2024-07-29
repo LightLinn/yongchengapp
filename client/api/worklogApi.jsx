@@ -42,7 +42,7 @@ export const fetchDailyChecklists = async () => {
   return response.json();
 };
 
-export const submitDailyCheckRecord = async (records) => {
+export const createDailyCheckRecord = async (records) => {
   const response = await fetch(`${API_BASE_URL}/daily_check_records/`, {
     method: 'POST',
     headers: {
@@ -51,15 +51,117 @@ export const submitDailyCheckRecord = async (records) => {
     body: JSON.stringify(records),
   });
   if (!response.ok) {
-    throw new Error('Failed to submit records');
+    throw new Error('Failed to create records');
   }
   return response.json();
 };
 
-export const fetchDailyCheckRecords = async (venueId, month) => {
-  const response = await fetch(`${API_BASE_URL}/daily_check_records/?venue=${venueId}&month=${month}`);
+export const bulkUpdateDailyCheckRecords = async (records) => {
+  const response = await fetch(`${API_BASE_URL}/daily_check_records/bulk_update/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(records),
+  });
   if (!response.ok) {
-    throw new Error('Failed to fetch records');
+    throw new Error('Failed to update records');
+  }
+  return response.json();
+};
+
+export const fetchDailyCheckRecordsBySchedule = async (scheduleId) => {
+  const response = await fetch(`${API_BASE_URL}/daily_check_records/by_schedule/?schedule=${scheduleId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch daily check records by worklog');
+  }
+  return response.json();
+};
+
+export const fetchSpecialChecklists = async () => {
+  const response = await fetch(`${API_BASE_URL}/special_checklists/`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch special checklists');
+  }
+  return response.json();
+};
+
+export const createSpecialCheckRecord = async (records) => {
+  const response = await fetch(`${API_BASE_URL}/special_check_records/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(records),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to create records');
+  }
+  return response.json();
+};
+
+export const bulkUpdateSpecialCheckRecords = async (records) => {
+  const response = await fetch(`${API_BASE_URL}/special_check_records/bulk_update/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(records),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update records');
+  }
+  return response.json();
+};
+
+export const fetchSpecialCheckRecordsBySchedule = async (scheduleId) => {
+  const response = await fetch(`${API_BASE_URL}/special_check_records/by_schedule/?schedule=${scheduleId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch special check records by schedule');
+  }
+  return response.json();
+};
+
+export const fetchPeriodicChecklists = async () => {
+  const response = await fetch(`${API_BASE_URL}/periodic_checklists/`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch periodic checklists');
+  }
+  return response.json();
+};
+
+export const createPeriodicCheckRecord = async (records) => {
+  const response = await fetch(`${API_BASE_URL}/periodic_check_records/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(records),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to create records');
+  }
+  return response.json();
+};
+
+export const bulkUpdatePeriodicCheckRecords = async (records) => {
+  const response = await fetch(`${API_BASE_URL}/periodic_check_records/bulk_update/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(records),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update records');
+  }
+  return response.json();
+};
+
+export const fetchPeriodicCheckRecordsBySchedule = async (scheduleId) => {
+  const response = await fetch(`${API_BASE_URL}/periodic_check_records/by_schedule/?schedule=${scheduleId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch periodic check records by schedule');
   }
   return response.json();
 };

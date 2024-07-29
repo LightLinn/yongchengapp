@@ -19,22 +19,25 @@ class SpecialChecklistSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DailyCheckRecordSerializer(serializers.ModelSerializer):
-    check_item = DailyChecklistSerializer()
+    check_item = DailyChecklistSerializer(read_only=True)
 
+    check_item_id = serializers.PrimaryKeyRelatedField(queryset=DailyChecklist.objects.all(), source='check_item')
     class Meta:
         model = DailyCheckRecord
         fields = '__all__'
 
 class PeriodicCheckRecordSerializer(serializers.ModelSerializer):
-    check_item = PeriodicChecklistSerializer()
+    check_item = DailyChecklistSerializer(read_only=True)
 
+    check_item_id = serializers.PrimaryKeyRelatedField(queryset=PeriodicChecklist.objects.all(), source='check_item')
     class Meta:
         model = PeriodicCheckRecord
         fields = '__all__'
 
 class SpecialCheckRecordSerializer(serializers.ModelSerializer):
-    check_item = SpecialChecklistSerializer()
+    check_item = DailyChecklistSerializer(read_only=True)
 
+    check_item_id = serializers.PrimaryKeyRelatedField(queryset=SpecialChecklist.objects.all(), source='check_item')
     class Meta:
         model = SpecialCheckRecord
         fields = '__all__'

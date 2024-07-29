@@ -61,9 +61,23 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
-        name="DailyCheckSummaryScreen"
+        name="SpecialChecklistScreen"
         options={({ navigation }) => ({
-          headerTitle: '每日檢點總覽',
+          headerTitle: '特殊檢點表',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
+        name="PeriodicChecklistScreen"
+        options={({ navigation }) => ({
+          headerTitle: '定時檢點表',
           headerShadowVisible: false,
           headerLeft: () => (
             <Button

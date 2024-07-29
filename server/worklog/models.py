@@ -34,14 +34,17 @@ class DailyChecklist(models.Model):
         verbose_name = '每日檢點'
         verbose_name_plural = '每日檢點'
 
-class DailyCheckRecord(Auditable):
+class DailyCheckRecord(models.Model):
+    SCORE_CHOICES = [       
+        ('優良', '優良'),
+        ('尚可', '尚可'),
+        ('需改善', '需改善'),
+    ]
     created_at = models.DateTimeField(auto_now_add=True)
     check_item = models.ForeignKey(DailyChecklist, on_delete=models.CASCADE, verbose_name='每日檢點', blank=True, null=True)
-    score = models.IntegerField(choices=[(0, '優'), (1, '尚可'), (2, '需改善')], default=0)
-    worklog = models.ForeignKey(Worklog, on_delete=models.CASCADE, verbose_name='工作日誌', blank=True, null=True)
+    score = models.CharField(max_length=20, choices=SCORE_CHOICES, verbose_name='評分', blank=True, null=True, default='優')
+    duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
-    date = models.DateField(verbose_name='檢點日期', blank=True, null=True)
-
 
     class Meta:
         db_table = 'daily_check_record'
@@ -68,9 +71,9 @@ class PeriodicChecklist(models.Model):
 class PeriodicCheckRecord(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     check_item = models.ForeignKey(PeriodicChecklist, on_delete=models.CASCADE, verbose_name='定時檢點', blank=True, null=True)
-    value = models.FloatField(verbose_name='數值')
+    value = models.CharField(max_length=50, verbose_name='數值', blank=True, null=True)
     pool = models.CharField(max_length=100, verbose_name='池號', blank=True, null=True)
-    worklog = models.ForeignKey(Worklog, on_delete=models.CASCADE, verbose_name='工作日誌', blank=True, null=True)
+    duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
 
     class Meta:
@@ -98,10 +101,10 @@ class SpecialChecklist(models.Model):
 class SpecialCheckRecord(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     check_item = models.ForeignKey(SpecialChecklist, on_delete=models.CASCADE, verbose_name='特殊處理檢點', blank=True, null=True)
-    quantity = models.FloatField(verbose_name='數量')
-    start_time = models.DateTimeField(verbose_name='開始時間', blank=True, null=True)
-    end_time = models.DateTimeField(verbose_name='結束時間', blank=True, null=True)
-    worklog = models.ForeignKey(Worklog, on_delete=models.CASCADE, verbose_name='工作日誌', blank=True, null=True)
+    quantity = models.CharField(max_length=50, verbose_name='數量', blank=True, null=True)
+    start_time = models.TimeField(verbose_name='開始時間', blank=True, null=True)
+    end_time = models.TimeField(verbose_name='結束時間', blank=True, null=True)
+    duty = models.ForeignKey('schedule.LifeguardSchedule', on_delete=models.CASCADE, verbose_name='值班人員', blank=True, null=True)
     remark = models.TextField(verbose_name='備註', blank=True, null=True)
 
     class Meta:

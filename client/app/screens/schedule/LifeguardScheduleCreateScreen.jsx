@@ -161,7 +161,7 @@ const LifeguardScheduleCreateScreen = () => {
       <View style={styles.dropdownContainer}>
         <ModalDropdown
           options={lifeguards.map(lg => `${lg.user.username || ''} ${lg.user.fullname || ''} ${lg.user.nickname || ''}`)}
-          onSelect={(index, value) => setSelectedLifeguard(lifeguards[index].user.id)}
+          onSelect={(index, value) => setSelectedLifeguard(lifeguards[index].id)}
           style={styles.dropdown}
           textStyle={styles.dropdownText}
           dropdownStyle={styles.dropdownList}
