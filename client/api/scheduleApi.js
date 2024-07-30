@@ -171,3 +171,24 @@ export const deleteLifeguardSchedule = async (id) => {
     throw new Error('Failed to delete lifeguard schedule');
   }
 };
+
+export const signOutLifeguardSchedule = async (scheduleId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/${scheduleId}/sign_out/`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ schedule_status: '已執勤' }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to sign out');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error signing out schedule:', error);
+    throw error;
+  }
+};

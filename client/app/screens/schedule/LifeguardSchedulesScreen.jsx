@@ -4,10 +4,12 @@ import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import { useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../../../styles/theme';
-import { fetchLifeguardId, fetchLifeguardSchedules } from '../../../api/scheduleApi';
+import { fetchLifeguardId, fetchLifeguardSchedules, signOutLifeguardSchedule } from '../../../api/scheduleApi';
 import { useAuth } from '../../../context/AuthContext';
+import { submitLifeguardAttendance } from '../../../api/attendApi';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { DataTable } from 'react-native-paper';
+import * as Location from 'expo-location';
 
 const LifeguardSchedulesScreen = () => {
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'table'
@@ -40,6 +42,7 @@ const LifeguardSchedulesScreen = () => {
   };
 
   const loadSchedules = async () => {
+    if (!lifeguardId) return; // 如果 lifeguardId 为空，直接返回
     setLoading(true);
     try {
       const data = await fetchLifeguardSchedules(lifeguardId, month);
@@ -52,9 +55,67 @@ const LifeguardSchedulesScreen = () => {
     }
   };
 
+  const getCurrentLocationAndSubmitAttendance = async (schedule) => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('無法獲取定位權限');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    if (!location) {
+      Alert.alert('無法獲取當前位置');
+      return;
+    }
+
+    if (!schedule) {
+      Alert.alert('無法獲取班表資訊');
+      return;
+    }
+
+    const attendanceData = {
+      user: userId,
+      attend_status: '簽到',
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      schedule: schedule.id,
+    };
+
+    try {
+      await submitLifeguardAttendance(attendanceData);
+      Alert.alert('簽到成功', '簽到成功');
+      loadSchedules(); // 簽到成功後重新加載班表
+    } catch (error) {
+      console.error('Failed to submit attendance', error);
+      let errorMessage = '無法提交簽到';
+      try {
+        const errorResponse = await error.response.json();
+        errorMessage = errorResponse.detail || errorMessage;
+      } catch {
+        // 無法解析錯誤訊息，使用默認訊息
+      }
+      Alert.alert('簽到失敗', errorMessage);
+    }
+  };
+
   const handleDayPress = (day) => {
     const dateKey = day.dateString;
     setSelectedDate(dateKey);
+  };
+
+  const handleSignIn = (schedule) => {
+    getCurrentLocationAndSubmitAttendance(schedule);
+  };
+
+  const handleSignOut = async (scheduleId) => {
+    try {
+      await signOutLifeguardSchedule(scheduleId);
+      Alert.alert('簽退成功', '簽退成功');
+      loadSchedules(); // 刷新頁面
+    } catch (error) {
+      console.error('Failed to sign out', error);
+      Alert.alert('簽退失敗', '無法簽退');
+    }
   };
 
   const renderScheduleDetails = () => {
@@ -62,8 +123,23 @@ const LifeguardSchedulesScreen = () => {
     const dailySchedules = schedules.filter(schedule => schedule.date === selectedDate);
     return dailySchedules.map(schedule => (
       <View key={schedule.id} style={styles.detailCard}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.dateText}>{selectedDate}</Text>
+          <Text style={styles.statusText}>{schedule.schedule_status}</Text>
+        </View>
+        <View style={styles.divider} />
         <Text style={styles.cardText}>場地 {schedule.venue_name}</Text>
         <Text style={styles.cardText}>時間 {moment(schedule.start_time, 'HH:mm:ss').format('HH:mm')} - {moment(schedule.end_time, 'HH:mm:ss').format('HH:mm')}</Text>
+        {schedule.schedule_status === '待執勤' && (
+          <TouchableOpacity onPress={() => handleSignIn(schedule)} style={styles.button}>
+            <Text style={styles.buttonText}>簽到</Text>
+          </TouchableOpacity>
+        )}
+        {schedule.schedule_status === '執勤中' && (
+          <TouchableOpacity onPress={() => handleSignOut(schedule.id)} style={styles.button}>
+            <Text style={styles.buttonText}>簽退</Text>
+          </TouchableOpacity>
+        )}
       </View>
     ));
   };
@@ -144,29 +220,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.lightWhite,
   },
-  switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  switchButton: {
-    padding: 10,
-    backgroundColor: COLORS.lightGray,
-    marginHorizontal: 5,
-    borderRadius: 5,
-  },
-  switchButtonActive: {
-    backgroundColor: COLORS.primary,
-  },
-  switchButtonText: {
-    color: COLORS.white,
-  },
-  selectedText: {
-    fontSize: SIZES.medium,
-    color: COLORS.gray,
-    textAlign: 'center',
-    marginVertical: 20,
-  },
   detailCard: {
     backgroundColor: COLORS.lightWhite,
     padding: 15,
@@ -181,10 +234,40 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  dateText: {
+    fontSize: SIZES.large,
+    color: COLORS.gray,
+  },
+  statusText: {
+    fontSize: SIZES.large,
+    color: COLORS.primary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.gray2,
+    marginVertical: 5,
+  },
   cardText: {
     fontSize: SIZES.medium,
     color: COLORS.gray,
     lineHeight: SIZES.xxLarge,
+  },
+  button: {
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontSize: SIZES.medium,
   },
 });
 

@@ -133,6 +133,17 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
         
         return Response(created_schedules, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['put'], url_path='sign_out')
+    def sign_out(self, request, pk=None):
+        schedule = self.get_object()
+        if schedule.schedule_status != '執勤中':
+            return Response({'detail': '無法簽退，當前狀態不是執勤中'}, status=status.HTTP_400_BAD_REQUEST)
+
+        schedule.schedule_status = '已執勤'
+        schedule.save()
+        serializer = self.get_serializer(schedule)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer

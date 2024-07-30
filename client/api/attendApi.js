@@ -84,3 +84,17 @@ export const fetchLifeguardId = async (userId) => {
   }
   return response.json();
 };
+
+export const fetchScheduleById = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/${id}/`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch schedule data');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching schedule by ID:', error);
+    throw error;
+  }
+};

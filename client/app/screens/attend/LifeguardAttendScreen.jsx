@@ -1,74 +1,44 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, RefreshControl } from 'react-native';
-import { useRouter } from 'expo-router';
-import { fetchLifeguardSchedules, submitLifeguardAttendance, fetchLifeguardId } from '../../../api/attendApi';
-import { useAuth } from '../../../context/AuthContext';
+// 20240730棄用
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Location from 'expo-location';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import { fetchScheduleById, submitLifeguardAttendance } from '../../../api/attendApi';
+import { useAuth } from '../../../context/AuthContext';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { Card } from 'react-native-elements';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const LifeguardAttendScreen = () => {
-  const [schedules, setSchedules] = useState([]);
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [schedule, setSchedule] = useState(null);
   const [location, setLocation] = useState(null);
-  const [lifeguardId, setLifeguardId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { userId } = useAuth();
   const router = useRouter();
+  const { scheduleId, lifeguardId } = useLocalSearchParams();
 
   useEffect(() => {
-    loadLifeguardId();
+    const loadSchedule = async () => {
+      try {
+        const data = await fetchScheduleById(scheduleId);
+        setSchedule(data);
+      } catch (error) {
+        console.error('Failed to load schedule', error);
+        Alert.alert('無法加載班表資訊');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSchedule();
     getCurrentLocation();
   }, []);
-
-  useEffect(() => {
-    if (lifeguardId) {
-      loadSchedules();
-    }
-  }, [lifeguardId]);
-
-  const loadLifeguardId = async () => {
-    try {
-      const data = await fetchLifeguardId(userId);
-      setLifeguardId(data.id);
-    } catch (error) {
-      console.error('Failed to load lifeguard ID', error);
-      Alert.alert('無法加載救生員ID');
-      setLoading(false);
-    }
-  };
-
-  const loadSchedules = async () => {
-    if (!lifeguardId) return; // 如果 lifeguardId 为空，直接返回
-
-    setLoading(true);
-    try {
-      const data = await fetchLifeguardSchedules(lifeguardId);
-      setSchedules(data);
-    } catch (error) {
-      console.error('Failed to load schedules', error);
-      Alert.alert('無法加載班表');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    if (lifeguardId) {
-      loadSchedules();
-    } else {
-      setRefreshing(false); // 如果 lifeguardId 为空，直接取消刷新状态
-    }
-  }, [lifeguardId]);
 
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('無法獲取定位權限');
+      setLoading(false);
       return;
     }
 
@@ -77,15 +47,12 @@ const LifeguardAttendScreen = () => {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
-  };
-
-  const handleSelectSchedule = (schedule) => {
-    setSelectedSchedule(schedule);
+    setLoading(false);
   };
 
   const handleSubmitAttendance = async () => {
-    if (!selectedSchedule) {
-      Alert.alert('請選擇一個班表');
+    if (!schedule) {
+      Alert.alert('無法獲取班表資訊');
       return;
     }
 
@@ -99,9 +66,9 @@ const LifeguardAttendScreen = () => {
       attend_status: '簽到',
       latitude: location.latitude,
       longitude: location.longitude,
-      schedule: selectedSchedule.id,
+      schedule: schedule.id,
     };
-
+    
     try {
       const response = await submitLifeguardAttendance(attendanceData);
       Alert.alert('簽到成功', response.detail || '簽到成功');
@@ -119,37 +86,28 @@ const LifeguardAttendScreen = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={schedules}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleSelectSchedule(item)}>
-            <Card containerStyle={[styles.card, selectedSchedule && selectedSchedule.id === item.id ? styles.selected : null]}>
-              <Card.Title style={styles.cardTitle}>點擊選擇班表</Card.Title>
-              <Card.Divider />
-              <View style={styles.cardContent}>
-                <Text style={styles.label}>救生員</Text>
-                <Text style={styles.value}>{item.lifeguard_name} ({item.lifeguard_nickname})</Text>
-              </View>
-              <View style={styles.cardContent}>
-                <Text style={styles.label}>地點</Text>
-                <Text style={styles.value}>{item.venue_name}</Text>
-              </View>
-              <View style={styles.cardContent}>
-                <Text style={styles.label}>日期</Text>
-                <Text style={styles.value}>{item.date}</Text>
-              </View>
-              <View style={styles.cardContent}>
-                <Text style={styles.label}>時間</Text>
-                <Text style={styles.value}>{item.start_time} - {item.end_time}</Text>
-              </View>
-            </Card>
-          </TouchableOpacity>
-        )}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
+      {schedule && (
+        <Card containerStyle={styles.card}>
+          <Card.Title style={styles.cardTitle}>班表詳情</Card.Title>
+          <Card.Divider />
+          <View style={styles.cardContent}>
+            <Text style={styles.label}>救生員</Text>
+            <Text style={styles.value}>{schedule.lifeguard_name} ({schedule.lifeguard_nickname})</Text>
+          </View>
+          <View style={styles.cardContent}>
+            <Text style={styles.label}>地點</Text>
+            <Text style={styles.value}>{schedule.venue_name}</Text>
+          </View>
+          <View style={styles.cardContent}>
+            <Text style={styles.label}>日期</Text>
+            <Text style={styles.value}>{schedule.date}</Text>
+          </View>
+          <View style={styles.cardContent}>
+            <Text style={styles.label}>時間</Text>
+            <Text style={styles.value}>{schedule.start_time} - {schedule.end_time}</Text>
+          </View>
+        </Card>
+      )}
       {location && (
         <View style={styles.locationContainer}>
           <Text>當前坐標 {location.latitude}, {location.longitude}</Text>
@@ -172,10 +130,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     marginVertical: 10,
-  },
-  selected: {
-    borderColor: COLORS.primary,
-    borderWidth: 2,
   },
   cardTitle: {
     fontSize: SIZES.large,
@@ -211,7 +165,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: COLORS.white,
     fontSize: SIZES.medium,
-    
   },
 });
 
