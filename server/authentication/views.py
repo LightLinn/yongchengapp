@@ -48,6 +48,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         group_name = self.request.query_params.get('group_name')
+        
         if group_name:
             queryset = queryset.filter(name=group_name)
         return queryset
@@ -176,6 +177,8 @@ class ScreenPermissionsViewSet(viewsets.ModelViewSet):
         elif group_ids:  # 否則根據group_ids過濾
             group_ids_list = group_ids.split(',')
             queryset = queryset.filter(group__id__in=group_ids_list)
+        else:
+            queryset = queryset.none()
         return queryset
 
 class ScreenViewSet(viewsets.ModelViewSet):

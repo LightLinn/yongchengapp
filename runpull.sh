@@ -1,10 +1,10 @@
-cp -rv database /home
+cp -rv database/ /home/
 
 git stash
 git pull
 
 cd /home
-cp -rv database /home/yongchengapp
+cp -rv database/ /home/yongchengapp/
 cd /home/yongchengapp/server
 
 # cd server/
