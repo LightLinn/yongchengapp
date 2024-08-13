@@ -81,6 +81,9 @@ const WorklogScreen = () => {
 
     return (
       <View>
+        <TouchableOpacity style={styles.createButton} onPress={handleCreateNewLog}>
+          <Text style={styles.createButtonText}>建立新日誌</Text>
+        </TouchableOpacity>
         <Calendar
           onDayPress={handleDayPress}
           markedDates={markedDates}
@@ -96,9 +99,6 @@ const WorklogScreen = () => {
           <Text style={styles.dateText}>{moment(selectedDate).format('YYYY/MM/DD')}</Text>
           {renderWorklogDetails()}
         </View>
-        <TouchableOpacity style={styles.createButton} onPress={handleCreateNewLog}>
-          <Text style={styles.createButtonText}>建立新日誌</Text>
-        </TouchableOpacity>
       </View>
     );
   };

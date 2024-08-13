@@ -30,6 +30,21 @@ class Venue(Auditable):
     def __str__(self):
         return self.name
     
+class VenueManagerList(models.Model):
+    venue = models.ForeignKey('Venue', on_delete=models.CASCADE, related_name='venue_managers', verbose_name='場地')
+    user = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='managed_venues', verbose_name='管理者')
+    is_primary = models.BooleanField(default=False, verbose_name='是否為主要管理者')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')
+
+    class Meta:
+        db_table = 'venue_manager_list'
+        verbose_name = '場地管理者'
+        verbose_name_plural = '場地管理者'
+        unique_together = ('venue', 'user')  # 確保每個用戶只能被指派為特定場地的管理者一次
+
+    def __str__(self):
+        return f"{self.user.username} - {self.venue.name}"
+    
 class VenueUsageRecord(Auditable):
     VENUE_STATUS_CHOICES = [
         ('not_used', '未使用'),

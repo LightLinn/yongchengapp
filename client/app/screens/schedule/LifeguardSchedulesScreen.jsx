@@ -45,7 +45,7 @@ const LifeguardSchedulesScreen = () => {
     if (!lifeguardId) return; // 如果 lifeguardId 为空，直接返回
     setLoading(true);
     try {
-      const data = await fetchLifeguardSchedules(lifeguardId, month);
+      const data = await fetchLifeguardSchedules(lifeguardId, true);
       setSchedules(data);
     } catch (error) {
       console.error('Failed to load schedules', error);

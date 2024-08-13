@@ -4,8 +4,8 @@ from django.shortcuts import render
 
 # 創建views.py文件，並將以下代碼添加到其中：
 from rest_framework import viewsets
-from .models import Venue, VenueUsageRecord, VenueBooking, VenueBookingStatus, VenueInspectionRecord, VenueRepairRequest
-from .serializers import VenueSerializer, VenueRepairRequestSerializer
+from .models import Venue, VenueRepairRequest, VenueManagerList
+from .serializers import VenueSerializer, VenueRepairRequestSerializer, VenueManagerListSerializer
 from authentication.permissions import *
 
 # 創建VenueViewSet
@@ -18,7 +18,10 @@ class VenueRepairRequestViewSet(viewsets.ModelViewSet):
     serializer_class = VenueRepairRequestSerializer
 
     #當用戶為get請求時，venue欄位為對應foreign key的值
-    
+
+class VenueManagerListViewSet(viewsets.ModelViewSet):
+    queryset = VenueManagerList.objects.all()
+    serializer_class = VenueManagerListSerializer
     
 
 # Path: server/venues/urls.py

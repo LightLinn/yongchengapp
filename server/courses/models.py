@@ -52,6 +52,7 @@ class EnrollmentList(Auditable):
     venue = models.ForeignKey('venues.Venue', on_delete=models.CASCADE, related_name='enrollments', verbose_name='場地', null=True, blank=True)
     coach = models.ForeignKey('humanresources.Coach', on_delete=models.CASCADE, related_name='enrollments', verbose_name='教練', null=True, blank=True)
     age = models.IntegerField(verbose_name='年齡', blank=True, null=True)
+    
 
     class Meta:
         db_table = 'enrollment'

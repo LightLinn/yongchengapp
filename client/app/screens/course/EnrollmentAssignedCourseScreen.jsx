@@ -31,7 +31,7 @@ const EnrollmentAssignedCourseScreen = () => {
         setNumber_of_sessions(details.coursetype.number_of_sessions);
 
         const initialDates = {};
-        let currentDate = moment().startOf('day');
+        let currentDate = moment(details.start_date).startOf('day');
         for (let i = 0; i < details.coursetype.number_of_sessions; i++) {
           initialDates[currentDate.format('YYYY-MM-DD')] = { selected: true, selectedColor: COLORS.primary };
           currentDate = currentDate.add(7, 'days');

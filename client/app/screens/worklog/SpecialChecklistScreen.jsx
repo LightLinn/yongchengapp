@@ -36,7 +36,7 @@ const SpecialChecklistScreen = () => {
       try {
         const lifeguardData = await fetchLifeguardId(userId);
         setLifeguardId(lifeguardData.id);
-        const scheduleData = await fetchLifeguardSchedules(lifeguardData.id);
+        const scheduleData = await fetchLifeguardSchedules(lifeguardData.id, false);
         setSchedules(scheduleData);
       } catch (error) {
         console.error('Failed to fetch lifeguard data', error);

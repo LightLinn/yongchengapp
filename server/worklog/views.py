@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.utils import timezone
+from django.db.models import Q
 
 # Create your views here.
 
@@ -44,6 +45,8 @@ class SpecialCheckRecordViewSet(viewsets.ModelViewSet):
         schedule_id = request.query_params.get('schedule')
         if not schedule_id:
             return Response({'error': 'Schedule ID is required'}, status=400)
+        
+        today = timezone.now().date()
         
         records = self.get_queryset().filter(duty=schedule_id)
         serializer = self.get_serializer(records, many=True)

@@ -100,9 +100,11 @@ export const fetchUnavailableSlotsByMonth = async (lifeguardId, month) => {
   return await response.json();
 };
 
-export const fetchLifeguardSchedules = async (lifeguardId) => {
+export const fetchLifeguardSchedules = async (lifeguardId, all) => {
   const token = await getToken();
-  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/by_lifeguardid/?lifeguard_id=${lifeguardId}`, {
+  const allParam = all ? '1' : '0';
+
+  const response = await fetch(`${API_BASE_URL}/lifeguard_schedules/by_lifeguardid/?lifeguard_id=${lifeguardId}&all=${allParam}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,

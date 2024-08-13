@@ -15,6 +15,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+uml/
 
 # Ignore macOS system files
 .DS_Store

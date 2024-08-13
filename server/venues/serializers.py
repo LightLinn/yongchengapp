@@ -1,6 +1,6 @@
 # 創建serializers.py文件，並將以下代碼添加到其中：
 from rest_framework import serializers
-from .models import Venue, VenueRepairRequest
+from .models import Venue, VenueRepairRequest, VenueManagerList
 from authentication.serializers import UserSerializer
 from authentication.models import CustomUser
 
@@ -57,3 +57,11 @@ class VenueRepairRequestSerializer(serializers.ModelSerializer):
         model = VenueRepairRequest
         fields = ['id', 'title', 'description', 'repair_status', 'venue', 'created_at', 'updated_at', 'user']
 
+
+class VenueManagerListSerializer(serializers.ModelSerializer):
+    venue = VenuePartialSerializer()
+    user = UserSerializer()
+
+    class Meta:
+        model = VenueManagerList
+        fields = '__all__'

@@ -1,0 +1,2982 @@
+{
+    "api_design": [
+      {
+        "model": "CustomUser",
+        "endpoints": [
+          {
+            "summary": "獲取所有用戶",
+            "description": "檢索系統中所有用戶的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/users",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of CustomUser objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新用戶",
+            "description": "在系統中創建一個新用戶",
+            "method": "POST",
+            "endpoint": "/api/yc/users",
+            "params": {
+              "body": "CustomUser object"
+            },
+            "response": {
+              "201": {
+                "description": "用戶創建成功",
+                "content": "Created CustomUser object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定用戶",
+            "description": "檢索特定用戶的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/users/{userId}",
+            "params": {
+              "path": {
+                "userId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "CustomUser object"
+              }
+            }
+          },
+          {
+            "summary": "更新用戶",
+            "description": "更新特定用戶的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/users/{userId}",
+            "params": {
+              "path": {
+                "userId": "integer"
+              },
+              "body": "CustomUser object"
+            },
+            "response": {
+              "200": {
+                "description": "用戶更新成功",
+                "content": "Updated CustomUser object"
+              }
+            }
+          },
+          {
+            "summary": "刪除用戶",
+            "description": "從系統中刪除特定用戶",
+            "method": "DELETE",
+            "endpoint": "/api/yc/users/{userId}",
+            "params": {
+              "path": {
+                "userId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "用戶刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "ScreenPermissions",
+        "endpoints": [
+          {
+            "summary": "獲取所有螢幕權限",
+            "description": "檢索所有螢幕權限的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/screen-permissions",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of ScreenPermissions objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新螢幕權限",
+            "description": "創建新的螢幕權限",
+            "method": "POST",
+            "endpoint": "/api/yc/screen-permissions",
+            "params": {
+              "body": "ScreenPermissions object"
+            },
+            "response": {
+              "201": {
+                "description": "螢幕權限創建成功",
+                "content": "Created ScreenPermissions object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定螢幕權限",
+            "description": "檢索特定螢幕權限的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/screen-permissions/{permissionId}",
+            "params": {
+              "path": {
+                "permissionId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "ScreenPermissions object"
+              }
+            }
+          },
+          {
+            "summary": "更新螢幕權限",
+            "description": "更新特定螢幕權限的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/screen-permissions/{permissionId}",
+            "params": {
+              "path": {
+                "permissionId": "integer"
+              },
+              "body": "ScreenPermissions object"
+            },
+            "response": {
+              "200": {
+                "description": "螢幕權限更新成功",
+                "content": "Updated ScreenPermissions object"
+              }
+            }
+          },
+          {
+            "summary": "刪除螢幕權限",
+            "description": "刪除特定的螢幕權限",
+            "method": "DELETE",
+            "endpoint": "/api/yc/screen-permissions/{permissionId}",
+            "params": {
+              "path": {
+                "permissionId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "螢幕權限刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Screen",
+        "endpoints": [
+          {
+            "summary": "獲取所有螢幕",
+            "description": "檢索所有螢幕的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/screens",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Screen objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新螢幕",
+            "description": "創建新的螢幕",
+            "method": "POST",
+            "endpoint": "/api/yc/screens",
+            "params": {
+              "body": "Screen object"
+            },
+            "response": {
+              "201": {
+                "description": "螢幕創建成功",
+                "content": "Created Screen object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定螢幕",
+            "description": "檢索特定螢幕的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/screens/{screenId}",
+            "params": {
+              "path": {
+                "screenId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Screen object"
+              }
+            }
+          },
+          {
+            "summary": "更新螢幕",
+            "description": "更新特定螢幕的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/screens/{screenId}",
+            "params": {
+              "path": {
+                "screenId": "integer"
+              },
+              "body": "Screen object"
+            },
+            "response": {
+              "200": {
+                "description": "螢幕更新成功",
+                "content": "Updated Screen object"
+              }
+            }
+          },
+          {
+            "summary": "刪除螢幕",
+            "description": "刪除特定的螢幕",
+            "method": "DELETE",
+            "endpoint": "/api/yc/screens/{screenId}",
+            "params": {
+              "path": {
+                "screenId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "螢幕刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Attendance",
+        "endpoints": [
+          {
+            "summary": "獲取所有出勤記錄",
+            "description": "檢索所有出勤記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/attendances",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Attendance objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新出勤記錄",
+            "description": "創建新的出勤記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/attendances",
+            "params": {
+              "body": "Attendance object"
+            },
+            "response": {
+              "201": {
+                "description": "出勤記錄創建成功",
+                "content": "Created Attendance object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定出勤記錄",
+            "description": "檢索特定出勤記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Attendance object"
+              }
+            }
+          },
+          {
+            "summary": "更新出勤記錄",
+            "description": "更新特定出勤記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              },
+              "body": "Attendance object"
+            },
+            "response": {
+              "200": {
+                "description": "出勤記錄更新成功",
+                "content": "Updated Attendance object"
+              }
+            }
+          },
+          {
+            "summary": "刪除出勤記錄",
+            "description": "刪除特定的出勤記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "出勤記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "LifeguardAttendance",
+        "endpoints": [
+          {
+            "summary": "獲取所有救生員出勤記錄",
+            "description": "檢索所有救生員出勤記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/lifeguard-attendances",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of LifeguardAttendance objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新救生員出勤記錄",
+            "description": "創建新的救生員出勤記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/lifeguard-attendances",
+            "params": {
+              "body": "LifeguardAttendance object"
+            },
+            "response": {
+              "201": {
+                "description": "救生員出勤記錄創建成功",
+                "content": "Created LifeguardAttendance object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定救生員出勤記錄",
+            "description": "檢索特定救生員出勤記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/lifeguard-attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "LifeguardAttendance object"
+              }
+            }
+          },
+          {
+            "summary": "更新救生員出勤記錄",
+            "description": "更新特定救生員出勤記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/lifeguard-attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              },
+              "body": "LifeguardAttendance object"
+            },
+            "response": {
+              "200": {
+                "description": "救生員出勤記錄更新成功",
+                "content": "Updated LifeguardAttendance object"
+              }
+            }
+          },
+          {
+            "summary": "刪除救生員出勤記錄",
+            "description": "刪除特定的救生員出勤記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/lifeguard-attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "救生員出勤記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "StaffAttendance",
+        "endpoints": [
+          {
+            "summary": "獲取所有員工出勤記錄",
+            "description": "檢索所有員工出勤記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/staff-attendances",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of StaffAttendance objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新員工出勤記錄",
+            "description": "創建新的員工出勤記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/staff-attendances",
+            "params": {
+              "body": "StaffAttendance object"
+            },
+            "response": {
+              "201": {
+                "description": "員工出勤記錄創建成功",
+                "content": "Created StaffAttendance object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定員工出勤記錄",
+            "description": "檢索特定員工出勤記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/staff-attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "StaffAttendance object"
+              }
+            }
+          },
+          {
+            "summary": "更新員工出勤記錄",
+            "description": "更新特定員工出勤記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/staff-attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              },
+              "body": "StaffAttendance object"
+            },
+            "response": {
+              "200": {
+                "description": "員工出勤記錄更新成功",
+                "content": "Updated StaffAttendance object"
+              }
+            }
+          },
+          {
+            "summary": "刪除員工出勤記錄",
+            "description": "刪除特定的員工出勤記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/staff-attendances/{attendanceId}",
+            "params": {
+              "path": {
+                "attendanceId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "員工出勤記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Banner",
+        "endpoints": [
+          {
+            "summary": "獲取所有橫幅",
+            "description": "檢索所有橫幅的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/banners",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Banner objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新橫幅",
+            "description": "創建新的橫幅",
+            "method": "POST",
+            "endpoint": "/api/yc/banners",
+            "params": {
+              "body": "Banner object"
+            },
+            "response": {
+              "201": {
+                "description": "橫幅創建成功",
+                "content": "Created Banner object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定橫幅",
+            "description": "檢索特定橫幅的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/banners/{bannerId}",
+            "params": {
+              "path": {
+                "bannerId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Banner object"
+              }
+            }
+          },
+          {
+            "summary": "更新橫幅",
+            "description": "更新特定橫幅的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/banners/{bannerId}",
+            "params": {
+              "path": {
+                "bannerId": "integer"
+              },
+              "body": "Banner object"
+            },
+            "response": {
+              "200": {
+                "description": "橫幅更新成功",
+                "content": "Updated Banner object"
+              }
+            }
+          },
+          {
+            "summary": "刪除橫幅",
+            "description": "刪除特定的橫幅",
+            "method": "DELETE",
+            "endpoint": "/api/yc/banners/{bannerId}",
+            "params": {
+              "path": {
+                "bannerId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "橫幅刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "EnrollmentNumbers",
+        "endpoints": [
+          {
+            "summary": "獲取所有報名單號",
+            "description": "檢索所有報名單號的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/enrollment-numbers",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of EnrollmentNumbers objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新報名單號",
+            "description": "創建新的報名單號",
+            "method": "POST",
+            "endpoint": "/api/yc/enrollment-numbers",
+            "params": {
+              "body": "EnrollmentNumbers object"
+            },
+            "response": {
+              "201": {
+                "description": "報名單號創建成功",
+                "content": "Created EnrollmentNumbers object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定報名單號",
+            "description": "檢索特定報名單號的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/enrollment-numbers/{enrollmentNumberId}",
+            "params": {
+              "path": {
+                "enrollmentNumberId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "EnrollmentNumbers object"
+              }
+            }
+          },
+          {
+            "summary": "更新報名單號",
+            "description": "更新特定報名單號的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/enrollment-numbers/{enrollmentNumberId}",
+            "params": {
+              "path": {
+                "enrollmentNumberId": "integer"
+              },
+              "body": "EnrollmentNumbers object"
+            },
+            "response": {
+              "200": {
+                "description": "報名單號更新成功",
+                "content": "Updated EnrollmentNumbers object"
+              }
+            }
+          },
+          {
+            "summary": "刪除報名單號",
+            "description": "刪除特定的報名單號",
+            "method": "DELETE",
+            "endpoint": "/api/yc/enrollment-numbers/{enrollmentNumberId}",
+            "params": {
+              "path": {
+                "enrollmentNumberId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "報名單號刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "EnrollmentList",
+        "endpoints": [
+          {
+            "summary": "獲取所有報名列表",
+            "description": "檢索所有報名列表的資料",
+            "method": "GET",
+            "endpoint": "/api/yc/enrollment-lists",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of EnrollmentList objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新報名",
+            "description": "創建新的報名記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/enrollment-lists",
+            "params": {
+              "body": "EnrollmentList object"
+            },
+            "response": {
+              "201": {
+                "description": "報名記錄創建成功",
+                "content": "Created EnrollmentList object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定報名記錄",
+            "description": "檢索特定報名記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/enrollment-lists/{enrollmentId}",
+            "params": {
+              "path": {
+                "enrollmentId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "EnrollmentList object"
+              }
+            }
+          },
+          {
+            "summary": "更新報名記錄",
+            "description": "更新特定報名記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/enrollment-lists/{enrollmentId}",
+            "params": {
+              "path": {
+                "enrollmentId": "integer"
+              },
+              "body": "EnrollmentList object"
+            },
+            "response": {
+              "200": {
+                "description": "報名記錄更新成功",
+                "content": "Updated EnrollmentList object"
+              }
+            }
+          },
+          {
+            "summary": "刪除報名記錄",
+            "description": "刪除特定的報名記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/enrollment-lists/{enrollmentId}",
+            "params": {
+              "path": {
+                "enrollmentId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "報名記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "AssignedCourse",
+        "endpoints": [
+          {
+            "summary": "獲取所有指派課程",
+            "description": "檢索所有指派課程的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/assigned-courses",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of AssignedCourse objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新指派課程",
+            "description": "創建新的指派課程",
+            "method": "POST",
+            "endpoint": "/api/yc/assigned-courses",
+            "params": {
+              "body": "AssignedCourse object"
+            },
+            "response": {
+              "201": {
+                "description": "指派課程創建成功",
+                "content": "Created AssignedCourse object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定指派課程",
+            "description": "檢索特定指派課程的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/assigned-courses/{assignedCourseId}",
+            "params": {
+              "path": {
+                "assignedCourseId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "AssignedCourse object"
+              }
+            }
+          },
+          {
+            "summary": "更新指派課程",
+            "description": "更新特定指派課程的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/assigned-courses/{assignedCourseId}",
+            "params": {
+              "path": {
+                "assignedCourseId": "integer"
+              },
+              "body": "AssignedCourse object"
+            },
+            "response": {
+              "200": {
+                "description": "指派課程更新成功",
+                "content": "Updated AssignedCourse object"
+              }
+            }
+          },
+          {
+            "summary": "刪除指派課程",
+            "description": "刪除特定的指派課程",
+            "method": "DELETE",
+            "endpoint": "/api/yc/assigned-courses/{assignedCourseId}",
+            "params": {
+              "path": {
+                "assignedCourseId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "指派課程刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "CourseType",
+        "endpoints": [
+          {
+            "summary": "獲取所有課程類型",
+            "description": "檢索所有課程類型的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/course-types",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of CourseType objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新課程類型",
+            "description": "創建新的課程類型",
+            "method": "POST",
+            "endpoint": "/api/yc/course-types",
+            "params": {
+              "body": "CourseType object"
+            },
+            "response": {
+              "201": {
+                "description": "課程類型創建成功",
+                "content": "Created CourseType object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定課程類型",
+            "description": "檢索特定課程類型的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/course-types/{courseTypeId}",
+            "params": {
+              "path": {
+                "courseTypeId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "CourseType object"
+              }
+            }
+          },
+          {
+            "summary": "更新課程類型",
+            "description": "更新特定課程類型的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/course-types/{courseTypeId}",
+            "params": {
+              "path": {
+                "courseTypeId": "integer"
+              },
+              "body": "CourseType object"
+            },
+            "response": {
+              "200": {
+                "description": "課程類型更新成功",
+                "content": "Updated CourseType object"
+              }
+            }
+          },
+          {
+            "summary": "刪除課程類型",
+            "description": "刪除特定的課程類型",
+            "method": "DELETE",
+            "endpoint": "/api/yc/course-types/{courseTypeId}",
+            "params": {
+              "path": {
+                "courseTypeId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "課程類型刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Course",
+        "endpoints": [
+          {
+            "summary": "獲取所有課程",
+            "description": "檢索所有課程的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/courses",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Course objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新課程",
+            "description": "創建新的課程",
+            "method": "POST",
+            "endpoint": "/api/yc/courses",
+            "params": {
+              "body": "Course object"
+            },
+            "response": {
+              "201": {
+                "description": "課程創建成功",
+                "content": "Created Course object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定課程",
+            "description": "檢索特定課程的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/courses/{courseId}",
+            "params": {
+              "path": {
+                "courseId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Course object"
+              }
+            }
+          },
+          {
+            "summary": "更新課程",
+            "description": "更新特定課程的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/courses/{courseId}",
+            "params": {
+              "path": {
+                "courseId": "integer"
+              },
+              "body": "Course object"
+            },
+            "response": {
+              "200": {
+                "description": "課程更新成功",
+                "content": "Updated Course object"
+              }
+            }
+          },
+          {
+            "summary": "刪除課程",
+            "description": "刪除特定的課程",
+            "method": "DELETE",
+            "endpoint": "/api/yc/courses/{courseId}",
+            "params": {
+              "path": {
+                "courseId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "課程刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Employee",
+        "endpoints": [
+          {
+            "summary": "獲取所有員工",
+            "description": "檢索所有員工的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/employees",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Employee objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新員工",
+            "description": "創建新的員工記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/employees",
+            "params": {
+              "body": "Employee object"
+            },
+            "response": {
+              "201": {
+                "description": "員工創建成功",
+                "content": "Created Employee object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定員工",
+            "description": "檢索特定員工的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/employees/{employeeId}",
+            "params": {
+              "path": {
+                "employeeId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Employee object"
+              }
+            }
+          },
+          {
+            "summary": "更新員工",
+            "description": "更新特定員工的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/employees/{employeeId}",
+            "params": {
+              "path": {
+                "employeeId": "integer"
+              },
+              "body": "Employee object"
+            },
+            "response": {
+              "200": {
+                "description": "員工更新成功",
+                "content": "Updated Employee object"
+              }
+            }
+          },
+          {
+            "summary": "刪除員工",
+            "description": "刪除特定的員工記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/employees/{employeeId}",
+            "params": {
+              "path": {
+                "employeeId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "員工刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Coach",
+        "endpoints": [
+          {
+            "summary": "獲取所有教練",
+            "description": "檢索所有教練的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/coaches",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Coach objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新教練",
+            "description": "創建新的教練記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/coaches",
+            "params": {
+              "body": "Coach object"
+            },
+            "response": {
+              "201": {
+                "description": "教練創建成功",
+                "content": "Created Coach object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定教練",
+            "description": "檢索特定教練的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/coaches/{coachId}",
+            "params": {
+              "path": {
+                "coachId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Coach object"
+              }
+            }
+          },
+          {
+            "summary": "更新教練",
+            "description": "更新特定教練的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/coaches/{coachId}",
+            "params": {
+              "path": {
+                "coachId": "integer"
+              },
+              "body": "Coach object"
+            },
+            "response": {
+              "200": {
+                "description": "教練更新成功",
+                "content": "Updated Coach object"
+              }
+            }
+          },
+          {
+            "summary": "刪除教練",
+            "description": "刪除特定的教練記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/coaches/{coachId}",
+            "params": {
+              "path": {
+                "coachId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "教練刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Lifeguard",
+        "endpoints": [
+          {
+            "summary": "獲取所有救生員",
+            "description": "檢索所有救生員的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/lifeguards",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Lifeguard objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新救生員",
+            "description": "創建新的救生員記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/lifeguards",
+            "params": {
+              "body": "Lifeguard object"
+            },
+            "response": {
+              "201": {
+                "description": "救生員創建成功",
+                "content": "Created Lifeguard object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定救生員",
+            "description": "檢索特定救生員的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/lifeguards/{lifeguardId}",
+            "params": {
+              "path": {
+                "lifeguardId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Lifeguard object"
+              }
+            }
+          },
+          {
+            "summary": "更新救生員",
+            "description": "更新特定救生員的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/lifeguards/{lifeguardId}",
+            "params": {
+              "path": {
+                "lifeguardId": "integer"
+              },
+              "body": "Lifeguard object"
+            },
+            "response": {
+              "200": {
+                "description": "救生員更新成功",
+                "content": "Updated Lifeguard object"
+              }
+            }
+          },
+          {
+            "summary": "刪除救生員",
+            "description": "刪除特定的救生員記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/lifeguards/{lifeguardId}",
+            "params": {
+              "path": {
+                "lifeguardId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "救生員刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "VenueManager",
+        "endpoints": [
+          {
+            "summary": "獲取所有場地管理員",
+            "description": "檢索所有場地管理員的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-managers",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of VenueManager objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新場地管理員",
+            "description": "創建新的場地管理員記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/venue-managers",
+            "params": {
+              "body": "VenueManager object"
+            },
+            "response": {
+              "201": {
+                "description": "場地管理員創建成功",
+                "content": "Created VenueManager object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定場地管理員",
+            "description": "檢索特定場地管理員的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-managers/{managerId}",
+            "params": {
+              "path": {
+                "managerId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "VenueManager object"
+              }
+            }
+          },
+          {
+            "summary": "更新場地管理員",
+            "description": "更新特定場地管理員的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/venue-managers/{managerId}",
+            "params": {
+              "path": {
+                "managerId": "integer"
+              },
+              "body": "VenueManager object"
+            },
+            "response": {
+              "200": {
+                "description": "場地管理員更新成功",
+                "content": "Updated VenueManager object"
+              }
+            }
+          },
+          {
+            "summary": "刪除場地管理員",
+            "description": "刪除特定的場地管理員記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/venue-managers/{managerId}",
+            "params": {
+              "path": {
+                "managerId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "場地管理員刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Salary",
+        "endpoints": [
+          {
+            "summary": "獲取所有薪資記錄",
+            "description": "檢索所有薪資記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/salaries",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Salary objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新薪資記錄",
+            "description": "創建新的薪資記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/salaries",
+            "params": {
+              "body": "Salary object"
+            },
+            "response": {
+              "201": {
+                "description": "薪資記錄創建成功",
+                "content": "Created Salary object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定薪資記錄",
+            "description": "檢索特定薪資記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/salaries/{salaryId}",
+            "params": {
+              "path": {
+                "salaryId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Salary object"
+              }
+            }
+          },
+          {
+            "summary": "更新薪資記錄",
+            "description": "更新特定薪資記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/salaries/{salaryId}",
+            "params": {
+              "path": {
+                "salaryId": "integer"
+              },
+              "body": "Salary object"
+            },
+            "response": {
+              "200": {
+                "description": "薪資記錄更新成功",
+                "content": "Updated Salary object"
+              }
+            }
+          },
+          {
+            "summary": "刪除薪資記錄",
+            "description": "刪除特定的薪資記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/salaries/{salaryId}",
+            "params": {
+              "path": {
+                "salaryId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "薪資記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "SalaryRange",
+        "endpoints": [
+          {
+            "summary": "獲取所有薪資級距",
+            "description": "檢索所有薪資級距的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/salary-ranges",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of SalaryRange objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新薪資級距",
+            "description": "創建新的薪資級距",
+            "method": "POST",
+            "endpoint": "/api/yc/salary-ranges",
+            "params": {
+              "body": "SalaryRange object"
+            },
+            "response": {
+              "201": {
+                "description": "薪資級距創建成功",
+                "content": "Created SalaryRange object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定薪資級距",
+            "description": "檢索特定薪資級距的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/salary-ranges/{rangeId}",
+            "params": {
+              "path": {
+                "rangeId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "SalaryRange object"
+              }
+            }
+          },
+          {
+            "summary": "更新薪資級距",
+            "description": "更新特定薪資級距的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/salary-ranges/{rangeId}",
+            "params": {
+              "path": {
+                "rangeId": "integer"
+              },
+              "body": "SalaryRange object"
+            },
+            "response": {
+              "200": {
+                "description": "薪資級距更新成功",
+                "content": "Updated SalaryRange object"
+              }
+            }
+          },
+          {
+            "summary": "刪除薪資級距",
+            "description": "刪除特定的薪資級距",
+            "method": "DELETE",
+            "endpoint": "/api/yc/salary-ranges/{rangeId}",
+            "params": {
+              "path": {
+                "rangeId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "薪資級距刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Performance",
+        "endpoints": [
+          {
+            "summary": "獲取所有績效記錄",
+            "description": "檢索所有員工績效記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/performances",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Performance objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新績效記錄",
+            "description": "創建新的員工績效記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/performances",
+            "params": {
+              "body": "Performance object"
+            },
+            "response": {
+              "201": {
+                "description": "績效記錄創建成功",
+                "content": "Created Performance object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定績效記錄",
+            "description": "檢索特定員工績效記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/performances/{performanceId}",
+            "params": {
+              "path": {
+                "performanceId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Performance object"
+              }
+            }
+          },
+          {
+            "summary": "更新績效記錄",
+            "description": "更新特定員工績效記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/performances/{performanceId}",
+            "params": {
+              "path": {
+                "performanceId": "integer"
+              },
+              "body": "Performance object"
+            },
+            "response": {
+              "200": {
+                "description": "績效記錄更新成功",
+                "content": "Updated Performance object"
+              }
+            }
+          },
+          {
+            "summary": "刪除績效記錄",
+            "description": "刪除特定的員工績效記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/performances/{performanceId}",
+            "params": {
+              "path": {
+                "performanceId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "績效記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "News",
+        "endpoints": [
+          {
+            "summary": "獲取所有新聞",
+            "description": "檢索所有新聞的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/news",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of News objects"
+              }
+            }
+          },
+          {
+            "summary": "創建新聞",
+            "description": "創建新的新聞",
+            "method": "POST",
+            "endpoint": "/api/yc/news",
+            "params": {
+              "body": "News object"
+            },
+            "response": {
+              "201": {
+                "description": "新聞創建成功",
+                "content": "Created News object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定新聞",
+            "description": "檢索特定新聞的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/news/{newsId}",
+            "params": {
+              "path": {
+                "newsId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "News object"
+              }
+            }
+          },
+          {
+            "summary": "更新新聞",
+            "description": "更新特定新聞的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/news/{newsId}",
+            "params": {
+              "path": {
+                "newsId": "integer"
+              },
+              "body": "News object"
+            },
+            "response": {
+              "200": {
+                "description": "新聞更新成功",
+                "content": "Updated News object"
+              }
+            }
+          },
+          {
+            "summary": "刪除新聞",
+            "description": "刪除特定的新聞",
+            "method": "DELETE",
+            "endpoint": "/api/yc/news/{newsId}",
+            "params": {
+              "path": {
+                "newsId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "新聞刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "UnavailableSlot",
+        "endpoints": [
+          {
+            "summary": "獲取所有不可用時段",
+            "description": "檢索所有救生員不可用時段的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/unavailable-slots",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of UnavailableSlot objects"
+              }
+            }
+          },
+          {
+            "summary": "創建不可用時段",
+            "description": "創建新的救生員不可用時段",
+            "method": "POST",
+            "endpoint": "/api/yc/unavailable-slots",
+            "params": {
+              "body": "UnavailableSlot object"
+            },
+            "response": {
+              "201": {
+                "description": "不可用時段創建成功",
+                "content": "Created UnavailableSlot object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定不可用時段",
+            "description": "檢索特定救生員不可用時段的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/unavailable-slots/{slotId}",
+            "params": {
+              "path": {
+                "slotId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "UnavailableSlot object"
+              }
+            }
+          },
+          {
+            "summary": "更新不可用時段",
+            "description": "更新特定救生員不可用時段的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/unavailable-slots/{slotId}",
+            "params": {
+              "path": {
+                "slotId": "integer"
+              },
+              "body": "UnavailableSlot object"
+            },
+            "response": {
+              "200": {
+                "description": "不可用時段更新成功",
+                "content": "Updated UnavailableSlot object"
+              }
+            }
+          },
+          {
+            "summary": "刪除不可用時段",
+            "description": "刪除特定的救生員不可用時段",
+            "method": "DELETE",
+            "endpoint": "/api/yc/unavailable-slots/{slotId}",
+            "params": {
+              "path": {
+                "slotId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "不可用時段刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "LifeguardSchedule",
+        "endpoints": [
+          {
+            "summary": "獲取所有救生員排班",
+            "description": "檢索所有救生員排班的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/lifeguard-schedules",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of LifeguardSchedule objects"
+              }
+            }
+          },
+          {
+            "summary": "創建救生員排班",
+            "description": "創建新的救生員排班",
+            "method": "POST",
+            "endpoint": "/api/yc/lifeguard-schedules",
+            "params": {
+              "body": "LifeguardSchedule object"
+            },
+            "response": {
+              "201": {
+                "description": "救生員排班創建成功",
+                "content": "Created LifeguardSchedule object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定救生員排班",
+            "description": "檢索特定救生員排班的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/lifeguard-schedules/{scheduleId}",
+            "params": {
+              "path": {
+                "scheduleId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "LifeguardSchedule object"
+              }
+            }
+          },
+          {
+            "summary": "更新救生員排班",
+            "description": "更新特定救生員排班的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/lifeguard-schedules/{scheduleId}",
+            "params": {
+              "path": {
+                "scheduleId": "integer"
+              },
+              "body": "LifeguardSchedule object"
+            },
+            "response": {
+              "200": {
+                "description": "救生員排班更新成功",
+                "content": "Updated LifeguardSchedule object"
+              }
+            }
+          },
+          {
+            "summary": "刪除救生員排班",
+            "description": "刪除特定的救生員排班",
+            "method": "DELETE",
+            "endpoint": "/api/yc/lifeguard-schedules/{scheduleId}",
+            "params": {
+              "path": {
+                "scheduleId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "救生員排班刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Location",
+        "endpoints": [
+          {
+            "summary": "獲取所有地點",
+            "description": "檢索所有地點的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/locations",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Location objects"
+              }
+            }
+          },
+          {
+            "summary": "創建地點",
+            "description": "創建新的地點",
+            "method": "POST",
+            "endpoint": "/api/yc/locations",
+            "params": {
+              "body": "Location object"
+            },
+            "response": {
+              "201": {
+                "description": "地點創建成功",
+                "content": "Created Location object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定地點",
+            "description": "檢索特定地點的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/locations/{locationId}",
+            "params": {
+              "path": {
+                "locationId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Location object"
+              }
+            }
+          },
+          {
+            "summary": "更新地點",
+            "description": "更新特定地點的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/locations/{locationId}",
+            "params": {
+              "path": {
+                "locationId": "integer"
+              },
+              "body": "Location object"
+            },
+            "response": {
+              "200": {
+                "description": "地點更新成功",
+                "content": "Updated Location object"
+              }
+            }
+          },
+          {
+            "summary": "刪除地點",
+            "description": "刪除特定的地點",
+            "method": "DELETE",
+            "endpoint": "/api/yc/locations/{locationId}",
+            "params": {
+              "path": {
+                "locationId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "地點刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "CoachSchedule",
+        "endpoints": [
+          {
+            "summary": "獲取所有教練排班",
+            "description": "檢索所有教練排班的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/coach-schedules",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of CoachSchedule objects"
+              }
+            }
+          },
+          {
+            "summary": "創建教練排班",
+            "description": "創建新的教練排班",
+            "method": "POST",
+            "endpoint": "/api/yc/coach-schedules",
+            "params": {
+              "body": "CoachSchedule object"
+            },
+            "response": {
+              "201": {
+                "description": "教練排班創建成功",
+                "content": "Created CoachSchedule object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定教練排班",
+            "description": "檢索特定教練排班的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/coach-schedules/{scheduleId}",
+            "params": {
+              "path": {
+                "scheduleId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "CoachSchedule object"
+              }
+            }
+          },
+          {
+            "summary": "更新教練排班",
+            "description": "更新特定教練排班的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/coach-schedules/{scheduleId}",
+            "params": {
+              "path": {
+                "scheduleId": "integer"
+              },
+              "body": "CoachSchedule object"
+            },
+            "response": {
+              "200": {
+                "description": "教練排班更新成功",
+                "content": "Updated CoachSchedule object"
+              }
+            }
+          },
+          {
+            "summary": "刪除教練排班",
+            "description": "刪除特定的教練排班",
+            "method": "DELETE",
+            "endpoint": "/api/yc/coach-schedules/{scheduleId}",
+            "params": {
+              "path": {
+                "scheduleId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "教練排班刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Venue",
+        "endpoints": [
+          {
+            "summary": "獲取所有場地",
+            "description": "檢索所有場地的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/venues",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Venue objects"
+              }
+            }
+          },
+          {
+            "summary": "創建場地",
+            "description": "創建新的場地",
+            "method": "POST",
+            "endpoint": "/api/yc/venues",
+            "params": {
+              "body": "Venue object"
+            },
+            "response": {
+              "201": {
+                "description": "場地創建成功",
+                "content": "Created Venue object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定場地",
+            "description": "檢索特定場地的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/venues/{venueId}",
+            "params": {
+              "path": {
+                "venueId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Venue object"
+              }
+            }
+          },
+          {
+            "summary": "更新場地",
+            "description": "更新特定場地的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/venues/{venueId}",
+            "params": {
+              "path": {
+                "venueId": "integer"
+              },
+              "body": "Venue object"
+            },
+            "response": {
+              "200": {
+                "description": "場地更新成功",
+                "content": "Updated Venue object"
+              }
+            }
+          },
+          {
+            "summary": "刪除場地",
+            "description": "刪除特定的場地",
+            "method": "DELETE",
+            "endpoint": "/api/yc/venues/{venueId}",
+            "params": {
+              "path": {
+                "venueId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "場地刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "VenueUsageRecord",
+        "endpoints": [
+          {
+            "summary": "獲取所有場地使用記錄",
+            "description": "檢索所有場地使用記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-usage-records",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of VenueUsageRecord objects"
+              }
+            }
+          },
+          {
+            "summary": "創建場地使用記錄",
+            "description": "創建新的場地使用記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/venue-usage-records",
+            "params": {
+              "body": "VenueUsageRecord object"
+            },
+            "response": {
+              "201": {
+                "description": "場地使用記錄創建成功",
+                "content": "Created VenueUsageRecord object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定場地使用記錄",
+            "description": "檢索特定場地使用記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-usage-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "VenueUsageRecord object"
+              }
+            }
+          },
+          {
+            "summary": "更新場地使用記錄",
+            "description": "更新特定場地使用記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/venue-usage-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              },
+              "body": "VenueUsageRecord object"
+            },
+            "response": {
+              "200": {
+                "description": "場地使用記錄更新成功",
+                "content": "Updated VenueUsageRecord object"
+              }
+            }
+          },
+          {
+            "summary": "刪除場地使用記錄",
+            "description": "刪除特定的場地使用記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/venue-usage-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "場地使用記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "VenueInspectionRecord",
+        "endpoints": [
+          {
+            "summary": "獲取所有場地巡檢記錄",
+            "description": "檢索所有場地巡檢記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-inspection-records",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of VenueInspectionRecord objects"
+              }
+            }
+          },
+          {
+            "summary": "創建場地巡檢記錄",
+            "description": "創建新的場地巡檢記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/venue-inspection-records",
+            "params": {
+              "body": "VenueInspectionRecord object"
+            },
+            "response": {
+              "201": {
+                "description": "場地巡檢記錄創建成功",
+                "content": "Created VenueInspectionRecord object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定場地巡檢記錄",
+            "description": "檢索特定場地巡檢記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-inspection-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "VenueInspectionRecord object"
+              }
+            }
+          },
+          {
+            "summary": "更新場地巡檢記錄",
+            "description": "更新特定場地巡檢記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/venue-inspection-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              },
+              "body": "VenueInspectionRecord object"
+            },
+            "response": {
+              "200": {
+                "description": "場地巡檢記錄更新成功",
+                "content": "Updated VenueInspectionRecord object"
+              }
+            }
+          },
+          {
+            "summary": "刪除場地巡檢記錄",
+            "description": "刪除特定的場地巡檢記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/venue-inspection-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "場地巡檢記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "VenueRepairRequest",
+        "endpoints": [
+          {
+            "summary": "獲取所有場地維修請求",
+            "description": "檢索所有場地維修請求的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-repair-requests",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of VenueRepairRequest objects"
+              }
+            }
+          },
+          {
+            "summary": "創建場地維修請求",
+            "description": "創建新的場地維修請求",
+            "method": "POST",
+            "endpoint": "/api/yc/venue-repair-requests",
+            "params": {
+              "body": "VenueRepairRequest object"
+            },
+            "response": {
+              "201": {
+                "description": "場地維修請求創建成功",
+                "content": "Created VenueRepairRequest object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定場地維修請求",
+            "description": "檢索特定場地維修請求的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/venue-repair-requests/{requestId}",
+            "params": {
+              "path": {
+                "requestId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "VenueRepairRequest object"
+              }
+            }
+          },
+          {
+            "summary": "更新場地維修請求",
+            "description": "更新特定場地維修請求的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/venue-repair-requests/{requestId}",
+            "params": {
+              "path": {
+                "requestId": "integer"
+              },
+              "body": "VenueRepairRequest object"
+            },
+            "response": {
+              "200": {
+                "description": "場地維修請求更新成功",
+                "content": "Updated VenueRepairRequest object"
+              }
+            }
+          },
+          {
+            "summary": "刪除場地維修請求",
+            "description": "刪除特定的場地維修請求",
+            "method": "DELETE",
+            "endpoint": "/api/yc/venue-repair-requests/{requestId}",
+            "params": {
+              "path": {
+                "requestId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "場地維修請求刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "Worklog",
+        "endpoints": [
+          {
+            "summary": "獲取所有工作日誌",
+            "description": "檢索所有工作日誌的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/worklogs",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of Worklog objects"
+              }
+            }
+          },
+          {
+            "summary": "創建工作日誌",
+            "description": "創建新的工作日誌",
+            "method": "POST",
+            "endpoint": "/api/yc/worklogs",
+            "params": {
+              "body": "Worklog object"
+            },
+            "response": {
+              "201": {
+                "description": "工作日誌創建成功",
+                "content": "Created Worklog object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定工作日誌",
+            "description": "檢索特定工作日誌的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/worklogs/{worklogId}",
+            "params": {
+              "path": {
+                "worklogId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Worklog object"
+              }
+            }
+          },
+          {
+            "summary": "更新工作日誌",
+            "description": "更新特定工作日誌的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/worklogs/{worklogId}",
+            "params": {
+              "path": {
+                "worklogId": "integer"
+              },
+              "body": "Worklog object"
+            },
+            "response": {
+              "200": {
+                "description": "工作日誌更新成功",
+                "content": "Updated Worklog object"
+              }
+            }
+          },
+          {
+            "summary": "刪除工作日誌",
+            "description": "刪除特定的工作日誌",
+            "method": "DELETE",
+            "endpoint": "/api/yc/worklogs/{worklogId}",
+            "params": {
+              "path": {
+                "worklogId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "工作日誌刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "DailyChecklist",
+        "endpoints": [
+          {
+            "summary": "獲取所有每日檢查項目",
+            "description": "檢索所有每日檢查項目的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/daily-checklists",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of DailyChecklist objects"
+              }
+            }
+          },
+          {
+            "summary": "創建每日檢查項目",
+            "description": "創建新的每日檢查項目",
+            "method": "POST",
+            "endpoint": "/api/yc/daily-checklists",
+            "params": {
+              "body": "DailyChecklist object"
+            },
+            "response": {
+              "201": {
+                "description": "每日檢查項目創建成功",
+                "content": "Created DailyChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定每日檢查項目",
+            "description": "檢索特定每日檢查項目的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/daily-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "DailyChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "更新每日檢查項目",
+            "description": "更新特定每日檢查項目的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/daily-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              },
+              "body": "DailyChecklist object"
+            },
+            "response": {
+              "200": {
+                "description": "每日檢查項目更新成功",
+                "content": "Updated DailyChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "刪除每日檢查項目",
+            "description": "刪除特定的每日檢查項目",
+            "method": "DELETE",
+            "endpoint": "/api/yc/daily-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "每日檢查項目刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "DailyCheckRecord",
+        "endpoints": [
+          {
+            "summary": "獲取所有每日檢查記錄",
+            "description": "檢索所有每日檢查記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/daily-check-records",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of DailyCheckRecord objects"
+              }
+            }
+          },
+          {
+            "summary": "創建每日檢查記錄",
+            "description": "創建新的每日檢查記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/daily-check-records",
+            "params": {
+              "body": "DailyCheckRecord object"
+            },
+            "response": {
+              "201": {
+                "description": "每日檢查記錄創建成功",
+                "content": "Created DailyCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定每日檢查記錄",
+            "description": "檢索特定每日檢查記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/daily-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "DailyCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "更新每日檢查記錄",
+            "description": "更新特定每日檢查記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/daily-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              },
+              "body": "DailyCheckRecord object"
+            },
+            "response": {
+              "200": {
+                "description": "每日檢查記錄更新成功",
+                "content": "Updated DailyCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "刪除每日檢查記錄",
+            "description": "刪除特定的每日檢查記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/daily-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "每日檢查記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "PeriodicChecklist",
+        "endpoints": [
+          {
+            "summary": "獲取所有定期檢查項目",
+            "description": "檢索所有定期檢查項目的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/periodic-checklists",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of PeriodicChecklist objects"
+              }
+            }
+          },
+          {
+            "summary": "創建定期檢查項目",
+            "description": "創建新的定期檢查項目",
+            "method": "POST",
+            "endpoint": "/api/yc/periodic-checklists",
+            "params": {
+              "body": "PeriodicChecklist object"
+            },
+            "response": {
+              "201": {
+                "description": "定期檢查項目創建成功",
+                "content": "Created PeriodicChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定定期檢查項目",
+            "description": "檢索特定定期檢查項目的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/periodic-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "PeriodicChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "更新定期檢查項目",
+            "description": "更新特定定期檢查項目的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/periodic-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              },
+              "body": "PeriodicChecklist object"
+            },
+            "response": {
+              "200": {
+                "description": "定期檢查項目更新成功",
+                "content": "Updated PeriodicChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "刪除定期檢查項目",
+            "description": "刪除特定的定期檢查項目",
+            "method": "DELETE",
+            "endpoint": "/api/yc/periodic-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "定期檢查項目刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "PeriodicCheckRecord",
+        "endpoints": [
+          {
+            "summary": "獲取所有定期檢查記錄",
+            "description": "檢索所有定期檢查記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/periodic-check-records",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of PeriodicCheckRecord objects"
+              }
+            }
+          },
+          {
+            "summary": "創建定期檢查記錄",
+            "description": "創建新的定期檢查記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/periodic-check-records",
+            "params": {
+              "body": "PeriodicCheckRecord object"
+            },
+            "response": {
+              "201": {
+                "description": "定期檢查記錄創建成功",
+                "content": "Created PeriodicCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定定期檢查記錄",
+            "description": "檢索特定定期檢查記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/periodic-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "PeriodicCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "更新定期檢查記錄",
+            "description": "更新特定定期檢查記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/periodic-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              },
+              "body": "PeriodicCheckRecord object"
+            },
+            "response": {
+              "200": {
+                "description": "定期檢查記錄更新成功",
+                "content": "Updated PeriodicCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "刪除定期檢查記錄",
+            "description": "刪除特定的定期檢查記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/periodic-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "定期檢查記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "SpecialChecklist",
+        "endpoints": [
+          {
+            "summary": "獲取所有特殊檢查項目",
+            "description": "檢索所有特殊檢查項目的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/special-checklists",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of SpecialChecklist objects"
+              }
+            }
+          },
+          {
+            "summary": "創建特殊檢查項目",
+            "description": "創建新的特殊檢查項目",
+            "method": "POST",
+            "endpoint": "/api/yc/special-checklists",
+            "params": {
+              "body": "SpecialChecklist object"
+            },
+            "response": {
+              "201": {
+                "description": "特殊檢查項目創建成功",
+                "content": "Created SpecialChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定特殊檢查項目",
+            "description": "檢索特定特殊檢查項目的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/special-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "SpecialChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "更新特殊檢查項目",
+            "description": "更新特定特殊檢查項目的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/special-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              },
+              "body": "SpecialChecklist object"
+            },
+            "response": {
+              "200": {
+                "description": "特殊檢查項目更新成功",
+                "content": "Updated SpecialChecklist object"
+              }
+            }
+          },
+          {
+            "summary": "刪除特殊檢查項目",
+            "description": "刪除特定的特殊檢查項目",
+            "method": "DELETE",
+            "endpoint": "/api/yc/special-checklists/{checklistId}",
+            "params": {
+              "path": {
+                "checklistId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "特殊檢查項目刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "model": "SpecialCheckRecord",
+        "endpoints": [
+          {
+            "summary": "獲取所有特殊檢查記錄",
+            "description": "檢索所有特殊檢查記錄的列表",
+            "method": "GET",
+            "endpoint": "/api/yc/special-check-records",
+            "params": {},
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "Array of SpecialCheckRecord objects"
+              }
+            }
+          },
+          {
+            "summary": "創建特殊檢查記錄",
+            "description": "創建新的特殊檢查記錄",
+            "method": "POST",
+            "endpoint": "/api/yc/special-check-records",
+            "params": {
+              "body": "SpecialCheckRecord object"
+            },
+            "response": {
+              "201": {
+                "description": "特殊檢查記錄創建成功",
+                "content": "Created SpecialCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "獲取特定特殊檢查記錄",
+            "description": "檢索特定特殊檢查記錄的詳細信息",
+            "method": "GET",
+            "endpoint": "/api/yc/special-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "200": {
+                "description": "成功回應",
+                "content": "SpecialCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "更新特殊檢查記錄",
+            "description": "更新特定特殊檢查記錄的信息",
+            "method": "PUT",
+            "endpoint": "/api/yc/special-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              },
+              "body": "SpecialCheckRecord object"
+            },
+            "response": {
+              "200": {
+                "description": "特殊檢查記錄更新成功",
+                "content": "Updated SpecialCheckRecord object"
+              }
+            }
+          },
+          {
+            "summary": "刪除特殊檢查記錄",
+            "description": "刪除特定的特殊檢查記錄",
+            "method": "DELETE",
+            "endpoint": "/api/yc/special-check-records/{recordId}",
+            "params": {
+              "path": {
+                "recordId": "integer"
+              }
+            },
+            "response": {
+              "204": {
+                "description": "特殊檢查記錄刪除成功",
+                "content": "No content"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+
+
+      

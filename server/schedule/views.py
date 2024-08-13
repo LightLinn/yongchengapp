@@ -88,6 +88,7 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='by_lifeguardid')
     def get_schedules_by_lifeguardid(self, request):
         lifeguard_id = self.request.query_params.get('lifeguard_id')
+        all_param = self.request.query_params.get('all', '0')
         
         if lifeguard_id is None:
             return Response({'detail': 'lifeguard_id is required'}, status=400)
@@ -96,8 +97,15 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
             lifeguard_id = int(lifeguard_id)
         except ValueError:
             return Response({'detail': 'Invalid lifeguard_id format'}, status=400)
-
+        
         schedules = self.queryset.filter(lifeguard_id=lifeguard_id)
+
+        if all_param != '1':
+            today = timezone.now().date()
+            schedules = schedules.filter(date__lte=today)
+
+        schedules = schedules.order_by('-date')
+        
         serializer = self.get_serializer(schedules, many=True)
         return Response(serializer.data)
     

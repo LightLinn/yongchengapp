@@ -47,7 +47,6 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         coach_id = self.request.query_params.get('coach', None)
         enrollment_number_id = self.request.query_params.get('enrollment_number', None)
-
         if coach_id is not None:
             try:
                 coach = Coach.objects.get(user_id=coach_id)
