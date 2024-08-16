@@ -12,12 +12,49 @@ from rest_framework.decorators import action
 from .models import Worklog, SpecialCheckRecord, SpecialChecklist, PeriodicCheckRecord, PeriodicChecklist, DailyCheckRecord, DailyChecklist
 from .serializers import WorklogSerializer, SpecialCheckRecordSerializer, SpecialChecklistSerializer, PeriodicCheckRecordSerializer, PeriodicChecklistSerializer, DailyCheckRecordSerializer, DailyChecklistSerializer
 from authentication.permissions import *
+from schedule.models import LifeguardSchedule
 
 class WorklogViewSet(viewsets.ModelViewSet):
     queryset = Worklog.objects.all()
     serializer_class = WorklogSerializer
     # permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # 保存 Worklog 之前，提取 schedule_id
+        schedule_id = serializer.validated_data.get('duty').id
+        
+        # 創建 Worklog 記錄
+        self.perform_create(serializer)
+        
+        # 更新對應的 LifeguardSchedule 狀態
+        try:
+            schedule = LifeguardSchedule.objects.get(id=schedule_id)
+            schedule.schedule_status = '已執勤'
+            schedule.save()
+        except LifeguardSchedule.DoesNotExist:
+            return Response({"detail": "Schedule not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    @action(detail=False, methods=['get'], url_path='check_worklog_status/(?P<schedule_id>[^/.]+)')
+    def check_worklog_status(self, request, schedule_id=None):
+        try:
+            schedule = LifeguardSchedule.objects.get(id=schedule_id)
+            special_check = SpecialCheckRecord.objects.filter(duty=schedule).exists()
+            periodic_check = PeriodicCheckRecord.objects.filter(duty=schedule).exists()
+            daily_check = DailyCheckRecord.objects.filter(duty=schedule).exists()
+
+            return Response({
+                'special_check': special_check,
+                'periodic_check': periodic_check,
+                'daily_check': daily_check
+            })
+        except LifeguardSchedule.DoesNotExist:
+            return Response({'error': 'Schedule not found'}, status=404)
+        
 class SpecialCheckRecordViewSet(viewsets.ModelViewSet):
     queryset = SpecialCheckRecord.objects.all()
     serializer_class = SpecialCheckRecordSerializer

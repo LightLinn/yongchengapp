@@ -10,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Course, CourseType, AssignedCourse, EnrollmentNumbers, EnrollmentList
+from attendance.models import Attendance
 from humanresources.models import Coach
 from .serializers import CourseSerializer, CourseTypeSerializer, AssignedCourseSerializer, EnrollmentNumbersSerializer, EnrollmentListSerializer
 from authentication.permissions import *
@@ -33,7 +34,47 @@ class CourseViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(enrollment_list__coach_id=coach_id)
         return queryset
     
+    @action(detail=True, methods=['put'], url_path='transfer')
+    def transfer(self, request, pk=None):
+        try:
+            course = self.get_object()
+            action_type = request.query_params.get('action', None)  # 通過 query_params 獲取 URL 中的參數
+            date = request.data.get('date', None)
+            print(date)
 
+            # 取得 enrollment_number
+            enrollment_number = course.enrollment_number
+
+            # 查找相同 enrollment_number 的所有課程
+            related_courses = Course.objects.filter(enrollment_number=enrollment_number).order_by('course_date')
+            
+            # 獲取最後一筆課程的日期
+            last_course_date = related_courses.last().course_date
+
+            #related_courses篩選出course_date=ccourse.course_date
+            related_courses = related_courses.filter(course_date=course.course_date)
+
+            if action_type == 'pass':
+                for related_course in related_courses:
+                    related_course.course_date = last_course_date + timedelta(weeks=1)
+                    last_course_date = related_course.course_date
+                    related_course.save()
+                    Attendance.objects.filter(course=course).delete()
+            
+            elif action_type == 'adjust':
+                for related_course in related_courses:
+                    related_course.course_date = date
+                    related_course.save()
+                    Attendance.objects.filter(course=course).delete()
+            else:
+                return Response({'error': '無效的操作'}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'status': f'{action_type}成功'}, status=status.HTTP_200_OK)
+        except Course.DoesNotExist:
+            return Response({'error': '課程不存在'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 class CourseTypeViewSet(viewsets.ModelViewSet):
     queryset = CourseType.objects.all()
     serializer_class = CourseTypeSerializer

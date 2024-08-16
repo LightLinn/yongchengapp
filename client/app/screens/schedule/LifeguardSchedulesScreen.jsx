@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { fetchLifeguardId, fetchLifeguardSchedules, signOutLifeguardSchedule } from '../../../api/scheduleApi';
 import { useAuth } from '../../../context/AuthContext';
@@ -25,11 +25,13 @@ const LifeguardSchedulesScreen = () => {
     loadLifeguardId();
   }, []);
 
-  useEffect(() => {
-    if (lifeguardId) {
-      loadSchedules();
-    }
-  }, [lifeguardId, month]);
+  useFocusEffect(
+    useCallback(() => {
+      if (lifeguardId) {
+        loadSchedules();
+      }
+    }, [lifeguardId, month])
+  );
 
   const loadLifeguardId = async () => {
     try {
@@ -109,12 +111,11 @@ const LifeguardSchedulesScreen = () => {
 
   const handleSignOut = async (scheduleId) => {
     try {
-      await signOutLifeguardSchedule(scheduleId);
-      Alert.alert('簽退成功', '簽退成功');
-      loadSchedules(); // 刷新頁面
+      // 導航到編寫工作日誌頁面，並帶入 scheduleId
+      router.push(`/screens/schedule/LifeguardSingoutScreen?scheduleId=${scheduleId}`);
     } catch (error) {
-      console.error('Failed to sign out', error);
-      Alert.alert('簽退失敗', '無法簽退');
+      console.error('Failed to navigate to WorklogScreen', error);
+      Alert.alert('錯誤', '無法導航至工作日誌頁面');
     }
   };
 

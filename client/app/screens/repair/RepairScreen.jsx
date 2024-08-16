@@ -94,7 +94,7 @@ const RepairScreen = () => {
         <TouchableOpacity onPress={() => setShowSortMenu(!showSortMenu)}>
           <Icon name="sort" size={SIZES.xLarge} color={COLORS.primary} />
         </TouchableOpacity>
-        {hasPermission('維修管理', 'can_create') && (
+        {hasPermission('維修列表', 'can_create') && (
           <TouchableOpacity onPress={() => router.push('/screens/repair/RepairAddScreen')}>
             <Icon name="add" size={SIZES.xLarge} color={COLORS.primary} />
           </TouchableOpacity>

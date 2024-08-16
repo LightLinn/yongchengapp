@@ -64,7 +64,7 @@ const MenuScreen = () => {
       screenName: '出勤管理',
       features: [
         { name: '日誌列表', icon: '', screenName: '日誌列表', screen: '/screens/worklog/WorklogScreen', action: 'can_view' },
-        { name: '創建救生員班表', icon: '', screenName: '創建救生員班表', screen: '/screens/schedule/VenueSelectScreen', action: 'can_view' },
+        { name: '救生員班表管理', icon: '', screenName: '救生員班表管理', screen: '/screens/schedule/VenueSelectScreen', action: 'can_view' },
         { name: '救生員班表', icon: '', screenName: '救生員班表', screen: '/screens/schedule/LifeguardSchedulesScreen', action: 'can_view' },
         { name: '教練排課時段', icon: '', screenName: '教練排課時段', screen: '/screens/schedule/LocationSelectScreen', action: 'can_view' },
         { name: '教練課表', icon: '', screenName: '教練課表', screen: '/screens/schedule/CoachSchedulesScreen', action: 'can_view' },

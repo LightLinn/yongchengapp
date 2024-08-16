@@ -165,3 +165,25 @@ export const fetchPeriodicCheckRecordsBySchedule = async (scheduleId) => {
   }
   return response.json();
 };
+
+export const fetchWorklogStatus = async (scheduleId) => {
+  const response = await fetch(`${API_BASE_URL}/worklog/check_worklog_status/${scheduleId}/`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch worklog status');
+  }
+  return await response.json();
+};
+
+export const submitWorklog = async (worklogPayload) => {
+  const response = await fetch(`${API_BASE_URL}/worklog/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(worklogPayload),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to submit worklog');
+  }
+  return await response.json();
+};

@@ -42,7 +42,6 @@ const RepairAddScreen = () => {
   }, [userId]);
 
   const handleCreate = async () => {
-    console.log(repair);
     try {
       await createRepair({
         title: repair.title,
@@ -59,7 +58,7 @@ const RepairAddScreen = () => {
   };
 
   const hasPermission = (action) => {
-    const permission = permissions.find(p => p.screen_name === '維修管理');
+    const permission = permissions.find(p => p.screen_name === '維修列表');
     return permission && permission[action];
   };
 

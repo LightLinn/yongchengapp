@@ -103,6 +103,20 @@ export default function Layout() {
         })} 
       />
       <Stack.Screen 
+        name="LifeguardSingoutScreen"
+        options={({ navigation }) => ({
+          headerTitle: '救生員簽退',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <Button
+              icon={<Icon name="arrow-back" color="#333" />}
+              buttonStyle={{ backgroundColor: 'transparent' }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+        })} 
+      />
+      <Stack.Screen 
         name="VenueSelectScreen"
         options={({ navigation }) => ({
           headerTitle: '選擇場地',

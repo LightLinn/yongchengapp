@@ -70,14 +70,14 @@ class WorklogSerializer(serializers.ModelSerializer):
 
     # 取得fk special_check_record的資料
     def get_special_check_record(self, obj):
-        special_check_records = SpecialCheckRecord.objects.filter(worklog=obj)
+        special_check_records = SpecialCheckRecord.objects.filter(duty=obj.duty)
         return SpecialCheckRecordSerializer(special_check_records, many=True).data
 
     def get_periodic_check_record(self, obj):
-        periodic_check_records = PeriodicCheckRecord.objects.filter(worklog=obj)
+        periodic_check_records = PeriodicCheckRecord.objects.filter(duty=obj.duty)
         return PeriodicCheckRecordSerializer(periodic_check_records, many=True).data
     
     def get_daily_check_record(self, obj):
-        daily_check_records = DailyCheckRecord.objects.filter(worklog=obj)
+        daily_check_records = DailyCheckRecord.objects.filter(duty=obj.duty)
         return DailyCheckRecordSerializer(daily_check_records, many=True).data
     

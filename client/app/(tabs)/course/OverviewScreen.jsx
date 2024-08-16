@@ -6,6 +6,7 @@ import { fetchEnrollments, fetchEnrollmentsCoach, fetchCoaches, fetchCourseTypes
 import { useAuth } from '../../../context/AuthContext'; 
 import { COLORS, SIZES } from '../../../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const OverviewScreen = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -40,7 +41,7 @@ const OverviewScreen = () => {
       } catch (error) {
         console.error('Failed to load data', error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
     }
   };
   
@@ -120,7 +121,7 @@ const OverviewScreen = () => {
         {filteredEnrollments.map((enroll) => (
           <EnrollItem 
             key={enroll.id} 
-            enroll={enroll} 
+            enroll={enroll}
           />
         ))}
       </ScrollView>

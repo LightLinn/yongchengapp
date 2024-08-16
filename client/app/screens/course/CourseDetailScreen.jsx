@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useLocalSearchParams } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { fetchCourseDetails, fetchEnrollmentDetails } from '../../../api/courseApi';
 import { COLORS, SIZES } from '../../../styles/theme';
 import CourseDetailItem from '../../components/CourseDetailItem';
@@ -12,6 +13,7 @@ const CourseDetailScreen = () => {
   const [enrollmentDetails, setEnrollmentDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
 
   const loadDetails = async () => {
     try {
@@ -35,6 +37,10 @@ const CourseDetailScreen = () => {
   const onRefresh = () => {
     setRefreshing(true);
     loadDetails();
+  };
+
+  const handlePress = () => {
+    navigation.navigate('Attendance');
   };
 
   if (loading) {
@@ -65,6 +71,9 @@ const CourseDetailScreen = () => {
           <Text style={styles.text}><Text style={styles.label}>程度描述 </Text>{enrollmentDetails.degree}</Text>
           <Text style={styles.text}><Text style={styles.label}>開課日期 </Text>{enrollmentDetails.start_date}</Text>
           <Text style={styles.text}><Text style={styles.label}>上課時間 </Text>{enrollmentDetails.start_time}</Text>
+          <TouchableOpacity style={styles.button1} onPress={handlePress}>
+            <Text style={styles.buttonText}>我要簽到</Text>
+          </TouchableOpacity>
         </Card>
       )}
       {courseDetails.length > 0 ? (
@@ -130,6 +139,17 @@ const styles = StyleSheet.create({
     color: COLORS.alert,
     textAlign: 'center',
     marginTop: 20,
+  },
+  button1: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  buttonText: {
+    fontSize: SIZES.medium,
+    color: COLORS.white,
+    textAlign: 'center'
   },
 });
 

@@ -133,3 +133,34 @@ export const fetchCoursesByEnrollmentListId = async (enrollmentListId) => {
   
   return await response.json();
 };
+
+export const leaveCourse = async (courseId) => {
+  const response = await fetch(`${API_BASE_URL}/courses/${courseId}/transfer/?action=pass`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('請求失敗，請稍後再試');
+  }
+
+  return await response.json();
+};
+
+export const adjustCourse = async (courseId, date) => {
+  const response = await fetch(`${API_BASE_URL}/courses/${courseId}/transfer/?action=adjust`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ date: date }), 
+  });
+
+  if (!response.ok) {
+    throw new Error('請求失敗，請稍後再試');
+  }
+
+  return await response.json();
+};

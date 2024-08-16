@@ -21,8 +21,7 @@ class Notification(Auditable):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
     created_by = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='created_notifications', verbose_name='建立者', blank=True, null=True)
     users = models.ManyToManyField('authentication.CustomUser', related_name='notifications', verbose_name='接收對象', blank=True)
-    groups = models.ManyToManyField(Group, related_name='notifications', verbose_name='接收群組', blank=True)
-    # recipient = models.ForeignKey('authentication.CustomUser', on_delete=models.CASCADE, related_name='notifications', verbose_name='接收對象', blank=True, null=True)
+    read_status = models.BooleanField(default=False, verbose_name='已讀')
 
     class Meta:
         db_table = 'notification'
@@ -34,7 +33,7 @@ class Notification(Auditable):
 
     
 class NotificationType(Auditable):
-    name = models.CharField(max_length=255, verbose_name='類別名稱')
+    name = models.CharField(max_length=255, verbose_name='類別名稱', unique=True)
     description = models.TextField(verbose_name='類別描述')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='建立時間')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
