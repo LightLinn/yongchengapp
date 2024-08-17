@@ -28,9 +28,23 @@ export const fetchEnrollmentDetails = async (enrollmentId) => {
   return response.json();
 };
 
+export const fetchCourses = async (enrollmentListId, enrollmentNumber) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/courses?enrollment_list_id=${enrollmentListId}&enrollment_number=${enrollmentNumber}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch courses');
+  }
+  return response.json();
+};
+
 export const updateEnrollmentStatus = async (enrollmentId, status, paymentAmount, paymentMethod, remark, coach, paymentDate) => {
   const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/`, {
+  const response = await fetch(`${API_BASE_URL}/enrollment_lists/${enrollmentId}/update_enrollment/`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -47,20 +61,6 @@ export const updateEnrollmentStatus = async (enrollmentId, status, paymentAmount
   });
   if (!response.ok) {
     throw new Error('Failed to update enrollment status');
-  }
-  return response.json();
-};
-
-export const fetchCourses = async (enrollmentListId, enrollmentNumber) => {
-  const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/courses?enrollment_list_id=${enrollmentListId}&enrollment_number=${enrollmentNumber}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    },
-  });
-  if (!response.ok) {
-    throw new Error('Failed to fetch courses');
   }
   return response.json();
 };

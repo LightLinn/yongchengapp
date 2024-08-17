@@ -7,6 +7,9 @@ from .models import LifeguardSchedule, CoahcSchedule, Location, UnavailableSlot
 from .serializers import LifeguardScheduleSerializer, CoachScheduleSerializer, LocationSerializer, UnavailableSlotSerializer
 from authentication.permissions import *
 from datetime import date, datetime, timedelta
+from django.contrib.auth.models import Group
+from authentication.models import CustomUser
+from notifications.models import Notification
 
 class UnavailableSlotViewSet(viewsets.ModelViewSet):
     queryset = UnavailableSlot.objects.all()
@@ -140,6 +143,24 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(created_schedules, status=status.HTTP_201_CREATED)
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        lifeguard = instance.lifeguard.user
+
+        group = Group.objects.get(name='內部_救生員')
+        ycappsystem = CustomUser.objects.get(username='ycappsystem')
+        users = group.user_set.all()
+        
+        Notification.objects.create(
+            title=f'新救生員班表通知',
+            content=f'已新增 {instance.venue.name} {instance.date} {instance.start_time} - {instance.end_time} 時段的救生員班表。',
+            type='排班公告',
+            method='APP',
+            created_by=ycappsystem,
+            users=lifeguard,
+            notify_status='待傳送'
+        )
 
     @action(detail=True, methods=['put'], url_path='sign_out')
     def sign_out(self, request, pk=None):
