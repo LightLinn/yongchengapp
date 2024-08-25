@@ -8,8 +8,8 @@ from reviews.models import Auditable
 class Notification(Auditable):
     NOTIFY_STATUS_CHOICES = [
         ('待傳送', '待傳送'),
-        ('成功', '成功'),
-        ('失敗', '失敗'),
+        ('傳送成功', '傳送成功'),
+        ('傳送失敗', '傳送失敗'),
         ('取消', '取消'),
     ]
 
@@ -19,6 +19,7 @@ class Notification(Auditable):
         ('EMAIL', 'EMAIL'),
         ('SMS', 'SMS'),
         ('APP', 'APP'),
+        ('DISCORD', 'DISCORD'),
     ]
 
     TYPE_CHOICES = [

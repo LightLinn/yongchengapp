@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import NotificationItem from '../../components/NotificationItem';
 import { fetchNotifications } from '../../../api/notificationApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const NotifyScreen = () => {
   const [notifications, setNotifications] = useState([]);
 
-  useEffect(() => {
-    const loadNotifications = async () => {
-      try {
-        const notificationData = await fetchNotifications();
-        setNotifications(notificationData);
-      } catch (error) {
-        console.error('Failed to load notifications', error);
-      }
-    };
+  const loadNotifications = async () => {
+    try {
+      const notificationData = await fetchNotifications();
+      setNotifications(notificationData);
+    } catch (error) {
+      console.error('Failed to load notifications', error);
+    }
+  };
 
-    loadNotifications();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadNotifications();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>

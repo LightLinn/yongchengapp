@@ -55,6 +55,42 @@ class WorklogViewSet(viewsets.ModelViewSet):
         except LifeguardSchedule.DoesNotExist:
             return Response({'error': 'Schedule not found'}, status=404)
         
+    @action(detail=False, methods=['get'], url_path='by_venue')
+    def by_venue(self, request):
+        venue_id = request.query_params.get('venue')
+        
+        if not venue_id:
+            return Response({'detail': 'venue id is required'}, status=400)
+        
+        worklogs = Worklog.objects.filter(duty__venue_id=venue_id)
+        serializer = self.get_serializer(worklogs, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], url_path='worklog_detail')
+    def worklog_detail(self, request):
+        worklog_id = request.query_params.get('id')
+
+        if not worklog_id:
+            return Response({'detail': 'worklog id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            worklog = Worklog.objects.get(id=worklog_id)
+        except Worklog.DoesNotExist:
+            return Response({'detail': 'Worklog not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # 獲取與該 duty 相關的每日檢點表、定時檢點表、特殊檢點表
+        daily_check_records = DailyCheckRecord.objects.filter(duty=worklog.duty)
+        periodic_check_records = PeriodicCheckRecord.objects.filter(duty=worklog.duty)
+        special_check_records = SpecialCheckRecord.objects.filter(duty=worklog.duty)
+
+        # 將資料序列化
+        worklog_data = self.get_serializer(worklog).data
+        worklog_data['daily_check_record'] = DailyCheckRecordSerializer(daily_check_records, many=True).data
+        worklog_data['periodic_check_record'] = PeriodicCheckRecordSerializer(periodic_check_records, many=True).data
+        worklog_data['special_check_record'] = SpecialCheckRecordSerializer(special_check_records, many=True).data
+
+        return Response(worklog_data, status=status.HTTP_200_OK)
+        
 class SpecialCheckRecordViewSet(viewsets.ModelViewSet):
     queryset = SpecialCheckRecord.objects.all()
     serializer_class = SpecialCheckRecordSerializer
@@ -263,6 +299,17 @@ class DailyCheckRecordViewSet(viewsets.ModelViewSet):
             return Response({'updated_records': updated_records, 'errors': errors}, status=status.HTTP_207_MULTI_STATUS)
 
         return Response(updated_records, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='by_venue')
+    def by_venue(self, request):
+        venue_id = request.query_params.get('venue')
+        
+        if not venue_id:
+            return Response({'detail': 'venue id is required'}, status=400)
+        
+        daily_check_records = DailyCheckRecord.objects.filter(duty__venue_id=venue_id)
+        serializer = self.get_serializer(daily_check_records, many=True)
+        return Response(serializer.data)
     
     
 

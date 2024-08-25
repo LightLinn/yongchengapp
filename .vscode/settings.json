@@ -1,3 +1,15 @@
 {
-    "markdown.preview.breaks": true
+    "markdown.preview.breaks": true,
+    "editor.tabSize": 4, // Tab 等於 4 個空格
+    "editor.insertSpaces": true, // 使用空格代替 Tab
+    "editor.detectIndentation": false, // 禁用自動檢測文件的縮進，強制使用上述設定
+    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true
+    },
+    "[javascript]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    }
 }

@@ -18,22 +18,6 @@ export const fetchWorklogs = async () => {
   return await response.json();
 };
 
-export const fetchWorklogDetail = async (id) => {
-  const token = await AsyncStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/worklog/${id}/`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch worklog detail');
-  }
-
-  return await response.json();
-};
-
 export const fetchDailyChecklists = async () => {
   const response = await fetch(`${API_BASE_URL}/daily_checklists/`);
   if (!response.ok) {
@@ -186,4 +170,47 @@ export const submitWorklog = async (worklogPayload) => {
     throw new Error('Failed to submit worklog');
   }
   return await response.json();
+};
+
+export const fetchWorklogsByVenueId = async (venueId) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/worklog/by_venue/?venue=${venueId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch worklogs');
+  }
+
+  return await response.json();
+};
+
+export async function fetchDailyCheckRecordsByVenueId(venueId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/daily_check_records/by_venue/?venue=${venueId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch daily check records');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching daily check records:', error);
+    throw error;
+  }
+}
+
+export const fetchWorklogDetail = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/worklog/worklog_detail/?id=${id}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch worklog detail');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching worklog detail:', error);
+    throw error;
+  }
 };

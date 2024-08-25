@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import Group
 from notifications.models import Notification
+from notifications.utils import create_system_notification
 from authentication.models import CustomUser
 from .models import Course, CourseType, AssignedCourse, EnrollmentNumbers, EnrollmentList
 from attendance.models import Attendance
@@ -197,6 +198,14 @@ class AssignedCourseViewSet(viewsets.ModelViewSet):
                 )
                 new_assigned_course.save()
 
+                #創建新的通知，通知教練
+                
+                create_system_notification(
+                    user=coach.user,
+                    title=f"您有新的課程分配",
+                    content=f"您有新的課程分配，請前往分頁「菜單」 > 「教練接課」查詢。",
+                )
+
             return Response({'detail': 'Assigned courses created successfully'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -233,22 +242,18 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
         group_name = "內部_管理人員"  # 这里填写实际的群组名称
         try:
             group = Group.objects.get(name=group_name)
-            users_in_group = group.user_set.all()  # 获取该群组中的所有用户
-            ycappsystem = CustomUser.objects.get(username='ycappsystem')
+            users_in_group = group.user_set.all()
 
-            notifications = [
-                Notification(
+            # 使用 create_system_notification 函數來生成通知
+            for user in users_in_group:
+                create_system_notification(
+                    user=user,
                     title=f"學生{enrollment.student}進行報名",
                     content=f"學生 {enrollment.student} 剛剛報名了一門新課程。",
                     type="全體公告",
                     notify_status="待傳送",
-                    method="APP",
-                    created_by=ycappsystem,
-                    users=user,
-                ) for user in users_in_group
-            ]
-
-            Notification.objects.bulk_create(notifications)
+                    method="APP"
+                )
             
         except Group.DoesNotExist:
             return Response({"error": f"群組 '{group_name}' 不存在"}, status=status.HTTP_400_BAD_REQUEST)
@@ -384,6 +389,8 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
         # Fetch all enrollments with the same enrollment_number
         enrollments = EnrollmentList.objects.filter(enrollment_number=enrollment.enrollment_number)
 
+        courses_to_create = []
+
         # Update enrollment status and coach for all fetched enrollments
         for enrollment in enrollments:
             enrollment.enrollment_status = enrollment_status
@@ -392,12 +399,30 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
 
             # Create Course instances for each selected date
             for date in selected_dates:
-                Course.objects.create(
+                course = Course(
                     enrollment_list=enrollment,
                     enrollment_number=enrollment.enrollment_number,
                     course_date=date,
                     course_time=enrollment.start_time,
                     course_status='進行中'
                 )
+                courses_to_create.append(course)
+            
+            # 創建學生通知
+            create_system_notification(
+                users=enrollment.user, 
+                title="您的報名已通過",
+                content="您有新的課程，請前往分頁「課程」 > 「總覽」查詢。",
+                )
+
+        if courses_to_create:
+            Course.objects.bulk_create(courses_to_create)
+            
+        # 創建教練通知
+        create_system_notification(
+            users=coach.user,
+            title="您有新的課程分配",
+            content="您有新的課程分配，請前往分頁「課程」 > 「總覽」查詢。",
+            )
 
         return Response({'detail': 'Enrollments and courses updated successfully'}, status=status.HTTP_200_OK)

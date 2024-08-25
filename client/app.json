@@ -14,7 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lightlin001.YongChengApp"
+      "bundleIdentifier": "com.lightlin001.YongChengApp",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
+      }
+
     },
     "android": {
       "package": "com.lightlin001.YongChengApp",
@@ -22,7 +29,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK"
+      ]
+
     },
     "web": {
       "favicon": "./assets/favicon.png"

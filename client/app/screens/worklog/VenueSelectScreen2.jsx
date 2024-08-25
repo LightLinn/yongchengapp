@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../../../styles/theme';
 import { fetchVenues } from '../../../api/venueApi';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -10,7 +10,8 @@ const VenueSelectScreen = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const { type } = useLocalSearchParams()
+  // 从 router.query 中获取传递的参数
+  const { type } = useLocalSearchParams();
 
   useEffect(() => {
     loadVenues();
@@ -29,12 +30,13 @@ const VenueSelectScreen = () => {
   };
 
   const handleSelectVenue = (venue) => {
-    if ( type === 'worklog' ) {
-      console.log(type);
-      router.push(`/screens/worklog/WorklogListScreen?venueId=${venue.id}&venueName=${venue.name}`);
-    } else if ( type === 'lifeguard' ) {
-      router.push(`/screens/schedule/LifeguardSchedulesListScreen?venueId=${venue.id}&venueName=${venue.name}`);
-    }
+    if ( type === 'daily' ) {
+      router.push(`/screens/worklog/DailyRecordsScreen?venueId=${venue.id}&venueName=${venue.name}`);
+    } else if ( type === 'periodic' ) {
+      router.push(`/screens/worklog/PeriodicRecordsScreen?venueId=${venue.id}&venueName=${venue.name}`);
+    } else if ( type === 'special' ) {
+      router.push(`/screens/worklog/SpecialRecordsScreen?venueId=${venue.id}&venueName=${venue.name}`);
+    }          
   };
 
   if (loading) {
@@ -61,6 +63,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: COLORS.lightWhite,
+  },
+  headerText: {
+    fontSize: SIZES.large,
+    color: COLORS.primary,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   itemContainer: {
     padding: 15,

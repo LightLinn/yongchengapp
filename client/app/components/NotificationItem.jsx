@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useRouter } from 'expo-router';
+import { COLORS } from '../../styles/theme';
+import moment from 'moment';
 
 const NotificationItem = ({ notification }) => {
   const router = useRouter();
@@ -12,7 +14,7 @@ const NotificationItem = ({ notification }) => {
 
   return (
     <TouchableOpacity onPress={handlePress}>
-      <Card containerStyle={styles.card}>
+      <Card containerStyle={[styles.card, !notification.read_status && styles.unreadCard]}>
         <Card.Title>{notification.title}</Card.Title>
         <Card.Divider />
         <Text style={styles.content}>
@@ -20,7 +22,9 @@ const NotificationItem = ({ notification }) => {
             ? `${notification.content.substring(0, 50)}...` 
             : notification.content}
         </Text>
-        <Text style={styles.timestamp}>{new Date(notification.created_at).toLocaleString()}</Text>
+        <Text style={styles.timestamp}>
+          {moment(notification.created_at).format('YYYY-MM-DD HH:mm')}
+        </Text>
       </Card>
     </TouchableOpacity>
   );
@@ -28,9 +32,13 @@ const NotificationItem = ({ notification }) => {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 10, // 设置圆角
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: COLORS.gray2,
+  },
+  unreadCard: {
+    borderColor: COLORS.secondary, // 未讀通知的邊框顏色
+    borderWidth: 2,
   },
   content: {
     fontSize: 16,
@@ -38,7 +46,7 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 12,
-    color: 'gray',
+    color: COLORS.gray2,
   },
 });
 
