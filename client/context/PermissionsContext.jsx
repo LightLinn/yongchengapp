@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { fetchUserPermissions } from '../api/groupApi';
 import { fetchUserProfile } from '../api/profileApi';
 import { useAuth } from './AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PermissionsContext = createContext();
 
@@ -11,12 +12,14 @@ export const PermissionsProvider = ({ children }) => {
   const { userId, permissions, setPermissions } = useAuth();
   const [loading, setLoading] = useState(true);
   const [ groupIds, setGroupIds ] = useState([]);
+  
 
   const loadPermissions = async () => {
     setLoading(true);
     setPermissions([]);
+    const storedUserId = await AsyncStorage.getItem('userId');
     try {
-      const userProfile = await fetchUserProfile(userId);
+      const userProfile = await fetchUserProfile(storedUserId);
       const groupIds = userProfile.groupIds;
       setGroupIds(groupIds);
 

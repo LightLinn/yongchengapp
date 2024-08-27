@@ -248,3 +248,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'superpd001@gmail.com'
 EMAIL_HOST_PASSWORD = 'wrym npnx jwax zkhy'#'Aa0938902062'
 DEFAULT_FROM_EMAIL = 'superpd001@example.com'
+

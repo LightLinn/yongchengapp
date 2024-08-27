@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.password_validation import validate_password
 from .models import CustomUser, ScreenPermissions, Screen
 from datetime import datetime
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 User = get_user_model()
@@ -106,9 +108,16 @@ class PasswordChangeSerializer(serializers.Serializer):
         return value
 
 
-# 列出所有權限及其對應的 codenames
-# from django.contrib.auth.models import Permission
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
 
-# permissions = Permission.objects.all()
-# for perm in permissions:
-#     print(f"Name: {perm.name}, Codename: {perm.codename}")
+        # 添加自定義信息
+        token['user_id'] = user.id
+        token['username'] = user.username
+        token['groups'] = [group.name for group in user.groups.all()]
+        token['group_ids'] = [group.id for group in user.groups.all()]
+
+        return token
+    

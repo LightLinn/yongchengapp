@@ -40,7 +40,7 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
       : BackgroundFetch.BackgroundFetchResult.NoData;
 
   } catch (error) {
-    console.error('Failed to fetch notifications in background:', error);
+    // console.error('Failed to fetch notifications in background:', error);
     return BackgroundFetch.BackgroundFetchResult.Failed;
   }
 });
@@ -51,10 +51,10 @@ async function registerBackgroundFetchAsync() {
   try {
     await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
     const status = await BackgroundFetch.getStatusAsync();
-    console.log('Background Fetch Status:', status);
+    // console.log('Background Fetch Status:', status);
     
     if (status === BackgroundFetch.BackgroundFetchStatus.Available) {
-      console.log('Background fetch is available');
+    //   console.log('Background fetch is available');
       const taskRegistered = await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
         minimumInterval: 5 * 60, // 每5分鐘檢查一次
         stopOnTerminate: false,    // 應用被終止後是否停止任務
@@ -62,15 +62,15 @@ async function registerBackgroundFetchAsync() {
       });
 
       if (taskRegistered) {
-        console.log('Background fetch task registered successfully');
+        // console.log('Background fetch task registered successfully');
       } else {
-        console.log('Failed to register background fetch task');
+        // console.log('Failed to register background fetch task');
       }
     } else {
-      console.log('Background fetch is not available on this device');
+    //   console.log('Background fetch is not available on this device');
     }
   } catch (error) {
-    console.error('Failed to register background fetch task:', error);
+    // console.error('Failed to register background fetch task:', error);
   }
 }
 
@@ -93,7 +93,7 @@ export default function Layout() {
       // 請求通知權限
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') {
-        console.log('Notification permissions not granted');
+        // console.log('Notification permissions not granted');
         return;
       }
 

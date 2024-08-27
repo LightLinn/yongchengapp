@@ -18,8 +18,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer, RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework.exceptions import ValidationError
+from .serializers import MyTokenObtainPairSerializer
 
 from .models import CustomUser, ScreenPermissions, Screen
 from humanresources.models import Coach, Lifeguard, Employee, VenueManager
@@ -28,10 +31,19 @@ from authentication.permissions import *
 import qrcode
 import random
 from datetime import date
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
 # Create your views here.
+
+class CheckTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"valid": True})
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
@@ -238,29 +250,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'detail': '找不到用戶'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'detail': f'刪除帳號失敗: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
-    
-
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-
-        # 添加自定义声明
-        token['username'] = user.username
-        token['groups'] = [group.name for group in user.groups.all()]
-
-        return token
-
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        
-        # 添加用户相关信息到返回数据中
-        data['user_id'] = self.user.id
-        data['username'] = self.user.username
-        data['groups'] = [group.name for group in self.user.groups.all()]
-        data['group_ids'] = [group.id for group in self.user.groups.all()]
-        
-        return data
     
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer

@@ -1,76 +1,45 @@
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Image, Animated, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const WelcomeScreen = () => {
   const router = useRouter();
-  const { isLogging } = useAuth();
-  const fadeAnimLogo1 = useRef(new Animated.Value(0)).current;
-  const fadeAnimLogo2 = useRef(new Animated.Value(0)).current;
-  const fadeAnimLogo3 = useRef(new Animated.Value(0)).current;
-  const seconds = 1000;
+  const { refreshAccessToken } = useAuth();
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const token = await AsyncStorage.getItem('token');
+      const storedToken = await AsyncStorage.getItem('token');
 
-      // Chain animations
-      Animated.sequence([
-        Animated.timing(fadeAnimLogo1, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.stagger(0, [
-          Animated.timing(fadeAnimLogo2, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(fadeAnimLogo3, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start();
-
-      if (token) {
+      if (storedToken) {
         try {
-          setTimeout(() => {
-            router.replace('/(tabs)/home');
-          }, seconds + 2000); // 延遲以讓動畫播放完畢
+          await refreshAccessToken();
+          router.replace('/(tabs)/home');
         } catch (error) {
           console.log('Token refresh failed', error);
-          setTimeout(() => {
-            router.replace('/LoginScreen');
-          }, seconds + 2000); // 延遲以讓動畫播放完畢
+          router.replace('/LoginScreen');
         }
       } else {
-        const timeoutId = setTimeout(() => {
-          router.replace('/LoginScreen');
-        }, seconds + 2000); // 延遲以讓動畫播放完畢
-        return () => clearTimeout(timeoutId);
+        router.replace('/LoginScreen');
       }
     };
 
     checkLoginStatus();
-  }, [isLogging]);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Animated.View style={{ ...styles.logoContainer, opacity: fadeAnimLogo1 }}>
+      <View style={styles.logoContainer}>
         <Image source={require('../../assets/logo-1-5.png')} style={styles.logo} />
-      </Animated.View>
+      </View>
       <View style={styles.extraLogosContainer}>
-        <Animated.View style={{ ...styles.extraLogoContainer, opacity: fadeAnimLogo2 }}>
+        <View style={styles.extraLogoContainer}>
           <Image source={require('../../assets/logo-2-1.png')} style={styles.extraLogo} />
-        </Animated.View>
-        <Animated.View style={{ ...styles.extraLogoContainer, opacity: fadeAnimLogo3 }}>
+        </View>
+        <View style={styles.extraLogoContainer}>
           <Image source={require('../../assets/logo-3-1.png')} style={styles.extraLogo} />
-        </Animated.View>
+        </View>
       </View>
       <ActivityIndicator size="large" color="#999" />
     </View>
@@ -91,6 +60,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 200,
     height: 250,
+    resizeMode: 'contain',
   },
   extraLogosContainer: {
     flexDirection: 'row',
@@ -105,8 +75,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   extraLogo: {
-    width: 100,
-    height: 100,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
 

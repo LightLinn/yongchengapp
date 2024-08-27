@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import SectionCard from '../../components/SectionCard';
@@ -12,9 +12,18 @@ const MenuScreen = () => {
   const { loading, refresh } = usePermissions();
   const { permissions } = useAuth();
 
+  // 在组件加载时自动刷新权限数据
+  useEffect(() => {
+    const loadPermissions = async () => {
+      await refresh();
+    };
+
+    loadPermissions();
+  }, []);
+
   const onRefresh = useCallback(async () => {
     await refresh();
-  }, [refresh]);
+  }, []);
 
   const hasPermission = (screenName, action) => {
     const permission = permissions.find(p => p.screen_name === screenName);
@@ -64,7 +73,7 @@ const MenuScreen = () => {
       screenName: '出勤管理',
       features: [
         { name: '工作日誌總表', icon: '', screenName: '工作日誌總表', screen: '/screens/schedule/VenueSelectScreen?type=worklog', action: 'can_view' },
-        { name: '工作日誌列表', icon: '', screenName: '工作日誌列表', screen: '/screens/worklog/WorklogScreen', action: 'can_view' },
+        // { name: '工作日誌列表', icon: '', screenName: '工作日誌列表', screen: '/screens/worklog/WorklogScreen', action: 'can_view' },
         { name: '救生員班表管理', icon: '', screenName: '救生員班表管理', screen: '/screens/schedule/VenueSelectScreen?type=lifeguard', action: 'can_view' },
         { name: '救生員班表', icon: '', screenName: '救生員班表', screen: '/screens/schedule/LifeguardSchedulesScreen', action: 'can_view' },
         { name: '教練排課時段', icon: '', screenName: '教練排課時段', screen: '/screens/schedule/LocationSelectScreen', action: 'can_view' },
@@ -99,7 +108,6 @@ const MenuScreen = () => {
       </View>
     );
   }
-
 
   return (
     <ScrollView
@@ -140,6 +148,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.bg,
+  },
+  noAccessText: {
+    color: COLORS.primary,
+    fontSize: SIZES.medium,
   },
 });
 
