@@ -7,7 +7,7 @@ import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { PermissionsProvider } from '../context/PermissionsContext';
 import { COLORS } from '../styles/theme';
-import * as TaskManager from 'expo-task-manager';
+// import * as TaskManager from 'expo-task-manager';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as Notifications from 'expo-notifications';
 import { fetchNotifications } from '../api/notificationApi';
@@ -15,67 +15,67 @@ import { fetchNotifications } from '../api/notificationApi';
 const BACKGROUND_FETCH_TASK = 'background-fetch-task';
 
 // 定義後台任務
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-  try {
-    console.log('Executing background fetch task');
-    const notifications = await fetchNotifications();
-    const pendingNotifications = notifications.filter(notification => notification.notify_status === '待傳送');
+// TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
+//   try {
+//     console.log('Executing background fetch task');
+//     const notifications = await fetchNotifications();
+//     const pendingNotifications = notifications.filter(notification => notification.notify_status === '待傳送');
 
-    // 推送 "待傳送" 的通知
-    for (const notification of pendingNotifications) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: notification.title,
-          body: notification.content.length > 50 
-            ? `${notification.content.substring(0, 50)}...` 
-            : notification.content,
-        },
-        trigger: null, // 即時推送
-      });
-    }
+//     // 推送 "待傳送" 的通知
+//     for (const notification of pendingNotifications) {
+//       await Notifications.scheduleNotificationAsync({
+//         content: {
+//           title: notification.title,
+//           body: notification.content.length > 50 
+//             ? `${notification.content.substring(0, 50)}...` 
+//             : notification.content,
+//         },
+//         trigger: null, // 即時推送
+//       });
+//     }
 
-    console.log(`Scheduled ${pendingNotifications.length} notifications`);
-    return pendingNotifications.length > 0 
-      ? BackgroundFetch.BackgroundFetchResult.NewData 
-      : BackgroundFetch.BackgroundFetchResult.NoData;
+//     console.log(`Scheduled ${pendingNotifications.length} notifications`);
+//     return pendingNotifications.length > 0 
+//       ? BackgroundFetch.BackgroundFetchResult.NewData 
+//       : BackgroundFetch.BackgroundFetchResult.NoData;
 
-  } catch (error) {
-    // console.error('Failed to fetch notifications in background:', error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
-  }
-});
+//   } catch (error) {
+//     // console.error('Failed to fetch notifications in background:', error);
+//     return BackgroundFetch.BackgroundFetchResult.Failed;
+//   }
+// });
 
 
 // 註冊後台任務
-async function registerBackgroundFetchAsync() {
-  try {
-    await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
-    const status = await BackgroundFetch.getStatusAsync();
-    // console.log('Background Fetch Status:', status);
+// async function registerBackgroundFetchAsync() {
+//   try {
+//     await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
+//     const status = await BackgroundFetch.getStatusAsync();
+//     // console.log('Background Fetch Status:', status);
     
-    if (status === BackgroundFetch.BackgroundFetchStatus.Available) {
-    //   console.log('Background fetch is available');
-      const taskRegistered = await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-        minimumInterval: 5 * 60, // 每5分鐘檢查一次
-        stopOnTerminate: false,    // 應用被終止後是否停止任務
-        startOnBoot: true,         // 設備重啟後是否重新啟動任務
-      });
+//     if (status === BackgroundFetch.BackgroundFetchStatus.Available) {
+//     //   console.log('Background fetch is available');
+//       const taskRegistered = await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+//         minimumInterval: 5 * 60, // 每5分鐘檢查一次
+//         stopOnTerminate: false,    // 應用被終止後是否停止任務
+//         startOnBoot: true,         // 設備重啟後是否重新啟動任務
+//       });
 
-      if (taskRegistered) {
-        // console.log('Background fetch task registered successfully');
-      } else {
-        // console.log('Failed to register background fetch task');
-      }
-    } else {
-    //   console.log('Background fetch is not available on this device');
-    }
-  } catch (error) {
-    // console.error('Failed to register background fetch task:', error);
-  }
-}
+//       if (taskRegistered) {
+//         // console.log('Background fetch task registered successfully');
+//       } else {
+//         // console.log('Failed to register background fetch task');
+//       }
+//     } else {
+//     //   console.log('Background fetch is not available on this device');
+//     }
+//   } catch (error) {
+//     // console.error('Failed to register background fetch task:', error);
+//   }
+// }
 
 // 在應用啟動時呼叫以確保後台任務被註冊
-registerBackgroundFetchAsync();
+// registerBackgroundFetchAsync();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -98,7 +98,7 @@ export default function Layout() {
       }
 
       // 註冊後台任務
-      await registerBackgroundFetchAsync();
+    //   await registerBackgroundFetchAsync();
 
       // 调度测试通知
       Notifications.scheduleNotificationAsync({

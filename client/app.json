@@ -3,7 +3,7 @@
     "name": "YongChengApp",
     "slug": "YongChengApp",
     "scheme": "client",
-    "version": "1.0.6",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

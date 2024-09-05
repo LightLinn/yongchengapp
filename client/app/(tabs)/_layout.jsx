@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
-import { Tabs, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Tabs } from 'expo-router';
 import { Icon } from 'react-native-elements';
 import { COLORS } from '../../styles/theme';
 
 export default function TabsLayout() {
+  const [showTweetTab, setShowTweetTab] = useState(false); // 控制 tweet 頁籤的顯示
+
   return (
     <Tabs
       screenOptions={{
@@ -31,16 +33,6 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Icon name="book" type="font-awesome" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="tweet"
-        options={{
-          tabBarLabel: '動態',
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="comment" type="font-awesome" color={color} size={size} />
           ),
         }}
       />
