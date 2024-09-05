@@ -410,7 +410,7 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
             
             # 創建學生通知
             create_system_notification(
-                users=enrollment.user, 
+                user=enrollment.user, 
                 title="您的報名已通過",
                 content="您有新的課程，請前往分頁「課程」 > 「總覽」查詢。",
                 )
@@ -420,7 +420,7 @@ class EnrollmentListViewSet(viewsets.ModelViewSet):
             
         # 創建教練通知
         create_system_notification(
-            users=coach.user,
+            user=coach.user,
             title="您有新的課程分配",
             content="您有新的課程分配，請前往分頁「課程」 > 「總覽」查詢。",
             )

@@ -27,12 +27,14 @@ class VenueRepairRequestViewSet(viewsets.ModelViewSet):
         group = Group.objects.get(name='內部_管理人員')
         ycappsystem = CustomUser.objects.get(username='ycappsystem')
         users = group.user_set.all()
+        print(users)
 
         for user in users:
+            print(user)
             create_system_notification(
-                users=user,
-                title=f'場地{instance.venue.name}報修申請通知',
-                content=f'場地{instance.venue.name}有新的報修申請，請盡快處理',
+                user=user,
+                title=f'{instance.venue.name}報修申請通知',
+                content=f'{instance.venue.name}有新的報修申請，請盡快處理',
                 type='全體公告',
             )
     
@@ -45,9 +47,9 @@ class VenueRepairRequestViewSet(viewsets.ModelViewSet):
 
         for user in users:
             create_system_notification(
-                users=user,
-                title=f'場地{instance.venue.name}報修更新通知',
-                content=f'場地{instance.venue.name}的報修申請已更新，請盡快處理',
+                user=user,
+                title=f'{instance.venue.name}報修更新通知',
+                content=f'{instance.venue.name}的報修申請已更新，請盡快處理',
                 type='全體公告',
             )
 

@@ -152,7 +152,7 @@ class LifeguardScheduleViewSet(viewsets.ModelViewSet):
         group = Group.objects.get(name='內部_救生員')
 
         create_system_notification(
-            users=lifeguard,
+            user=lifeguard,
             title=f'新班表通知',
             content=f'已新增 {instance.venue.name} {instance.date} {instance.start_time} - {instance.end_time} 時段的班表。',
             type='排班公告',
